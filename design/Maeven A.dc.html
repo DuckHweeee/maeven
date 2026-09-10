@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&amp;family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,600;6..12,700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f2f2f0;color:#0d0d0c;font-family:"Nunito Sans",system-ui,sans-serif;font-size:16.5px;-webkit-font-smoothing:antialiased}
+  a{color:#0d0d0c;text-decoration:none}
+  a:hover{color:#1c6b45}
+  p{text-wrap:pretty}
+  @keyframes mvn-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#f2f2f0">
+
+  <header style="position:sticky;top:0;z-index:20;background:rgba(244,241,236,0.94);backdrop-filter:blur(8px);border-bottom:1px solid #dcdcd8">
+    <div style="max-width:1280px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span style="font-family:'Archivo',sans-serif;font-size:25px;letter-spacing:-0.035em;font-weight:800;text-transform:lowercase">{{ brandName }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#8a8a84"><br></span>
+      </div>
+      <nav style="display:flex;flex-wrap:wrap;gap:2px">
+        <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="7">
+          <button onClick="{{ tab.go }}" style="border:0;background:transparent;cursor:pointer;font-family:'Nunito Sans',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#0d0d0c;padding:8px 11px;display:flex;flex-direction:column;align-items:center;gap:5px" style-hover="color:#1c6b45">
+            <span>{{ tab.label }}</span>
+            <sc-if value="{{ tab.active }}" hint-placeholder-val="{{ true }}">
+              <span style="display:block;width:100%;height:2px;background:#7ee0a3"></span>
+            </sc-if>
+          </button>
+        </sc-for>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== NHẬN DIỆN ===== -->
+  <sc-if value="{{ isBrand }}" hint-placeholder-val="{{ true }}">
+  <main style="max-width:1280px;margin:0 auto;padding:56px 24px 96px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px;align-items:end;padding-bottom:52px;border-bottom:1px solid #dcdcd8">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#0d0d0c;margin-bottom:22px;border-top:3px solid #0d0d0c;padding-top:10px;display:inline-block">01 — Bộ nhận diện</div>
+        <h1 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(44px,6.4vw,88px);line-height:0.98;letter-spacing:-0.03em;margin:0 0 20px">Ít món hơn,<br><span style="color:#1c6b45">mặc lâu hơn.</span></h1>
+        <p style="max-width:48ch;font-size:16px;line-height:1.75;color:#26262a;margin:0">{{ brandName }} là thương hiệu thời trang nam tối giản: mỗi mùa một bộ hẹp, chất liệu tự nhiên, form dựng vai rõ. Tạp chí lối sống đi kèm là nơi thương hiệu nói chuyện bằng nội dung thay vì khuyến mãi.</p>
+      </div>
+      <div style="aspect-ratio:4/5;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#8a8a84">brand hero — lookbook nam, dọc 1600×2000</span>
+      </div>
+    </div>
+
+    <section style="padding:52px 0;border-bottom:1px solid #dcdcd8">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#0d0d0c;margin-bottom:26px;border-top:3px solid #0d0d0c;padding-top:10px;display:inline-block">Logo &amp; lockup</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
+        <div style="background:#fff;border:1px solid #dcdcd8;aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+          <span style="font-family:'Archivo',sans-serif;font-size:36px;letter-spacing:-0.04em;font-weight:800;text-transform:lowercase">{{ brandName }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.3em;color:#8a8a84">PRIMARY</span>
+        </div>
+        <div style="background:#0d0d0c;aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+          <span style="font-family:'Archivo',sans-serif;font-size:36px;letter-spacing:-0.04em;font-weight:800;text-transform:lowercase;color:#f2f2f0">{{ brandName }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.3em;color:#8f887c">REVERSED</span>
+        </div>
+        <div style="background:#fff;border:1px solid #dcdcd8;aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;padding:18px">
+          <div style="text-align:center">
+            <div style="font-family:'Archivo',sans-serif;font-size:30px;letter-spacing:-0.04em;font-weight:800;text-transform:lowercase">{{ brandName }}</div>
+            <div style="height:1px;background:#0d0d0c;margin:8px 0"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.24em;text-transform:uppercase;color:#26262a">{{ tagline }}</div>
+          </div>
+        </div>
+        <div style="background:#7ee0a3;aspect-ratio:3/2;display:flex;align-items:center;justify-content:center">
+          <span style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:56px;font-weight:800;color:#0d0d0c">m</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:52px 0;border-bottom:1px solid #dcdcd8;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#0d0d0c;margin-bottom:26px;border-top:3px solid #0d0d0c;padding-top:10px;display:inline-block">Bảng màu</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px">
+          <sc-for list="{{ palette }}" as="c" hint-placeholder-count="5">
+            <div>
+              <div style="height:92px;border:1px solid #dcdcd8;background:{{ c.hex }}"></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;margin-top:8px;color:#26262a">{{ c.name }}</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8a8a84">{{ c.hex }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#0d0d0c;margin-bottom:26px;border-top:3px solid #0d0d0c;padding-top:10px;display:inline-block">Kiểu chữ</div>
+        <div style="border-bottom:1px solid #dcdcd8;padding-bottom:18px;margin-bottom:18px">
+          <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:44px;line-height:1.02;letter-spacing:-0.035em">Archivo</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#8a8a84;margin-top:6px">TIÊU ĐỀ · 700/800 · có tiếng Việt</div>
+        </div>
+        <div style="border-bottom:1px solid #dcdcd8;padding-bottom:18px;margin-bottom:18px">
+          <div style="font-size:25px;line-height:1.35">Nunito Sans — nội dung, giao diện, chú thích</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#8a8a84;margin-top:6px">THÂN BÀI · 400/500/600</div>
+        </div>
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:17px">IBM Plex Mono — 01 / SS26 / SKU</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#8a8a84;margin-top:6px">NHÃN, SỐ, METADATA</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:52px 0">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#0d0d0c;margin-bottom:26px;border-top:3px solid #0d0d0c;padding-top:10px;display:inline-block">Giọng thương hiệu</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px">
+        <sc-for list="{{ voice }}" as="v" hint-placeholder-count="4">
+          <div style="border-top:4px solid #7ee0a3;padding-top:16px">
+            <h3 style="font-family:'Archivo',sans-serif;font-weight:700;font-size:23px;margin:0 0 10px">{{ v.title }}</h3>
+            <p style="margin:0;font-size:14.5px;line-height:1.7;color:#26262a">{{ v.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- ===== TRANG CHỦ ===== -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <main>
+    <section style="position:relative;background:#0b0b0a;color:#f2f2f0;min-height:min(88vh,760px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden">
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#171717 0 12px,#212121 12px 24px)"></div>
+      
+      <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px 40px;width:100%">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:#7ee0a3;margin-bottom:26px">SS26 — Ánh sáng buổi sớm</div>
+        <h1 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(48px,9vw,132px);line-height:0.88;letter-spacing:-0.03em;margin:0;max-width:14ch;text-wrap:balance">Mười bốn món cho cả một mùa</h1>
+      </div>
+      <div style="position:relative;border-top:1px solid #2b2b28">
+        <div style="max-width:1280px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#8a8a84">
+          <span>01 / 04 — Lookbook</span>
+          <span>Sản xuất tại Việt Nam</span>
+          <button onClick="{{ openShop }}" style="cursor:pointer;background:transparent;border:0;color:#f2f2f0;border-bottom:1px solid #7ee0a3;padding:0 0 4px;font:inherit;letter-spacing:0.16em;text-transform:uppercase">Xem bộ sưu tập →</button>
+        </div>
+      </div>
+    </section>
+
+    <div style="background:#7ee0a3;color:#0d0d0c;overflow:hidden;padding:11px 0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.24em;text-transform:uppercase;white-space:nowrap">
+      <div style="display:inline-block;animation:mvn-marquee 26s linear infinite">Giao 48 giờ toàn quốc &nbsp;·&nbsp; Vải dệt tại Nam Định &nbsp;·&nbsp; Bảo hành sửa chữa trọn đời &nbsp;·&nbsp; Tạp chí mới mỗi thứ Ba &nbsp;·&nbsp; Giao 48 giờ toàn quốc &nbsp;·&nbsp; Vải dệt tại Nam Định &nbsp;·&nbsp; Bảo hành sửa chữa trọn đời &nbsp;·&nbsp; Tạp chí mới mỗi thứ Ba &nbsp;·&nbsp;</div>
+    </div>
+
+    <section style="max-width:1280px;margin:0 auto;padding:60px 24px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid #0d0d0c;padding-bottom:14px;margin-bottom:26px">
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(30px,4.4vw,56px);line-height:0.95;letter-spacing:-0.02em;margin:0">Mới về</h2>
+        <button onClick="{{ openShop }}" style="cursor:pointer;background:transparent;border:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#8a8a84" style-hover="color:#0d0d0c">Tất cả sản phẩm →</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px">
+        <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+          <div>
+            <div style="position:relative;aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);display:flex;align-items:center;justify-content:center;text-align:center;padding:16px">
+              <span style="position:absolute;top:10px;left:12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#1c6b45">{{ p.no }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8a84">{{ p.slot }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding-top:11px;border-top:1px solid #0d0d0c;font-size:14.5px">
+              <span>{{ p.name }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#26262a">{{ p.price }}</span>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8a84;margin-top:4px">{{ p.material }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="background:#0d0d0c;color:#f2f2f0;padding:68px 24px">
+      <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:44px;align-items:center">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#93938c;margin-bottom:18px">Tạp chí {{ brandName }}</div>
+          <h2 style="font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(29px,3.8vw,46px);line-height:1.1;letter-spacing:-0.01em;margin:0 0 18px">Chúng tôi viết về cách mặc, cách sống, và những người làm ra đồ</h2>
+          <p style="margin:0 0 24px;color:#d2d2cc;font-size:15.5px;line-height:1.75;max-width:52ch">Ba bài mỗi tuần: tin thời trang, hướng dẫn phối đồ, grooming, xe và đồng hồ, văn hóa. Biên tập viên viết và ký tên; trợ lý AI hỗ trợ dựng nháp, kiểm tone và tối ưu SEO.</p>
+          <button onClick="{{ openMag }}" style="cursor:pointer;background:transparent;border:0;color:#f2f2f0;border-bottom:1px solid #7ee0a3;padding:0 0 4px;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;font-family:'Nunito Sans',sans-serif">Vào tạp chí</button>
+        </div>
+        <div style="display:grid;gap:14px">
+          <sc-for list="{{ homePosts }}" as="a" hint-placeholder-count="3">
+            <button onClick="{{ a.go }}" style="cursor:pointer;text-align:left;background:transparent;border:0;border-top:1px solid #2e2e2b;padding:14px 0 0;display:flex;gap:16px;align-items:center;color:#f2f2f0">
+              <span style="width:88px;height:64px;flex:0 0 auto;background:repeating-linear-gradient(135deg,#1e1e1c 0 6px,#262624 6px 12px)"></span>
+              <span>
+                <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#7ee0a3">{{ a.rubric }}</span>
+                <span style="display:block;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:18.5px;line-height:1.3;margin-top:6px">{{ a.title }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#0d0d0c;color:#f2f2f0;overflow:hidden;padding:56px 0 0">
+      <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:flex-end">
+        <p style="margin:0;max-width:34ch;font-size:15.5px;line-height:1.75;color:#d2d2cc">Thiết kế bền hình: một bộ hẹp, vật liệu tự nhiên, và một tạp chí nói chuyện bằng nội dung.</p>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.2em;text-transform:uppercase;color:#7ee0a3">EST. 2026</span>
+      </div>
+      <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(90px,20vw,300px);line-height:0.78;letter-spacing:-0.055em;text-transform:lowercase;margin:0;padding:0 12px;white-space:nowrap;overflow:hidden">{{ brandName }}</div>
+    </section>
+
+    <section style="max-width:1280px;margin:0 auto;padding:60px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px">
+      <sc-for list="{{ promises }}" as="p" hint-placeholder-count="3">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#1c6b45;margin-bottom:10px">{{ p.kicker }}</div>
+          <p style="margin:0;font-size:15px;line-height:1.7;color:#26262a">{{ p.body }}</p>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- ===== TẠP CHÍ ===== -->
+  <sc-if value="{{ isMag }}" hint-placeholder-val="{{ true }}">
+  <main style="max-width:1280px;margin:0 auto;padding:44px 24px 92px">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;border-bottom:1px solid #dcdcd8;padding-bottom:20px">
+      <h1 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,58px);letter-spacing:-0.01em;margin:0">Tạp chí</h1>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ rubrics }}" as="r" hint-placeholder-count="6">
+          <button onClick="{{ r.go }}" style="cursor:pointer;background:{{ r.bg }};border:1px solid {{ r.border }};color:{{ r.fg }};padding:8px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase" style-hover="border-color:#0d0d0c">{{ r.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{ hasFeature }}" hint-placeholder-val="{{ true }}">
+    <article style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:36px;padding:40px 0;border-bottom:1px solid #dcdcd8;align-items:center">
+      <div style="aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);display:flex;align-items:center;justify-content:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8a8a84">ảnh bài nổi bật 1600×1200</span>
+      </div>
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#1c6b45">Tin thời trang · 6 phút đọc</div>
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,3.6vw,44px);line-height:1.08;letter-spacing:-0.01em;margin:14px 0 16px">Vải lanh Việt trở lại: chuyện sau ba xưởng dệt ở Nam Định</h2>
+        <p style="margin:0 0 20px;font-size:16px;line-height:1.75;color:#26262a;max-width:56ch">Sau một thập kỷ nhường chỗ cho sợi tổng hợp, lanh và gai dầu đang được các xưởng nhỏ dệt lại theo đơn hàng của thương hiệu nội địa. Chúng tôi đến ba xưởng để xem con số thật.</p>
+        <button onClick="{{ openArticle }}" style="cursor:pointer;border:1px solid #0d0d0c;background:transparent;padding:13px 24px;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;font-family:'Nunito Sans',sans-serif" style-hover="background:#0d0d0c;color:#f2f2f0">Đọc bài</button>
+      </div>
+    </article>
+    </sc-if>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:32px;padding-top:40px">
+      <sc-for list="{{ posts }}" as="p" hint-placeholder-count="6">
+        <button onClick="{{ p.go }}" style="cursor:pointer;text-align:left;background:transparent;border:0;padding:0;color:#0d0d0c">
+          <span style="display:flex;aspect-ratio:3/2;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);align-items:center;justify-content:center">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8a8a84">{{ p.slot }}</span>
+          </span>
+          <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#1c6b45;margin-top:14px">{{ p.rubric }}</span>
+          <span style="display:block;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:21px;line-height:1.25;margin:8px 0 10px">{{ p.title }}</span>
+          <span style="display:block;font-size:14px;line-height:1.7;color:#55554f">{{ p.dek }}</span>
+          <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8a8a84;margin-top:12px">{{ p.meta }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ===== BÀI VIẾT ===== -->
+  <sc-if value="{{ isArticle }}" hint-placeholder-val="{{ true }}">
+  <main>
+    <div style="max-width:820px;margin:0 auto;padding:60px 24px 22px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#1c6b45">{{ artRubric }}</div>
+      <h1 style="font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(33px,5.2vw,64px);line-height:1.02;letter-spacing:-0.012em;margin:18px 0 20px">{{ artTitle }}</h1>
+      <p style="font-size:19px;line-height:1.65;color:#26262a;margin:0 0 26px">{{ artDek }}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;color:#8a8a84;border-top:1px solid #dcdcd8;border-bottom:1px solid #dcdcd8;padding:14px 0">
+        <span>Nguyễn Hà Trang</span><span>08.09.2026</span><span>{{ artReadTime }}</span><span>{{ artPhotoCredit }}</span>
+      </div>
+      <sc-if value="{{ showSummary }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff;border:1px solid #e2e2de;padding:20px 22px;margin-top:22px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#1c6b45;margin-bottom:12px">{{ summaryHeading }}</div>
+          <ul style="margin:0;padding-left:18px;font-size:15px;line-height:1.75;color:#26262a">
+            <sc-for list="{{ summaryPoints }}" as="pt" hint-placeholder-count="3">
+              <li>{{ pt }}</li>
+            </sc-for>
+          </ul>
+        </div>
+      </sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
+        <button onClick="{{ toggleSummary }}" style="cursor:pointer;background:transparent;border:1px solid #c9c9c4;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#26262a" style-hover="border-color:#0d0d0c;color:#0d0d0c">{{ summaryLabel }}</button>
+        <button onClick="{{ toggleLang }}" style="cursor:pointer;background:transparent;border:1px solid #c9c9c4;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#26262a" style-hover="border-color:#0d0d0c;color:#0d0d0c">{{ langLabel }}</button>
+      </div>
+    </div>
+    <div style="max-width:1120px;margin:0 auto;padding:22px 24px 0">
+      <div style="aspect-ratio:16/9;background:repeating-linear-gradient(135deg,#e4e4e1 0 10px,#ebebe8 10px 20px);display:flex;align-items:center;justify-content:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8a8a84">ảnh mở bài — xưởng dệt 2400×1350</span>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8a84;margin-top:10px">{{ artCaption }}</div>
+    </div>
+    <div style="max-width:680px;margin:0 auto;padding:42px 24px 88px;font-size:17.5px;line-height:1.8;color:#22221f">
+      <p style="margin:0 0 22px">{{ body1 }}</p>
+      <p style="margin:0 0 22px">{{ body2 }}</p>
+      <blockquote style="margin:34px 0;padding:0 0 0 24px;border-left:2px solid #7ee0a3">
+        <p style="font-family:'Archivo',sans-serif;font-weight:500;font-size:26px;line-height:1.4;margin:0;color:#0d0d0c">{{ quote }}</p>
+        <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8a8a84;margin-top:14px">Trần Văn Phú, xưởng Hồng Phú</span>
+      </blockquote>
+      <p style="margin:0 0 22px">{{ body3 }}</p>
+      <h2 style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.02em;font-size:29px;line-height:1.2;margin:38px 0 18px">{{ heading2 }}</h2>
+      <p style="margin:0">{{ body4 }}</p>
+    </div>
+    <div style="background:#ebebe8;border-top:1px solid #dcdcd8;padding:52px 24px">
+      <div style="max-width:1120px;margin:0 auto">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a84;margin-bottom:22px">Đọc tiếp</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:28px">
+          <sc-for list="{{ related }}" as="p" hint-placeholder-count="3">
+            <div>
+              <div style="aspect-ratio:3/2;background:repeating-linear-gradient(135deg,#e0e0dc 0 8px,#e8e8e4 8px 16px)"></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#1c6b45;margin-top:12px">{{ p.rubric }}</div>
+              <h3 style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.02em;font-size:19.5px;line-height:1.28;margin:8px 0 0">{{ p.title }}</h3>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ===== SHOP ===== -->
+  <sc-if value="{{ isShop }}" hint-placeholder-val="{{ true }}">
+  <main style="max-width:1280px;margin:0 auto;padding:44px 24px 92px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px;align-items:start">
+      <div style="display:grid;gap:12px">
+        <div style="aspect-ratio:4/5;background:repeating-linear-gradient(135deg,#e4e4e1 0 10px,#ebebe8 10px 20px);display:flex;align-items:center;justify-content:center">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8a8a84">product 01 — sơ mi lanh, chính diện</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div style="aspect-ratio:1;background:repeating-linear-gradient(135deg,#e0e0dc 0 8px,#e8e8e4 8px 16px)"></div>
+          <div style="aspect-ratio:1;background:repeating-linear-gradient(135deg,#e0e0dc 0 8px,#e8e8e4 8px 16px)"></div>
+          <div style="aspect-ratio:1;background:repeating-linear-gradient(135deg,#e0e0dc 0 8px,#e8e8e4 8px 16px)"></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a84">SS26 · MV-SM-01</div>
+        <h1 style="font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(31px,4.2vw,48px);line-height:1.06;letter-spacing:-0.01em;margin:14px 0 12px">Áo sơ mi lanh mộc</h1>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:17px;margin-bottom:22px">1.480.000₫</div>
+        <p style="font-size:16px;line-height:1.75;color:#26262a;margin:0 0 26px;max-width:52ch">Lanh 100% dệt tại Nam Định, giặt trước để giữ form. Form dựng vai rõ, thân hơi thuôn, tay có thể xắn. Càng giặt càng mềm.</p>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#8a8a84;margin-bottom:10px">Kích cỡ</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
+          <sc-for list="{{ sizes }}" as="s" hint-placeholder-count="5">
+            <button onClick="{{ s.go }}" style="cursor:pointer;background:{{ s.bg }};color:{{ s.fg }};border:1px solid {{ s.border }};min-width:52px;padding:11px 0;font-family:'IBM Plex Mono',monospace;font-size:12px" style-hover="border-color:#0d0d0c">{{ s.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px">
+          <button onClick="{{ addToCart }}" style="cursor:pointer;flex:1 1 200px;background:#0d0d0c;color:#f2f2f0;border:1px solid #0d0d0c;padding:15px 20px;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;font-family:'Nunito Sans',sans-serif" style-hover="background:#1c6b45;border-color:#1c6b45">{{ cartLabel }}</button>
+          <button style="cursor:pointer;background:transparent;border:1px solid #c9c9c4;padding:15px 20px;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;font-family:'Nunito Sans',sans-serif" style-hover="border-color:#0d0d0c">Lưu</button>
+        </div>
+        <div style="border-top:1px solid #dcdcd8">
+          <sc-for list="{{ specs }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex;gap:20px;justify-content:space-between;border-bottom:1px solid #dcdcd8;padding:14px 0;font-size:14.5px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8a8a84">{{ s.k }}</span>
+              <span style="text-align:right;color:#26262a">{{ s.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <section style="margin-top:64px">
+      <h2 style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.02em;font-size:26px;margin:0 0 22px">Mặc cùng</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+        <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+          <div>
+            <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px)"></div>
+            <div style="display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:14px">
+              <span>{{ p.name }}</span><span style="font-family:'IBM Plex Mono',monospace;color:#26262a">{{ p.price }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- ===== STUDIO AI ===== -->
+  <sc-if value="{{ isStudio }}" hint-placeholder-val="{{ true }}">
+  <main style="max-width:1440px;margin:0 auto;padding:26px 24px 76px">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a84">Studio biên tập · bản nháp</div>
+        <h1 style="font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.01em;margin:8px 0 0">{{ draftTitle }}</h1>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8a84">{{ savedAt }}</span>
+        <button style="cursor:pointer;background:transparent;border:1px solid #c9c9c4;padding:11px 18px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;font-family:'Nunito Sans',sans-serif" style-hover="border-color:#0d0d0c">Xem trước</button>
+        <button onClick="{{ publish }}" style="cursor:pointer;background:#0d0d0c;color:#f2f2f0;border:1px solid #0d0d0c;padding:11px 20px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;font-family:'Nunito Sans',sans-serif" style-hover="background:#1c6b45;border-color:#1c6b45">{{ publishLabel }}</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:20px;align-items:start">
+      <section style="background:#fff;border:1px solid #dcdcd8;padding:26px 28px;min-width:0">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding-bottom:16px;border-bottom:1px solid #e8e8e4;margin-bottom:22px">
+          <sc-for list="{{ aiActions }}" as="a" hint-placeholder-count="6">
+            <button onClick="{{ a.go }}" style="cursor:pointer;background:#f6f6f4;border:1px solid #e2e2de;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#26262a" style-hover="border-color:#1c6b45;color:#1c6b45">{{ a.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#8a8a84;margin-bottom:8px">Tiêu đề</div>
+        <div style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:29px;line-height:1.2;padding-bottom:18px;border-bottom:1px solid #e8e8e4">{{ draftTitle }}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#8a8a84;margin:22px 0 8px">Sapo · tone {{ tone }}</div>
+        <p style="font-size:16px;line-height:1.75;color:#26262a;margin:0 0 24px">{{ draftDek }}</p>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#8a8a84;margin-bottom:10px">Nội dung</div>
+        <div style="font-size:16px;line-height:1.8;color:#22221f">
+          <p style="margin:0 0 18px">Xưởng của ông Phú nằm cuối một con ngõ ở Nam Định, sau cánh cổng sắt không biển hiệu. Bên trong, mười hai máy dệt chạy tám tiếng mỗi ngày.</p>
+          <div style="margin:0 0 18px;background:#eef7f2;border-left:2px solid #7ee0a3;padding:12px 14px">
+            <p style="margin:0">“Trước tôi dệt vải lót cho hàng xuất. Giờ tôi dệt lanh, số lượng bằng một phần mười, giá gấp ba.”</p>
+            <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#1c6b45;margin-top:8px">AI đề xuất: tách thành trích dẫn nổi bật</span>
+          </div>
+          <sc-for list="{{ draftExtra }}" as="para" hint-placeholder-count="1">
+            <p style="margin:0 0 18px">{{ para }}</p>
+          </sc-for>
+          <p style="margin:0;color:#8a8a84">{{ cursorHint }}</p>
+        </div>
+      </section>
+
+      <aside style="display:grid;gap:16px;min-width:0">
+        <div style="background:#0d0d0c;color:#f2f2f0;padding:22px 24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#93938c">Trợ lý AI</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8fbf94">● đang bật</span>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#93938c;margin-bottom:10px">Gợi ý tiêu đề</div>
+          <div style="display:grid;gap:8px">
+            <sc-for list="{{ titleIdeas }}" as="t" hint-placeholder-count="3">
+              <button onClick="{{ t.go }}" style="cursor:pointer;text-align:left;background:#171716;border:1px solid #2e2e2b;color:#f2f2f0;padding:12px 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;line-height:1.5" style-hover="border-color:#7ee0a3">{{ t.text }}</button>
+            </sc-for>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#93938c;margin:22px 0 10px">Đổi tone sapo</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ tones }}" as="t" hint-placeholder-count="4">
+              <button onClick="{{ t.go }}" style="cursor:pointer;background:{{ t.bg }};border:1px solid {{ t.border }};color:{{ t.fg }};padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em">{{ t.label }}</button>
+            </sc-for>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#93938c;margin:22px 0 10px">Dịch</div>
+          <button onClick="{{ translate }}" style="cursor:pointer;width:100%;background:transparent;border:1px solid #4a473f;color:#d2d2cc;padding:11px 12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase" style-hover="border-color:#f2f2f0;color:#f2f2f0">{{ translateLabel }}</button>
+        </div>
+
+        <div style="background:#fff;border:1px solid #dcdcd8;padding:22px 24px">
+          <div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:16px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a84">Kiểm giọng thương hiệu</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#26262a">{{ voiceScore }}</span>
+          </div>
+          <div style="display:grid;gap:14px">
+            <sc-for list="{{ checks }}" as="c" hint-placeholder-count="4">
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:{{ c.color }};flex:0 0 34px">{{ c.score }}</span>
+                <span style="min-width:0">
+                  <span style="display:block;font-size:14px;font-weight:500">{{ c.label }}</span>
+                  <span style="display:block;font-size:13px;line-height:1.6;color:#55554f">{{ c.note }}</span>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #dcdcd8;padding:22px 24px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a84;margin-bottom:14px">SEO &amp; thẻ · AI tạo</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+            <sc-for list="{{ tags }}" as="t" hint-placeholder-count="5">
+              <span style="background:#f2efe8;border:1px solid #e2e2de;padding:6px 10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#26262a">{{ t }}</span>
+            </sc-for>
+          </div>
+          <div style="font-size:13.5px;line-height:1.65;color:#55554f;border-top:1px solid #e8e8e4;padding-top:14px">Meta: Lanh và gai dầu dệt trong nước đang trở lại nhờ đơn hàng từ thương hiệu Việt. Phóng sự từ ba xưởng dệt ở Nam Định. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8a8a84">· 148/160</span></div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #dcdcd8;padding:22px 24px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a84;margin-bottom:14px">Ảnh bìa · gợi ý</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);display:flex;align-items:flex-end;padding:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8a84">máy dệt, cận</span></div>
+            <div style="aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);display:flex;align-items:flex-end;padding:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8a84">sân phơi vải</span></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ===== MOBILE ===== -->
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ true }}">
+  <main style="max-width:1280px;margin:0 auto;padding:48px 24px 92px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#8a8a84;margin-bottom:32px">Mockup mobile — trang chủ, tạp chí, đọc bài</div>
+    <div style="display:flex;flex-wrap:wrap;gap:36px;justify-content:center">
+
+      <div style="width:330px;flex:0 0 auto;border:10px solid #0d0d0c;border-radius:40px;overflow:hidden;background:#f2f2f0">
+        <div style="display:flex;justify-content:space-between;padding:10px 18px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#26262a"><span>9:41</span><span>▮▮▮</span></div>
+        <div style="padding:6px 16px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dcdcd8">
+          <span style="font-family:'Archivo',sans-serif;font-size:19px;letter-spacing:-0.035em;font-weight:800;text-transform:lowercase">{{ brandName }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:16px">≡</span>
+        </div>
+        <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);display:flex;align-items:flex-end;padding:16px">
+          <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:28px;line-height:1.04">Mười bốn món cho cả một mùa</span>
+        </div>
+        <div style="padding:14px 16px 22px">
+          <div style="background:#0d0d0c;color:#f2f2f0;text-align:center;padding:14px;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase">Xem bộ sưu tập</div>
+          <div style="display:flex;gap:12px;margin-top:16px">
+            <div style="flex:1;aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#e4e4e1 0 6px,#ebebe8 6px 12px)"></div>
+            <div style="flex:1;aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#e4e4e1 0 6px,#ebebe8 6px 12px)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:330px;flex:0 0 auto;border:10px solid #0d0d0c;border-radius:40px;overflow:hidden;background:#f2f2f0">
+        <div style="display:flex;justify-content:space-between;padding:10px 18px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#26262a"><span>9:41</span><span>▮▮▮</span></div>
+        <div style="padding:6px 16px 12px;border-bottom:1px solid #dcdcd8;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:22px">Tạp chí</div>
+        <div style="display:flex;gap:6px;padding:12px 16px;overflow:hidden">
+          <span style="background:#0d0d0c;color:#f2f2f0;padding:6px 10px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase">Tất cả</span>
+          <span style="border:1px solid #c9c9c4;padding:6px 10px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#26262a">Tin</span>
+          <span style="border:1px solid #c9c9c4;padding:6px 10px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#26262a">Phối đồ</span>
+        </div>
+        <div style="padding:0 16px 22px;display:grid;gap:18px">
+          <div>
+            <div style="aspect-ratio:3/2;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px)"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:#1c6b45;margin-top:10px">Tin thời trang</div>
+            <div style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:19px;line-height:1.25;margin-top:6px">Vải lanh Việt trở lại: ba xưởng dệt ở Nam Định</div>
+          </div>
+          <div style="display:flex;gap:12px;border-top:1px solid #dcdcd8;padding-top:14px">
+            <div style="width:76px;height:58px;flex:0 0 auto;background:repeating-linear-gradient(135deg,#e4e4e1 0 6px,#ebebe8 6px 12px)"></div>
+            <div style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:15.5px;line-height:1.3">Bốn cách mặc một chiếc sơ mi mộc suốt tuần</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:330px;flex:0 0 auto;border:10px solid #0d0d0c;border-radius:40px;overflow:hidden;background:#f2f2f0">
+        <div style="display:flex;justify-content:space-between;padding:10px 18px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#26262a"><span>9:41</span><span>▮▮▮</span></div>
+        <div style="padding:10px 16px 0">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:#1c6b45">Tin thời trang</div>
+          <div style="font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:-0.015em;font-size:25px;line-height:1.12;margin:10px 0 12px">Vải lanh Việt trở lại: ba xưởng dệt ở Nam Định</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8a84;border-top:1px solid #dcdcd8;border-bottom:1px solid #dcdcd8;padding:10px 0">Nguyễn Hà Trang · 6 phút</div>
+          <div style="background:#fff;border:1px solid #e2e2de;padding:12px 14px;margin-top:14px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#1c6b45;margin-bottom:8px">Tóm tắt AI</div>
+            <div style="font-size:12.5px;line-height:1.6;color:#26262a">Lanh nội địa đắt hơn 40%, giao chậm gấp đôi — vẫn kín đơn.</div>
+          </div>
+          <div style="aspect-ratio:16/9;background:repeating-linear-gradient(135deg,#e4e4e1 0 8px,#ebebe8 8px 16px);margin-top:14px"></div>
+          <p style="font-size:13.5px;line-height:1.75;color:#22221f;margin:14px 0 22px">Xưởng của ông Phú nằm cuối một con ngõ ở Nam Định, sau cánh cổng sắt không biển hiệu. Bên trong, mười hai máy dệt chạy tám tiếng mỗi ngày.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <footer style="border-top:1px solid #dcdcd8;padding:30px 24px">
+    <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8a8a84">
+      
+      <span>{{ brandName }} — {{ tagline }}</span><span><br></span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;brandName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;MAEVEN&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tagline&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Ít món, mặc lâu&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: "brand", rubric: "Tất cả", tone: "Điềm tĩnh", size: "M",
+    titleIdx: 0, summary: true, en: false, cart: false, published: false, extended: false
+  };
+  go(s) { this.setState({ screen: s }); }
+
+  renderVals() {
+    const p = this.props, st = this.state, s = st.screen;
+    const accent = "#1c6b45";
+    const tabDefs = [["brand","Nhận diện"],["home","Trang chủ"],["mag","Tạp chí"],["article","Bài viết"],["shop","Sản phẩm"],["studio","Studio AI"],["mobile","Mobile"]];
+
+    const titles = [
+      "Vải lanh Việt trở lại: chuyện sau ba xưởng dệt ở Nam Định",
+      "Đắt hơn 40%, chậm gấp đôi: vì sao thương hiệu Việt vẫn chọn lanh nội",
+      "Ba xưởng dệt, mười hai máy, và một mùa lanh mới"
+    ];
+    const deks = {
+      "Điềm tĩnh": "Sau một thập kỷ nhường chỗ cho sợi tổng hợp, lanh và gai dầu đang được dệt lại theo đơn hàng của các thương hiệu nội địa. Chi phí cao hơn 40%, thời gian giao gấp đôi — và vẫn có người đặt.",
+      "Ngắn gọn": "Lanh nội địa đắt hơn 40%, giao chậm gấp đôi. Ba xưởng ở Nam Định vẫn không kịp đơn.",
+      "Phóng sự": "Trong con ngõ không biển hiệu ở Nam Định, mười hai máy dệt chạy tám tiếng mỗi ngày cho những thương hiệu mà năm năm trước chưa ai trong số họ tồn tại.",
+      "Phân tích": "Vì sao các thương hiệu Việt chấp nhận trả thêm 40% cho vải dệt trong nước, và điều đó nói gì về cách khách hàng đang mua."
+    };
+    const toneList = ["Điềm tĩnh","Ngắn gọn","Phóng sự","Phân tích"];
+
+    const allPosts = [
+      { rubric:"Phối đồ", title:"Bốn cách mặc một chiếc sơ mi mộc suốt tuần", dek:"Cùng một món, bốn ngữ cảnh: họp, cà phê, tiệc cưới sân vườn, chuyến bay đêm.", meta:"05.09.2026 · 4 phút", slot:"ảnh 1200×800" },
+      { rubric:"Văn hóa", title:"Hai ngày ở Hội An với một chiếc túi duy nhất", dek:"Danh sách đồ mang theo và những gì hóa ra không cần.", meta:"02.09.2026 · 6 phút", slot:"ảnh 1200×800" },
+      { rubric:"Grooming", title:"Tủ chăm da tối giản cho khí hậu ẩm", dek:"Năm sản phẩm, không nhiều hơn, cho mùa hè Hà Nội.", meta:"29.08.2026 · 5 phút", slot:"ảnh 1200×800" },
+      { rubric:"Đồ chơi", title:"Đồng hồ ba kim dưới 20 triệu: bốn lựa chọn bền", dek:"Không giới hạn, không phiên bản đặc biệt — chỉ máy tốt và dây thay được.", meta:"26.08.2026 · 7 phút", slot:"ảnh 1200×800" },
+      { rubric:"Tin thời trang", title:"Giá cotton tăng: điều gì xảy ra với tủ đồ của bạn", dek:"Ba thay đổi có thể thấy trên nhãn giá trong sáu tháng tới.", meta:"22.08.2026 · 5 phút", slot:"ảnh 1200×800" },
+      { rubric:"Phối đồ", title:"Bảng màu trung tính cho mùa mưa", dek:"Sáu món, hai màu, mọi thứ mặc chồng được với nhau.", meta:"19.08.2026 · 4 phút", slot:"ảnh 1200×800" }
+    ];
+    const filtered = st.rubric === "Tất cả" ? allPosts : allPosts.filter(x => x.rubric === st.rubric);
+
+    const checkData = [
+      { score:"92", label:"Câu ngắn, chủ động", note:"Trung bình 18 từ/câu. Đạt.", color:"#1c6b45" },
+      { score:"80", label:"Có số liệu kèm tuyên bố", note:"Đoạn 4 nêu “đắt hơn nhiều” — nên thay bằng con số.", color:"#6b6b66" },
+      { score:"96", label:"Không hối khách", note:"Không có ngôn từ khẩn cấp.", color:"#1c6b45" },
+      { score:"74", label:"Tiếng Việt sạch", note:"3 từ mượn có thể thay: “trend”, “item”, “local”.", color:"#6b6b66" }
+    ];
+
+    const bodyVi = {
+      b1: "Xưởng của ông Phú nằm cuối một con ngõ ở Nam Định, sau cánh cổng sắt không biển hiệu. Bên trong, mười hai máy dệt chạy tám tiếng mỗi ngày, phần lớn cho đơn hàng của bốn thương hiệu Việt mà năm năm trước chưa ai trong số họ tồn tại.",
+      b2: "“Trước tôi dệt vải lót cho hàng xuất”, ông nói. “Giờ tôi dệt lanh, số lượng bằng một phần mười, giá gấp ba.” Con số đó là lý do xưởng còn mở.",
+      q: "Khách hỏi vải dệt ở đâu trước khi hỏi giá. Mười năm trước không ai hỏi câu đó.",
+      b3: "Chuỗi cung ứng ngắn lại có cái giá của nó. Một mét lanh dệt trong nước hiện đắt hơn lanh nhập khoảng 40%, thời gian giao dài gấp đôi vì các xưởng nhỏ không chạy song song nhiều đơn. Với thương hiệu bán mười bốn mẫu một mùa, đó là phép tính chấp nhận được; với thương hiệu bán hai trăm mẫu, không.",
+      h2: "Ba con số cần nhìn",
+      b4: "Sản lượng lanh nội địa vẫn nhỏ, nhưng tỷ lệ đơn hàng từ thương hiệu trong nước đã tăng đều ba năm liền. Điều thay đổi không phải công nghệ dệt mà là cách khách mua: ít hơn, đắt hơn, giữ lâu hơn."
+    };
+    const bodyEn = {
+      b1: "Mr. Phu's workshop sits at the end of an alley in Nam Dinh, behind an iron gate with no sign. Inside, twelve looms run eight hours a day, mostly for four Vietnamese labels that did not exist five years ago.",
+      b2: "“I used to weave lining for export orders,” he says. “Now I weave linen — a tenth of the volume at three times the price.” That number is why the workshop is still open.",
+      q: "Customers ask where the cloth was woven before they ask the price. Ten years ago nobody asked that.",
+      b3: "A shorter supply chain has its cost. Locally woven linen runs about 40% above imported linen, and lead times double because small workshops cannot run orders in parallel. For a label selling fourteen styles a season the math works; for one selling two hundred, it does not.",
+      h2: "Three numbers to watch",
+      b4: "Domestic linen output is still small, but the share of orders from local labels has risen three years running. What changed is not the weaving technology — it is how people buy: less, dearer, kept longer."
+    };
+    Object.assign(bodyVi, {
+      rubric: "Tin thời trang",
+      title: "Vải lanh Việt trở lại: chuyện sau ba xưởng dệt ở Nam Định",
+      dek: "Sau một thập kỷ nhường chỗ cho sợi tổng hợp, lanh và gai dầu đang được dệt lại theo đơn hàng của các thương hiệu nội địa. Chi phí cao hơn 40%, thời gian giao gấp đôi — và vẫn có người đặt.",
+      readTime: "6 phút đọc",
+      credit: "Ảnh: Lê Quốc",
+      caption: "Xưởng dệt Hồng Phú, tháng 8.2026.",
+      sumHead: "Tóm tắt bằng AI · 3 điểm",
+      sum: [
+        "Lanh dệt trong nước đắt hơn hàng nhập khoảng 40%, giao chậm gấp đôi.",
+        "Đơn hàng từ thương hiệu Việt đã tăng ba năm liền tại ba xưởng ở Nam Định.",
+        "Mô hình chỉ hợp với thương hiệu bán ít mẫu mỗi mùa."
+      ]
+    });
+    Object.assign(bodyEn, {
+      rubric: "Fashion news",
+      title: "Vietnamese linen returns: inside three weaving workshops in Nam Dinh",
+      dek: "After a decade of ceding ground to synthetics, linen and hemp are being woven again for local labels. It costs 40% more and takes twice as long — and the orders keep coming.",
+      readTime: "6 min read",
+      credit: "Photos: Le Quoc",
+      caption: "Hong Phu weaving workshop, August 2026.",
+      sumHead: "AI summary · 3 points",
+      sum: [
+        "Locally woven linen costs about 40% more than imports and takes twice as long to deliver.",
+        "Orders from Vietnamese labels have risen three years running at three Nam Dinh workshops.",
+        "The model only works for labels selling few styles per season."
+      ]
+    });
+    const body = st.en ? bodyEn : bodyVi;
+
+    return {
+      brandName: p.brandName ?? "MAEVEN",
+      tagline: p.tagline ?? "Ít món, mặc lâu",
+      isBrand: s==="brand", isHome: s==="home", isMag: s==="mag", isArticle: s==="article",
+      isShop: s==="shop", isStudio: s==="studio", isMobile: s==="mobile",
+      tabs: tabDefs.map(([k,label]) => ({ label, active: s===k, go: () => this.go(k) })),
+      openArticle: () => this.go("article"),
+      openMag: () => this.go("mag"),
+      openShop: () => this.go("shop"),
+
+      palette: [
+        { name:"Mực", hex:"#0d0d0c" }, { name:"Giấy", hex:"#f2f2f0" },
+        { name:"Lục nhạt", hex:"#7ee0a3" }, { name:"Tro", hex:"#e4e4e1" }, { name:"Khói", hex:"#8a8a84" }
+      ],
+      voice: [
+        { title:"Nói con số, không nói cảm xúc", body:"Mọi tuyên bố về chất liệu, xuất xứ hay độ bền đều đi kèm số liệu hoặc tên xưởng. Không dùng “tuyệt hảo”, “đỉnh cao”." },
+        { title:"Ngắn, chủ động, tiếng Việt sạch", body:"Câu dưới 22 từ. Hạn chế từ mượn khi đã có từ Việt. Không viết hoa giữa câu để nhấn." },
+        { title:"Không hối khách", body:"Không đếm ngược, không “chỉ còn 2 sản phẩm”. Hàng hết thì ghi hết và cho đăng ký chờ." },
+        { title:"AI là trợ lý, người ký tên", body:"AI dựng nháp, gợi tiêu đề, kiểm tone. Mỗi bài xuất bản đều có biên tập viên chịu trách nhiệm cuối." }
+      ],
+      promises: [
+        { kicker:"Sản xuất", body:"Mỗi mùa mười bốn mẫu, dệt tại Nam Định và Bảo Lộc. Tên xưởng in trên nhãn." },
+        { kicker:"Sửa miễn phí", body:"Sửa đường may và thay cúc miễn phí trong hai năm, tại cửa hàng hoặc qua bưu điện." },
+        { kicker:"Không giảm giá theo mùa", body:"Một mức giá suốt vòng đời sản phẩm. Hàng lỗi và mẫu thử bán riêng hai lần mỗi năm." }
+      ],
+      products: [
+        { no:"01", name:"Áo sơ mi lanh mộc", price:"1.480.000₫", material:"Lanh 100% · Nam Định", slot:"product 01 — sơ mi" },
+        { no:"02", name:"Quần ống suông", price:"1.750.000₫", material:"Cotton dệt chéo", slot:"product 02 — quần" },
+        { no:"03", name:"Áo khoác không cổ", price:"3.200.000₫", material:"Lanh pha gai dầu", slot:"product 03 — khoác" },
+        { no:"04", name:"Áo thun cổ tròn", price:"620.000₫", material:"Cotton sợi dài", slot:"product 04 — thun" }
+      ],
+      homePosts: [
+        { rubric:"Tin thời trang", title:"Vải lanh Việt trở lại: chuyện sau ba xưởng dệt", go: () => this.go("article") },
+        { rubric:"Phối đồ", title:"Bốn cách mặc một chiếc sơ mi mộc suốt tuần", go: () => this.go("article") },
+        { rubric:"Đồ chơi", title:"Đồng hồ ba kim dưới 20 triệu: bốn lựa chọn bền", go: () => this.go("article") }
+      ],
+      rubrics: ["Tất cả","Tin thời trang","Phối đồ","Grooming","Đồ chơi","Văn hóa"].map(label => {
+        const on = st.rubric === label;
+        return { label, bg: on ? "#0d0d0c" : "transparent", fg: on ? "#f2f2f0" : "#333331",
+          border: on ? "#0d0d0c" : "#c9c9c4", go: () => this.setState({ rubric: label }) };
+      }),
+      hasFeature: st.rubric === "Tất cả" || st.rubric === "Tin thời trang",
+      posts: filtered.map(x => ({ ...x, go: () => this.go("article") })),
+
+      showSummary: st.summary,
+      summaryLabel: st.summary ? "Ẩn tóm tắt AI" : "Tóm tắt bằng AI",
+      toggleSummary: () => this.setState(s2 => ({ summary: !s2.summary })),
+      langLabel: st.en ? "Đọc tiếng Việt" : "Read in English",
+      toggleLang: () => this.setState(s2 => ({ en: !s2.en })),
+      body1: body.b1, body2: body.b2, quote: body.q, body3: body.b3, heading2: body.h2, body4: body.b4,
+      artRubric: body.rubric, artTitle: body.title, artDek: body.dek, artReadTime: body.readTime,
+      artPhotoCredit: body.credit, artCaption: body.caption,
+      summaryHeading: body.sumHead, summaryPoints: body.sum,
+      related: [
+        { rubric:"Phối đồ", title:"Bốn cách mặc một chiếc sơ mi mộc suốt tuần" },
+        { rubric:"Nhân vật", title:"Người thợ may cuối cùng ở phố Hàng Trống" },
+        { rubric:"Grooming", title:"Tủ chăm da tối giản cho khí hậu ẩm" }
+      ],
+
+      sizes: ["XS","S","M","L","XL"].map(label => {
+        const on = st.size === label;
+        return { label, bg: on ? "#0d0d0c" : "transparent", fg: on ? "#f2f2f0" : "#0d0d0c",
+          border: on ? "#0d0d0c" : "#c9c9c4", go: () => this.setState({ size: label }) };
+      }),
+      cartLabel: st.cart ? "Đã thêm · size " + st.size : "Thêm vào giỏ",
+      addToCart: () => this.setState({ cart: true }),
+      specs: [
+        { k:"Chất liệu", v:"Lanh 100%, 180 g/m²" },
+        { k:"Xuất xứ", v:"Dệt tại Nam Định, may tại Hà Nội" },
+        { k:"Bảo quản", v:"Giặt máy 30°C, phơi bóng mát" },
+        { k:"Sửa chữa", v:"Miễn phí trong 2 năm" }
+      ],
+
+      draftTitle: titles[st.titleIdx],
+      draftDek: deks[st.tone],
+      tone: st.tone,
+      savedAt: st.published ? "Đã xuất bản 14:26" : "Lưu tự động 14:22",
+      publishLabel: st.published ? "Đã xuất bản" : "Xuất bản",
+      publish: () => this.setState({ published: true }),
+      aiActions: [
+        { label:"Viết tiếp từ outline", go: () => this.setState({ extended: true }) },
+        { label:"Gợi ý tiêu đề", go: () => this.setState(s2 => ({ titleIdx: (s2.titleIdx + 1) % 3 })) },
+        { label:"Đổi tone", go: () => this.setState(s2 => ({ tone: toneList[(toneList.indexOf(s2.tone)+1) % toneList.length] })) },
+        { label:"Tạo tag + SEO", go: () => {} },
+        { label:"Tóm tắt bài", go: () => {} },
+        { label:"Dịch Việt–Anh", go: () => {} }
+      ],
+      draftExtra: st.extended ? [
+        "Chuỗi cung ứng ngắn lại có cái giá của nó: một mét lanh dệt trong nước đắt hơn lanh nhập khoảng 40%, thời gian giao dài gấp đôi. (AI dựng từ outline — cần biên tập kiểm số liệu.)"
+      ] : [],
+      cursorHint: st.extended ? "AI đã thêm một đoạn từ outline. Kiểm tra số liệu trước khi xuất bản." : "Con trỏ ở đây — gõ tiếp hoặc nhấn “Viết tiếp từ outline”.",
+      titleIdeas: titles.map((text, i) => ({ text, go: () => this.setState({ titleIdx: i }) })),
+      tones: toneList.map(label => {
+        const on = st.tone === label;
+        return { label, bg: on ? "#f2f2f0" : "transparent", fg: on ? "#0d0d0c" : "#d2d2cc",
+          border: on ? "#f2f2f0" : "#4a473f", go: () => this.setState({ tone: label }) };
+      }),
+      translate: () => this.setState({ screen: "article", en: true }),
+      translateLabel: "Xem bản tiếng Anh",
+      voiceScore: "86 / 100",
+      checks: checkData,
+      tags: ["lanh","dệt nội địa","Nam Định","chuỗi cung ứng","bền vững","SS26"]
+    };
+  }
+}
+</script>
+</body>
+</html>
