@@ -10,7 +10,9 @@ the product pages"); invoke a skill as a slash command (`/blog-schema`).
 | **frontend-doctor** | ✅ fixes | After any UI change, before shipping. Finds and fixes real defects — mobile overflow, `next/image` misuse, hydration mismatches, broken a11y semantics, focus traps, React state bugs — then verifies with tsc + eslint + build. |
 | **motion-3d** | ✅ builds | Any 3D or motion work — Three.js scenes, GLSL, CSS 3D, scroll choreography, variable-font animation. Knows the perf budget, fallback rules and WebGL disposal discipline. |
 | **photo-scout** | ✅ fetches | A page or article needs imagery, or a photo reads wrong. Searches Pexels, *looks at* the candidates before choosing, installs the winner and keeps attribution in sync. |
+| **content-model** | ✅ edits | A feature needs a new field or entity in `src/lib/data.ts`. Changes the types and migrates every existing record in one pass, and makes a dangling reference fail the build rather than the page. Run it **before** any UI for the feature. |
 | **magazine-writer** | ✅ writes | The magazine needs a new piece. Writes it in Vietnamese in the brand voice and installs it into `data.ts` as a working route. |
+| **preflight** | ❌ reports | Before shipping, and after any change to routing, data, imagery or motion. Boots the real server and walks every route — images, console and hydration errors, and motion in all three modes (normal, reduced, no-JS). The only agent that runs the site rather than reading it. |
 | **blog-reviewer** | ❌ reports | Editorial quality gate before publishing. Scores a draft against `design.md`'s voice contract and blocks claims borrowing real-world authority. |
 | **blog-seo** | ❌ reports | After adding a route or changing metadata. Validates the Next.js metadata surface against the prerendered build. |
 | **responsive-auditor** | ❌ reports | Before a release. Walks 320 → 1440px and reports what breaks, with the arithmetic. |
