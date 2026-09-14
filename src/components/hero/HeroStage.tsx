@@ -2,8 +2,12 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, useGSAP } from "@/lib/gsap";
 import { useReducedMotion, useWebGL } from "@/lib/motion";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Three.js is pulled in only once we know the scene will actually run, so it
 // never lands in the shared bundle or on a reduced-motion reader's device.
@@ -31,34 +35,38 @@ export default function HeroStage({
   const canRender3d = hasWebGL && !reduced;
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Parallax: one scroll read per frame, written out as custom properties.
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || reduced) return;
+  // Parallax: three depth planes driven straight off scroll position.
+  //
+  // Was a scroll listener throttled through its own requestAnimationFrame.
+  // ScrollTrigger already runs one batched handler for every scrubbed animation
+  // on the page, so this joins that instead of adding a second scroll reader —
+  // and `invalidateOnRefresh` re-measures on resize, which the old version had
+  // to wire up by hand.
+  useGSAP(
+    () => {
+      const el = sectionRef.current;
+      if (!el || reduced) return;
 
-    let frame = 0;
-    const apply = () => {
-      frame = 0;
-      const rect = el.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0, -rect.top / Math.max(rect.height, 1)));
-      el.style.setProperty("--p-veil", `${(progress * 42).toFixed(1)}px`);
-      el.style.setProperty("--p-type", `${(progress * 96).toFixed(1)}px`);
-      el.style.setProperty("--p-fade", (1 - progress * 0.75).toFixed(3));
-    };
-
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(apply);
-    };
-
-    apply();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [reduced]);
+      gsap.fromTo(
+        el,
+        { "--p-veil": "0px", "--p-type": "0px", "--p-fade": 1 },
+        {
+          "--p-veil": "42px",
+          "--p-type": "96px",
+          "--p-fade": 0.25,
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+    },
+    { dependencies: [reduced] },
+  );
 
   return (
     <section

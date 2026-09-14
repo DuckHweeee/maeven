@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Photo from "@/components/Photo";
+import Parallax from "@/components/motion/Parallax";
 import Reveal from "@/components/motion/Reveal";
 import { PRODUCTS, PROMISES } from "@/lib/data";
 import { BRAND } from "@/lib/constants";
@@ -32,13 +33,15 @@ export default function AboutPage() {
             áo, vì đó là thứ quyết định chiếc áo bền được bao lâu.
           </p>
         </div>
-        <Photo
-          src="/img/brand/hero.jpg"
-          alt="Sổ mẫu nam MAEVEN"
-          ratio="4 / 5"
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+        <Parallax amount={70}>
+          <Photo
+            src="/img/brand/hero.jpg"
+            alt="Áo sơ mi lanh mộc treo trên móc gỗ dưới ánh sáng ban ngày"
+            ratio="4 / 5"
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </Parallax>
       </div>
 
       {/* ------------------------------------------------------ bốn xưởng */}

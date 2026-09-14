@@ -36,6 +36,20 @@ export const useReducedMotion = () =>
 export const useFinePointer = () =>
   useMediaQuery("(hover: hover) and (pointer: fine)");
 
+/**
+ * False on the server and during hydration, true immediately after.
+ *
+ * Same shape as useWebGL below rather than `useEffect(() => setMounted(true))`:
+ * a subscription that never fires with differing server and client snapshots
+ * gives React one clean post-hydration pass, instead of a setState cascade.
+ */
+export const useMounted = () =>
+  useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+
 let webglSupport: boolean | null = null;
 
 function detectWebgl() {
@@ -69,6 +83,3 @@ export function usePointerEffects() {
 
 export const clamp = (v: number, min: number, max: number) =>
   Math.min(max, Math.max(min, v));
-
-/** Frame-rate independent easing toward a target. */
-export const lerp = (from: number, to: number, t: number) => from + (to - from) * t;
