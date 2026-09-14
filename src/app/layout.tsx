@@ -49,7 +49,15 @@ export default function RootLayout({
       lang="vi"
       className={`${archivo.variable} ${nunito.variable} ${plexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-paper text-ink">
+      {/* Extensions (Grammarly, ColorZilla and friends) stamp attributes onto
+          <body> before React hydrates, which React reports as a tree-hydration
+          mismatch pointing at this file. This suppresses the diff for this one
+          element's own attributes only — one level deep, so a genuine mismatch
+          anywhere inside still surfaces. */}
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-paper text-ink"
+      >
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />
