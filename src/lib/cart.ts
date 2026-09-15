@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 
+export { priceToNumber } from "./constants";
+
 export type CartLine = { sku: string; size: string; qty: number };
 
 // v2: product codes changed (mv-sm-01 -> mv-01), so v1 lines would resolve
@@ -119,9 +121,6 @@ export const useCartOpen = () =>
 
 /* ------------------------------------------------------------------- money */
 
-/** "1.480.000₫" -> 1480000 */
-export const priceToNumber = (price: string) =>
-  Number(price.replace(/[^\d]/g, "")) || 0;
 
 /** Grouped manually rather than via toLocaleString, whose output depends on the
  *  runtime's locale data and can differ between server and browser. */
