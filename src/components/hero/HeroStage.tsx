@@ -1,38 +1,39 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRef } from "react";
+import HeroVideo from "./HeroVideo";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { useReducedMotion, useWebGL } from "@/lib/motion";
+import { useMounted, useReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
-
-// Three.js is pulled in only once we know the scene will actually run, so it
-// never lands in the shared bundle or on a reduced-motion reader's device.
-const FabricCanvas = dynamic(() => import("./FabricCanvas"), { ssr: false });
 
 /**
  * The home hero. Three depth planes move at different rates as the page
  * scrolls: the cloth behind, a grain veil over it, and the type in front.
  *
- * The photograph is always rendered underneath. If WebGL is missing or the
- * reader prefers reduced motion, that still frame is simply what you get —
- * nothing is hidden behind an effect that may not run.
+ * The rearmost plane is a silent video loop of the cloth, over a still
+ * photograph that is always rendered underneath. If the reader prefers reduced
+ * motion the video is never mounted and that still frame is simply what you get
+ * — nothing is hidden behind an effect that may not run.
  */
 export default function HeroStage({
   src,
   alt,
+  video,
+  poster,
   children,
 }: {
   src: string;
   alt: string;
+  /** Optional moving plane. Omitted on routes that want the still hero. */
+  video?: boolean;
+  poster?: string;
   children: React.ReactNode;
 }) {
   const reduced = useReducedMotion();
-  const hasWebGL = useWebGL();
-  const canRender3d = hasWebGL && !reduced;
+  const mounted = useMounted();
   const sectionRef = useRef<HTMLElement>(null);
 
   // Parallax: three depth planes driven straight off scroll position.
@@ -83,8 +84,15 @@ export default function HeroStage({
         className="object-cover opacity-70"
       />
 
-      {/* plane 1b — the cloth, when it can run */}
-      {canRender3d && <FabricCanvas src={src} />}
+      {/* plane 1b — the cloth in motion, when the reader wants motion.
+
+          Gated on `mounted` as well as `reduced`, because `useReducedMotion`
+          reports false on the server: without it the prerendered HTML carries an
+          autoplaying <video> that a reduced-motion reader starts decoding and
+          React then unmounts, and a reader without JavaScript is left with a
+          three-megabyte download behind an element that never fades in. After
+          mount the preference is known and this is simply right. */}
+      {video && mounted && !reduced && <HeroVideo poster={poster ?? src} />}
 
       {/* plane 2 — grain veil, drifts slowly */}
       <div

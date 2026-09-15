@@ -6,7 +6,10 @@ import type { Product } from "@/lib/data";
 import { addToCart } from "@/lib/cart";
 
 export default function BuyPanel({ product }: { product: Product }) {
-  const [size, setSize] = useState("M");
+  // Middle of whatever scale this product uses — "M" on the clothing scale,
+  // which is what this defaulted to when the scale was the only one there was.
+  const scale = product.sizes ?? SIZES;
+  const [size, setSize] = useState(() => scale[Math.floor(scale.length / 2)]);
 
   return (
     <div>
@@ -25,7 +28,7 @@ export default function BuyPanel({ product }: { product: Product }) {
         Kích cỡ
       </div>
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Chọn kích cỡ">
-        {SIZES.map((label) => {
+        {scale.map((label) => {
           const on = size === label;
           return (
             <button

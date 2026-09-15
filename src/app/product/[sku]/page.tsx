@@ -38,7 +38,8 @@ export default async function ProductPage({ params }: Params) {
   if (!product) notFound();
 
   const [hero, ...thumbs] = product.gallery;
-  const alsoWear = PRODUCTS.filter((p) => p.sku !== sku);
+  // Three, so the row is never ragged however many products the catalogue grows to.
+  const alsoWear = PRODUCTS.filter((p) => p.sku !== sku).slice(0, 3);
   const written = articlesForProduct(sku);
 
   return (

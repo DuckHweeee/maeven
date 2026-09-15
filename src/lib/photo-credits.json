@@ -27,6 +27,26 @@
     "sourceUrl": "https://unsplash.com/photos/a-white-shirt-hanging-on-a-clothes-line-lziP7ZPtghg",
     "alt": "a white shirt hanging on a clothes line"
   },
+  "/img/campaign/01.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nam mặc áo khoác vải bông màu cát, áo thun trắng, quần than, đứng trước tường bê tông"
+  },
+  "/img/campaign/02.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nữ mặc áo khoác màu cát và quần trắng ngà, trong phòng bê tông có rèm voan"
+  },
+  "/img/campaign/03.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nam mặc nguyên bộ màu cát, nắng xiên đổ chéo trên tường"
+  },
+  "/img/campaign/04.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nữ mặc nguyên bộ màu cát, đứng cạnh cột bê tông ngoài trời"
+  },
   "/img/editorial/bang-mau.jpg": {
     "photographer": "RDNE Stock project",
     "photographerUrl": "https://www.pexels.com/@rdne",
@@ -82,6 +102,12 @@
     "source": "Pexels",
     "sourceUrl": "https://www.pexels.com/photo/man-sitting-and-working-with-sewing-machine-19340518/",
     "alt": "A senior tailor skillfully operates a sewing machine, surrounded by fabric in a workshop setting."
+  },
+  "/img/home/hero-poster.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Sợi vải thẫm màu bay trên nền sáng",
+    "note": "Khung hình đầu của /img/home/hero.mp4, dùng làm ảnh chờ cho video ở đầu trang chủ."
   },
   "/img/home/hero.jpg": {
     "photographer": "Diana Light",
@@ -201,6 +227,21 @@
     "source": "Unsplash",
     "sourceUrl": "https://unsplash.com/photos/Az7co_KPQsE",
     "alt": "cotton t-shirt"
+  },
+  "/img/product/05-a.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Mũ thân kem lưỡi nâu, chụp nghiêng"
+  },
+  "/img/product/05-b.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Mũ màu than thêu cùng tông, chụp nghiêng"
+  },
+  "/img/product/05-cap.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Mũ thân kem lưỡi xanh rêu, chụp nghiêng"
   },
   "/img/ugc/01.jpg": {
     "photographer": "ShotPot",

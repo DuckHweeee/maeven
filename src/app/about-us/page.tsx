@@ -3,7 +3,15 @@ import Link from "next/link";
 import Photo from "@/components/Photo";
 import Parallax from "@/components/motion/Parallax";
 import Reveal from "@/components/motion/Reveal";
-import { ARTICLES, PRODUCTS, PROMISES } from "@/lib/data";
+import {
+  ARTICLES,
+  PRODUCTS,
+  PROMISES,
+  WORKSHOP_COUNT,
+  WORKSHOP_PLACES,
+  viCount,
+  viList,
+} from "@/lib/data";
 import { BRAND } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -19,6 +27,10 @@ export default function AboutPage() {
   // Counted rather than written down: the sentence below is a promise about
   // what the magazine does, so it must not be able to drift from the articles.
   const disclosed = ARTICLES.filter((a) => a.relatedSkus.length > 0).length;
+  // Same reason as `disclosed`: the heading and the sentence below both state a
+  // number that the list right underneath them would contradict if it drifted.
+  const howMany = viCount(WORKSHOP_COUNT);
+  const where = viList(WORKSHOP_PLACES);
 
   return (
     <main className="mx-auto max-w-[1280px] px-4 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-24">
@@ -31,9 +43,9 @@ export default function AboutPage() {
             <span className="text-forest">Distinct</span>
           </h1>
           <p className="m-0 max-w-[48ch] text-base leading-[1.75] text-graphite">
-            {BRAND.name} bắt đầu năm 2026 với mười bốn mẫu cho một mùa. Vải dệt ở
-            bốn xưởng tại Nam Định và Bảo Lộc. Tên xưởng in trên nhãn từng chiếc
-            áo, vì đó là thứ quyết định chiếc áo bền được bao lâu.
+            {BRAND.name} bắt đầu năm 2026 với mười bốn mẫu cho một mùa. Làm ở{" "}
+            {howMany} xưởng tại {where}. Tên xưởng in trên nhãn từng chiếc áo, vì
+            đó là thứ quyết định chiếc áo bền được bao lâu.
           </p>
         </div>
         <Parallax amount={70}>
@@ -47,9 +59,9 @@ export default function AboutPage() {
         </Parallax>
       </div>
 
-      {/* ------------------------------------------------------ bốn xưởng */}
+      {/* -------------------------------------------------------- xưởng */}
       <section className="border-b border-line py-10 sm:py-[52px]">
-        <h2 className="mono-label mb-6 text-[11px] text-smoke">Bốn xưởng</h2>
+        <h2 className="mono-label mb-6 text-[11px] text-smoke">{howMany} xưởng</h2>
         <div className="grid gap-8 sm:grid-cols-2">
           {workshops.map((w, i) => (
             <Reveal key={w.sku} delay={(i % 2) * 80}>

@@ -7,17 +7,10 @@
 // live in `constants.ts` so client components can pull them without this module.
 export { BRAND, NAV, SIZES } from "./constants";
 
-export const MARQUEE_ITEMS = [
-  "Giao 48 giờ toàn quốc",
-  "Dệt tại Nam Định và Bảo Lộc",
-  "Sửa chữa miễn phí hai năm",
-  "Tạp chí mới thứ Tư và thứ Bảy",
-];
-
 export const PROMISES = [
   {
     kicker: "Sản xuất",
-    body: "Mỗi mùa mười bốn mẫu, dệt tại Nam Định và Bảo Lộc. Tên xưởng in trên nhãn.",
+    body: "Mỗi mùa mười bốn mẫu, làm tại Nam Định, Bảo Lộc và TP.HCM. Tên xưởng in trên nhãn.",
   },
   {
     kicker: "Sửa miễn phí",
@@ -38,7 +31,7 @@ export const PROMISES = [
  * a recommendation block pointing at a 404. The site is prerendered, so anything
  * that only fails at runtime fails after it has shipped.
  */
-export const SKUS = ["mv-01", "mv-02", "mv-03", "mv-04"] as const;
+export const SKUS = ["mv-01", "mv-02", "mv-03", "mv-04", "mv-05"] as const;
 export type Sku = (typeof SKUS)[number];
 
 export type Product = {
@@ -50,6 +43,12 @@ export type Product = {
   material: string;
   blurb: string;
   gallery: { src: string; alt: string }[];
+  /**
+   * The size scale, when this item is not sold on the clothing scale in
+   * `SIZES`. Optional rather than required because four of five products do use
+   * that scale, and BuyPanel is the only read site — it falls back to `SIZES`.
+   */
+  sizes?: string[];
   specs: { k: string; v: string }[];
   /** The workshop that wove the cloth — printed on the label, shown on the card back. */
   maker: { workshop: string; place: string; story: string };
@@ -162,6 +161,36 @@ export const PRODUCTS: Product[] = [
       story: "Cổ bo do một người làm, bà Thoa, hai mươi hai năm ở xưởng. Máy dệt cổ chạy riêng, chậm. Bà bảo nếu chạy nhanh thì ba tháng sau cổ giãn.",
     },
   },
+  {
+    no: "05",
+    sku: "mv-05",
+    name: "Mũ lưỡi trai Cap Saint Jacques",
+    price: "480.000₫",
+    material: "Bông chéo giặt sẵn",
+    blurb:
+      "Sáu mảnh, lưỡi cong, không đệm mụt. Chữ thêu móc xích nổi ba lớp ở thân trước, một dòng nữa thêu chìm dọc mép lưỡi. Cap Saint Jacques là tên cũ của Vũng Tàu; câu dưới lưỡi là dòng chữ ở trên cùng trang chủ này.",
+    gallery: [
+      { src: "/img/product/05-cap.jpg", alt: "Mũ thân kem lưỡi xanh rêu, chụp nghiêng" },
+      { src: "/img/product/05-a.jpg", alt: "Mũ thân kem lưỡi nâu, chụp nghiêng" },
+      { src: "/img/product/05-b.jpg", alt: "Mũ màu than thêu cùng tông, chụp nghiêng" },
+    ],
+    // A cap is sold by head circumference. Offering XS–XL here would contradict
+    // the "Vòng đầu" row three lines below it.
+    sizes: ["54–56", "57–58", "59–60"],
+    specs: [
+      { k: "Chất liệu", v: "Bông chéo 100%, giặt sẵn, 320 g/m²" },
+      { k: "Xuất xứ", v: "Vải dệt tại Nam Định, may và thêu tại TP.HCM" },
+      { k: "Màu", v: "Kem/xanh rêu, kem/nâu, than thêu cùng tông" },
+      { k: "Vòng đầu", v: "54–60 cm, khóa đồng ở sau" },
+      { k: "Bảo quản", v: "Giặt tay nước lạnh, phơi úp trong bóng râm" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Phú Thị",
+      place: "TP.HCM",
+      story: "Xưởng này làm mũ đồng phục trường học suốt mười tám năm. Máy thêu móc xích chạy chữ nổi là máy cũ, mỗi thân mũ mất bảy phút. Họ từ chối làm dưới năm trăm chiếc một đợt vì phải canh lại máy cho từng cỡ chữ.",
+    },
+  },
 ];
 
 // A code can be declared in SKUS and then never given a product. The types
@@ -176,6 +205,99 @@ for (const sku of SKUS) {
 export function getProduct(sku: string) {
   return PRODUCTS.find((p) => p.sku === sku);
 }
+
+/**
+ * Where the work happens, counted rather than asserted.
+ *
+ * Every page that used to write "bốn xưởng tại Nam Định và Bảo Lộc" now reads
+ * these two values instead. Adding the cap added a fifth workshop in a third
+ * province, and three pages went from true to false in the same commit without
+ * anything failing — the sentence is only ever right by accident while it is
+ * typed out by hand.
+ */
+export const WORKSHOP_PLACES = [...new Set(PRODUCTS.map((p) => p.maker.place))];
+export const WORKSHOP_COUNT = new Set(PRODUCTS.map((p) => p.maker.workshop)).size;
+
+/** Small counts as words, because the rest of the copy writes them as words. */
+const VI_COUNT = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín", "mười"];
+export const viCount = (n: number) => VI_COUNT[n] ?? String(n);
+
+/** "Nam Định, Bảo Lộc và TP.HCM" — the Vietnamese list, with "và" before the last. */
+export const viList = (items: readonly string[]) =>
+  items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} và ${items.at(-1)}`;
+
+/**
+ * The ticker of standing promises.
+ *
+ * Declared here rather than at the top of the file because the "where" line is
+ * read off PRODUCTS, and a module-scope array is evaluated where it is written.
+ */
+export const MARQUEE_ITEMS = [
+  "Giao 48 giờ toàn quốc",
+  `Làm tại ${viList(WORKSHOP_PLACES)}`,
+  "Sửa chữa miễn phí hai năm",
+  "Tạp chí mới thứ Tư và thứ Bảy",
+];
+
+
+/* ----------------------------------------------------------------- campaign */
+
+/**
+ * The season's lookbook.
+ *
+ * Deliberately not typed against `Sku`. These are campaign frames, not product
+ * photography: the garment in them is styled for a picture, and tying a frame to
+ * a code would make the site claim "this is item mv-0x" about a shot that was
+ * never lit to answer that question. The band links to the collection, not to a
+ * product page — which is also the only honest thing it can do while the jacket
+ * in frame is not the jacket in the catalogue.
+ */
+export type Look = {
+  id: string;
+  src: string;
+  alt: string;
+  /** One line of where and what. No adjectives that the photograph already shows. */
+  note: string;
+  /** How far this column drifts against the page, in px. Set per look so the
+      four columns move at four rates rather than as one block. */
+  drift: number;
+};
+
+export const CAMPAIGN = {
+  title: "Bê tông và ánh sáng ngang",
+  season: "SS26",
+  /** Shot in one room over one afternoon; the light moves, the clothes do not. */
+  looks: [
+    {
+      id: "l1",
+      src: "/img/campaign/01.jpg",
+      alt: "Người mẫu nam mặc áo khoác vải bông màu cát, áo thun trắng, quần than, đứng trước tường bê tông",
+      note: "Tường bê tông, nắng gián tiếp",
+      drift: 90,
+    },
+    {
+      id: "l2",
+      src: "/img/campaign/02.jpg",
+      alt: "Người mẫu nữ mặc áo khoác màu cát và quần trắng ngà, trong phòng bê tông có rèm voan",
+      note: "Rèm voan, sau mười một giờ",
+      drift: 40,
+    },
+    {
+      id: "l3",
+      src: "/img/campaign/03.jpg",
+      alt: "Người mẫu nam mặc nguyên bộ màu cát, nắng xiên đổ chéo trên tường",
+      note: "Nắng xiên qua cửa kính",
+      drift: 120,
+    },
+    {
+      id: "l4",
+      src: "/img/campaign/04.jpg",
+      alt: "Người mẫu nữ mặc nguyên bộ màu cát, đứng cạnh cột bê tông ngoài trời",
+      note: "Ngoài hiên, bóng cột",
+      drift: 62,
+    },
+  ] satisfies Look[],
+} as const;
 
 
 /* ------------------------------------------------------- MAEVEN by you */
