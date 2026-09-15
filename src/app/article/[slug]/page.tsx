@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ArticleReader from "./ArticleReader";
-import { ARTICLES, getArticle, relatedArticles } from "@/lib/data";
+import { ARTICLES, getArticle, productsForArticle, relatedArticles } from "@/lib/data";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -21,5 +21,11 @@ export default async function ArticlePage({ params }: Params) {
   const article = getArticle(slug);
   if (!article) notFound();
 
-  return <ArticleReader article={article} related={relatedArticles(slug)} />;
+  return (
+    <ArticleReader
+      article={article}
+      related={relatedArticles(slug)}
+      products={productsForArticle(article)}
+    />
+  );
 }

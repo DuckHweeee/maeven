@@ -3,7 +3,7 @@ import Link from "next/link";
 import Photo from "@/components/Photo";
 import Parallax from "@/components/motion/Parallax";
 import Reveal from "@/components/motion/Reveal";
-import { PRODUCTS, PROMISES } from "@/lib/data";
+import { ARTICLES, PRODUCTS, PROMISES } from "@/lib/data";
 import { BRAND } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -16,6 +16,9 @@ export default function AboutPage() {
   // The workshops are the product data, not a second copy of it — a name that
   // changes on a label changes here too.
   const workshops = PRODUCTS.map((p) => ({ sku: p.sku, ...p.maker }));
+  // Counted rather than written down: the sentence below is a promise about
+  // what the magazine does, so it must not be able to drift from the articles.
+  const disclosed = ARTICLES.filter((a) => a.relatedSkus.length > 0).length;
 
   return (
     <main className="mx-auto max-w-[1280px] px-4 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-24">
@@ -106,7 +109,8 @@ export default function AboutPage() {
           </p>
           <p className="m-0 max-w-[52ch] text-base leading-[1.75] text-graphite">
             Nếu một bài nhắc đến sản phẩm của {BRAND.name}, bài đó sẽ ghi rõ ngay
-            dưới tiêu đề. Đến giờ chưa có bài nào như vậy.
+            dưới tiêu đề. Hiện có {disclosed} trong {ARTICLES.length} bài đã đăng
+            mang dòng đó.
           </p>
         </div>
       </section>

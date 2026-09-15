@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Photo from "@/components/Photo";
 import ProductCard from "@/components/ProductCard";
+import ArticleCard from "@/components/ArticleCard";
 import BuyPanel from "./BuyPanel";
-import { PRODUCTS, getProduct } from "@/lib/data";
+import { PRODUCTS, articlesForProduct, getProduct } from "@/lib/data";
 
 type Params = { params: Promise<{ sku: string }> };
 
@@ -25,6 +26,7 @@ export default async function ProductPage({ params }: Params) {
 
   const [hero, ...thumbs] = product.gallery;
   const alsoWear = PRODUCTS.filter((p) => p.sku !== sku);
+  const written = articlesForProduct(sku);
 
   return (
     <main className="mx-auto max-w-[1280px] px-4 pt-8 pb-16 sm:px-6 sm:pt-11 sm:pb-24">
@@ -46,6 +48,21 @@ export default async function ProductPage({ params }: Params) {
 
         <BuyPanel product={product} />
       </div>
+
+      {/* Derived from the articles, so an editor only ever links in one
+          direction and this side keeps itself current. */}
+      {written.length > 0 && (
+        <section className="mt-16">
+          <h2 className="m-0 mb-[22px] font-display text-[22px] font-semibold tracking-[-0.02em] sm:text-[26px]">
+            Tạp chí viết về món này
+          </h2>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {written.map((a) => (
+              <ArticleCard key={a.slug} article={a} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mt-16">
         <h2 className="m-0 mb-[22px] font-display text-[22px] font-semibold tracking-[-0.02em] sm:text-[26px]">
