@@ -31,10 +31,20 @@ export const PROMISES = [
 
 /* ------------------------------------------------------------------ product */
 
+/**
+ * The product codes, as a literal union rather than `string`.
+ *
+ * This is what makes a broken article-to-product link a compile error instead of
+ * a recommendation block pointing at a 404. The site is prerendered, so anything
+ * that only fails at runtime fails after it has shipped.
+ */
+export const SKUS = ["mv-01", "mv-02", "mv-03", "mv-04"] as const;
+export type Sku = (typeof SKUS)[number];
+
 export type Product = {
   no: string;
   /** Product code. Also the route param for /product/[sku]. */
-  sku: string;
+  sku: Sku;
   name: string;
   price: string;
   material: string;
@@ -154,6 +164,15 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
+// A code can be declared in SKUS and then never given a product. The types
+// cannot see that, so check it at module scope: data.ts is imported by every
+// prerendered route, which makes this a build failure rather than a bad page.
+for (const sku of SKUS) {
+  if (!PRODUCTS.some((p) => p.sku === sku)) {
+    throw new Error(`SKUS lists "${sku}" but no product defines it`);
+  }
+}
+
 export function getProduct(sku: string) {
   return PRODUCTS.find((p) => p.sku === sku);
 }
@@ -267,12 +286,37 @@ export type ArticleBody = {
   body: Block[];
 };
 
+/**
+ * Funnel classification, from the journal spec. Deliberately separate from
+ * `rubric`: a rubric is how a reader navigates the magazine (Grooming, Phối đồ),
+ * a pillar is how the business classifies the piece. Collapsing them would force
+ * one of the two to lie.
+ */
+export const PILLARS = ["style", "education", "culture", "brand", "product"] as const;
+export type Pillar = (typeof PILLARS)[number];
+
+/** Channels a piece can be reworked for. Editorial checklist, nothing automated. */
+export const CHANNELS = ["instagram", "tiktok", "email"] as const;
+export type Channel = (typeof CHANNELS)[number];
+
 export type Article = ArticleBody & {
   slug: string;
   date: string;
   author: string;
   hero: string;
   card: string;
+  pillar: Pillar;
+  /**
+   * Products this piece is genuinely about, in display order.
+   *
+   * Empty is the normal case, not a gap to fill. The magazine states on
+   * /about-us that any piece touching a MAEVEN product will say so under its
+   * headline — so a link here is a disclosure, and adding one where the piece is
+   * not really about the garment would make that promise false.
+   */
+  relatedSkus: Sku[];
+  /** Which channels this has already been reworked for. */
+  repurposed: Channel[];
   /** Present only where a translation has actually been written. */
   en?: ArticleBody;
 };
@@ -280,6 +324,9 @@ export type Article = ArticleBody & {
 export const ARTICLES: Article[] = [
   {
     slug: "vietnamese-linen-returns",
+    pillar: "culture",
+    relatedSkus: ["mv-01", "mv-03"],
+    repurposed: ["instagram"],
     date: "09.09.2026",
     author: "Nguyễn Hà Trang",
     hero: "/img/article/hero.jpg",
@@ -378,6 +425,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "one-shirt-four-ways",
+    pillar: "style",
+    relatedSkus: ["mv-01", "mv-02"],
+    repurposed: ["instagram", "email"],
     date: "05.09.2026",
     author: "Lê Minh Quân",
     hero: "/img/editorial/so-mi-mot-tuan.jpg",
@@ -423,6 +473,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "two-days-in-hoi-an",
+    pillar: "culture",
+    relatedSkus: [],
+    repurposed: [],
     date: "02.09.2026",
     author: "Phạm Thu Hà",
     hero: "/img/editorial/hoi-an.jpg",
@@ -465,6 +518,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "minimal-grooming-humid-climate",
+    pillar: "education",
+    relatedSkus: [],
+    repurposed: ["email"],
     date: "29.08.2026",
     author: "Đỗ Anh Khoa",
     hero: "/img/editorial/grooming.jpg",
@@ -509,6 +565,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "three-hand-watches-under-20m",
+    pillar: "style",
+    relatedSkus: [],
+    repurposed: [],
     date: "26.08.2026",
     author: "Lê Minh Quân",
     hero: "/img/editorial/dong-ho.jpg",
@@ -554,6 +613,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "cotton-prices-rising",
+    pillar: "education",
+    relatedSkus: ["mv-02", "mv-04"],
+    repurposed: [],
     date: "22.08.2026",
     author: "Đỗ Anh Khoa",
     hero: "/img/editorial/cotton.jpg",
@@ -599,6 +661,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "neutral-palette-rainy-season",
+    pillar: "style",
+    relatedSkus: ["mv-01", "mv-02", "mv-04"],
+    repurposed: [],
     date: "19.08.2026",
     author: "Phạm Thu Hà",
     hero: "/img/editorial/bang-mau.jpg",
@@ -643,6 +708,23 @@ export const FEATURE_SLUG = ARTICLES[0].slug;
 
 export function getArticle(slug: string) {
   return ARTICLES.find((a) => a.slug === slug);
+}
+
+/** Products a piece is about, resolved in the order the editor listed them. */
+export function productsForArticle(article: Article) {
+  return article.relatedSkus
+    .map((sku) => PRODUCTS.find((p) => p.sku === sku))
+    .filter((p): p is Product => Boolean(p));
+}
+
+/**
+ * The reverse link, derived rather than declared.
+ *
+ * Storing it on the product as well would be two places to forget; this way an
+ * editor adds `relatedSkus` to one article and both pages update.
+ */
+export function articlesForProduct(sku: string) {
+  return ARTICLES.filter((a) => a.relatedSkus.some((s) => s === sku));
 }
 
 /** Three most recent pieces other than the one being read. */
