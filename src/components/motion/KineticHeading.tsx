@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { clamp, lerp, usePointerEffects } from "@/lib/motion";
+import { useRef } from "react";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { clamp, usePointerEffects } from "@/lib/motion";
 
 type Props = {
   text: string;
@@ -17,7 +18,14 @@ type Props = {
  * settle as the page scrolls past. Archivo is loaded as a variable font, so this
  * animates the real wght/wdth axes rather than faking weight with a transform.
  *
- * Word rects are measured once per interaction and on resize — never per frame.
+ * Word rects are measured once per interaction and on resize — never per frame,
+ * and each word's swell is a `gsap.quickTo` that gets retargeted rather than a
+ * hand-rolled requestAnimationFrame lerp.
+ *
+ * The dependency list spreads `weight` and `width` into numbers on purpose: they
+ * arrive as array literals, which are a fresh reference on every render, so
+ * depending on the arrays themselves tore down and rebuilt the whole effect each
+ * time the parent re-rendered.
  */
 export default function KineticHeading({
   text,
@@ -28,7 +36,8 @@ export default function KineticHeading({
   const ref = useRef<HTMLHeadingElement>(null);
   const { enabled } = usePointerEffects();
 
-  useEffect(() => {
+  useGSAP(
+    () => {
     const root = ref.current;
     if (!root) return;
 
@@ -57,52 +66,37 @@ export default function KineticHeading({
       });
     };
 
-    const current = words.map(() => 0);
-    const target = words.map(() => 0);
-    let frame = 0;
-    let running = false;
+    // One eased value per word, 0 at rest and 1 under the pointer.
+    const swell = words.map(() => ({ t: 0 }));
 
-    const tick = () => {
-      let moving = false;
-      for (let i = 0; i < words.length; i++) {
-        current[i] = lerp(current[i], target[i], 0.12);
-        if (Math.abs(current[i] - target[i]) > 0.002) moving = true;
-
-        const t = current[i];
-        const wght = Math.round(lerp(weight[0], weight[1], t));
-        const wdth = Math.round(lerp(width[0], width[1], t));
-        words[i].style.setProperty(
-          "font-variation-settings",
-          `"wght" ${wght}, "wdth" ${wdth}`,
-        );
-      }
-      if (!moving) {
-        running = false;
-        return;
-      }
-      frame = requestAnimationFrame(tick);
+    const paint = (i: number) => {
+      const t = swell[i].t;
+      const wght = Math.round(weight[0] + (weight[1] - weight[0]) * t);
+      const wdth = Math.round(width[0] + (width[1] - width[0]) * t);
+      words[i].style.setProperty(
+        "font-variation-settings",
+        `"wght" ${wght}, "wdth" ${wdth}`,
+      );
     };
 
-    const start = () => {
-      if (running) return;
-      running = true;
-      frame = requestAnimationFrame(tick);
-    };
+    const to = swell.map((s, i) =>
+      gsap.quickTo(s, "t", {
+        duration: 0.55,
+        ease: "power3.out",
+        onUpdate: () => paint(i),
+      }),
+    );
 
     const onMove = (e: PointerEvent) => {
       if (!centers.length) measure();
       for (let i = 0; i < centers.length; i++) {
         const d = Math.hypot(e.clientX - centers[i].x, e.clientY - centers[i].y);
         // Influence falls off over ~260px, so neighbouring words swell slightly.
-        target[i] = clamp(1 - d / 260, 0, 1);
+        to[i](clamp(1 - d / 260, 0, 1));
       }
-      start();
     };
 
-    const onLeave = () => {
-      target.fill(0);
-      start();
-    };
+    const onLeave = () => to.forEach((f) => f(0));
 
     const onScrollOrResize = () => {
       centers = [];
@@ -114,13 +108,17 @@ export default function KineticHeading({
     root.addEventListener("pointerleave", onLeave);
 
     return () => {
-      cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
       root.removeEventListener("pointerleave", onLeave);
     };
-  }, [enabled, weight, width]);
+    },
+    {
+      scope: ref,
+      dependencies: [enabled, weight[0], weight[1], width[0], width[1]],
+    },
+  );
 
   return (
     <h1 ref={ref} className={className}>

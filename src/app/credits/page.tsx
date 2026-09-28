@@ -10,13 +10,23 @@ export const metadata: Metadata = {
 type Credit = {
   photographer: string;
   photographerUrl: string;
-  pexelsUrl: string;
+  source: string;
+  sourceUrl: string;
   alt: string;
 };
 
 const entries = Object.entries(credits as Record<string, Credit>).sort(([a], [b]) =>
   a.localeCompare(b),
 );
+
+const SOURCE_HOME: Record<string, string> = {
+  Pexels: "https://www.pexels.com",
+  Unsplash: "https://unsplash.com",
+};
+
+// Derived from the credits file rather than hard-coded, so adding a provider to
+// the fetcher never leaves this page claiming the wrong licence.
+const sources = [...new Set(entries.map(([, c]) => c.source))].sort();
 
 export default function CreditsPage() {
   return (
@@ -26,15 +36,20 @@ export default function CreditsPage() {
       </h1>
       <p className="m-0 mb-10 max-w-[56ch] text-base leading-[1.75] text-graphite">
         Ảnh minh hoạ lấy từ{" "}
-        <a
-          href="https://www.pexels.com"
-          className="border-b border-mint"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Pexels
-        </a>{" "}
-        theo giấy phép Pexels. Tác giả từng ảnh ghi bên dưới.
+        {sources.map((name, i) => (
+          <span key={name}>
+            {i > 0 && (i === sources.length - 1 ? " và " : ", ")}
+            <a
+              href={SOURCE_HOME[name] ?? "#"}
+              className="border-b border-mint"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {name}
+            </a>
+          </span>
+        ))}
+        , theo giấy phép của từng nơi. Tác giả từng ảnh ghi bên dưới.
       </p>
 
       <ul className="m-0 grid list-none grid-cols-2 gap-6 p-0 sm:grid-cols-3 lg:grid-cols-4">
@@ -56,12 +71,12 @@ export default function CreditsPage() {
                 {c.photographer}
               </a>{" "}
               <a
-                href={c.pexelsUrl}
+                href={c.sourceUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="font-mono text-[10px] text-smoke hover:text-ink"
               >
-                · Pexels ↗
+                · {c.source} ↗
               </a>
             </div>
           </li>

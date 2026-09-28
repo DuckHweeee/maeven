@@ -4,7 +4,9 @@ import { useSyncExternalStore } from "react";
 
 export type CartLine = { sku: string; size: string; qty: number };
 
-const KEY = "maeven.cart.v1";
+// v2: product codes changed (mv-sm-01 -> mv-01), so v1 lines would resolve
+// to no product and strand the header count against an empty drawer.
+const KEY = "maeven.cart.v2";
 const MAX_QTY = 9;
 
 /**

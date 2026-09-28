@@ -33,10 +33,10 @@ const PRESETS = {
   cards:    { path: "/",                                  scrollY: 2600 },
   moive:    { path: "/",                                  scrollY: 830 },
   product:  { path: "/product",                           full: true },
-  pdp:      { path: "/product/mv-sm-01",                  full: true },
+  pdp:      { path: "/product/mv-01",                     full: true },
   magazine: { path: "/magazine",                          full: true },
   article:  { path: "/article/vietnamese-linen-returns",  full: true },
-  about:    { path: "/gioi-thieu",                        full: true },
+  about:    { path: "/about-us",                          full: true },
 };
 
 const argv = process.argv.slice(2);
@@ -68,6 +68,17 @@ const context = await browser.newContext({
   reducedMotion: reduced ? "reduce" : "no-preference",
   hasTouch: mobile,
   isMobile: mobile,
+});
+
+// The welcome modal reveals 12s after load and covers the page with a
+// pointer-eating overlay. Any shot that waits past that gets the modal instead
+// of the page, and any --hover lands on the overlay rather than the target.
+await context.addInitScript(() => {
+  try {
+    localStorage.setItem("maeven.welcome.v1", "dismissed");
+  } catch {
+    /* private mode — the modal is the least of our problems */
+  }
 });
 
 const errors = [];

@@ -118,10 +118,12 @@ errors. `shots/` is gitignored.
 
 ## Agents
 
-`.claude/` holds nine project agents and three skills:
+`.claude/` holds eleven project agents and three skills:
 
+- **preflight** — boots the site and checks every route, image and motion mode
 - **frontend-doctor** — finds and fixes frontend defects
 - **photo-scout** — sources photography from Pexels
+- **content-model** — owns the shape of the typed content layer
 - **magazine-writer** — writes and installs new articles
 - **blog-reviewer** — editorial quality gate against the `design.md` voice contract
 - **blog-seo** — on-page SEO validation for the Next.js metadata surface
