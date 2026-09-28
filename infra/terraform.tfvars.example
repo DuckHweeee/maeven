@@ -1,0 +1,14 @@
+# Copy to terraform.tfvars and edit. Every value has a default; this file is
+# only needed to change them.
+
+project_name = "maeven"
+aws_region   = "ap-southeast-1" # Singapore — closest region to Vietnam
+
+# Custom domain (needs a Route 53 hosted zone for it in this account):
+# domain_name = "maeven.vn"
+# include_www = true
+
+# Deploy from GitHub Actions without access keys:
+# github_repository = "DuckHweeee/maeven"
+# github_deploy_branch = "main"
+# create_github_oidc_provider = true # false if the account already has one

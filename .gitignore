@@ -43,5 +43,10 @@ next-env.d.ts
 # screenshots
 shots/
 
-# image shortlist candidates
-.image-review/
+# terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/*.tfvars
+!infra/*.tfvars.example
+infra/crash.log

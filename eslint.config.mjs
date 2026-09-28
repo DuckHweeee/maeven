@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Vendored design-canvas source — read-only reference, not app code.
     "design/**",
+    // CloudFront Function runtime, not app code — see infra/.
+    "infra/**",
   ]),
 ]);
 

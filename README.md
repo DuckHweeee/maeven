@@ -9,10 +9,25 @@ Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · TypeScript.
 
 ```bash
 npm run dev      # http://localhost:3000
-npm run build
-npm start
+npm run build    # static export → out/
+npm start        # serves out/ on http://localhost:3000
 npm run lint
 ```
+
+`next.config.ts` sets `output: "export"`, so the build is plain files and
+`npm start` serves them with `serve` rather than `next start`.
+
+## Deploying
+
+S3 + CloudFront, provisioned with Terraform in [`infra/`](infra/README.md):
+
+```bash
+cd infra && terraform init && terraform apply   # once
+npm run build && ./scripts/deploy.sh            # every release
+```
+
+`.github/workflows/deploy.yml` does the second line on every push to `main`
+once the repository variables listed in `infra/README.md` are set.
 
 ## Routes
 
@@ -90,7 +105,7 @@ reviewed. It drives the installed Chrome through Playwright — Playwright canno
 download a browser on macOS 12, hence `channel: "chrome"`.
 
 ```bash
-npm run build && npm start          # or next start -p 3131
+npm run build && npm start -- -l 3131
 npm run shoot                       # every preset -> shots/
 node scripts/shoot.mjs hero --wait 4500
 node scripts/shoot.mjs hero --reduced      # reduced-motion path
