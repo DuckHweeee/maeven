@@ -1,14 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DUR, EASE_OUT, gsap, useGSAP } from "@/lib/gsap";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
  * Reveals children once they enter the viewport.
  *
- * The class is toggled straight on the DOM node rather than through React state:
- * this is a one-shot visual change, so a re-render buys nothing. Content is
- * rendered and readable from the start — a missing IntersectionObserver, or a
- * callback that never fires, simply leaves it visible.
+ * `gsap.from()` is what makes this safe without JavaScript: the hidden state is
+ * written by the tween, so a reader whose script never runs simply sees the
+ * content. The previous CSS version put `opacity: 0` in the stylesheet and
+ * needed a `@media (scripting: enabled)` guard to avoid hiding the page from
+ * no-JS readers and crawlers — with GSAP there is nothing to guard.
+ *
+ * `matchMedia` carries the reduced-motion contract: under `reduce` the tween is
+ * never created at all, so nothing is ever hidden and nothing moves.
  */
 export default function Reveal({
   children,
@@ -16,42 +24,40 @@ export default function Reveal({
   className = "",
 }: {
   children: React.ReactNode;
+  /** Milliseconds, so call sites can keep writing `delay={i * 70}`. */
   delay?: number;
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
 
-    const show = () => el.classList.add("reveal-in");
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.from(ref.current, {
+          autoAlpha: 0,
+          y: 18,
+          duration: DUR,
+          ease: EASE_OUT,
+          delay: delay / 1000,
+          scrollTrigger: {
+            trigger: ref.current,
+            // Slightly inside the fold, so a block animates as it arrives
+            // rather than after it has already been read.
+            start: "top 88%",
+            once: true,
+          },
+        });
+      });
 
-    if (typeof IntersectionObserver === "undefined") {
-      show();
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          show();
-          io.disconnect();
-        }
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.05 },
-    );
-
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+      return () => mm.revert();
+    },
+    { scope: ref, dependencies: [delay] },
+  );
 
   return (
-    <div
-      ref={ref}
-      style={{ "--reveal-delay": `${delay}ms` } as React.CSSProperties}
-      className={`reveal ${className}`}
-    >
+    <div ref={ref} className={className}>
       {children}
     </div>
   );

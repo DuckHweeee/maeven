@@ -1,6 +1,7 @@
 "use client";
 
-import { Children, useCallback, useEffect, useRef, useState } from "react";
+import { Children, useCallback, useRef, useState } from "react";
+import { gsap, useGSAP } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/motion";
 
 const SPEED = 0.35; // px per frame at 60fps — a slow drift, not a slideshow
@@ -15,6 +16,13 @@ const SPEED = 0.35; // px per frame at 60fps — a slow drift, not a slideshow
  * WCAG 2.2.2: content that moves automatically for more than five seconds needs
  * a way to stop it. Hovering pauses it, focus pauses it, and there is an
  * explicit pause control — hover alone would leave keyboard users stuck.
+ *
+ * The drift adds to `scrollLeft` each frame rather than tweening it, so a swipe
+ * or a trackpad scroll composes with the motion instead of fighting a tween that
+ * owns the property. What GSAP replaces here is the loop itself: `gsap.ticker`
+ * is the same frame callback every other animation on the page already shares,
+ * so this no longer runs a requestAnimationFrame of its own. Stopping and
+ * starting eases through a speed value, the way the marquee does.
  */
 export default function AutoCarousel({
   children,
@@ -33,33 +41,60 @@ export default function AutoCarousel({
   // Pointer/focus pauses live in a ref so they never re-render mid-drift.
   const held = useRef(false);
 
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track || reduced) return;
+  // Eased 0..1 multiplier, so pausing coasts to a stop instead of cutting.
+  const speed = useRef({ v: 1 });
 
-    let frame = 0;
-    let last = performance.now();
-
-    const tick = (now: number) => {
-      const dt = Math.min((now - last) / 16.67, 3);
-      last = now;
-
-      if (!paused && !held.current) {
-        const half = track.scrollWidth / 2;
-        let next = track.scrollLeft + SPEED * dt;
-        if (half > 0 && next >= half) next -= half;
-        track.scrollLeft = next;
-      }
-      frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [reduced, paused]);
-
-  const hold = useCallback((v: boolean) => {
-    held.current = v;
+  const retarget = useCallback((wantPaused: boolean) => {
+    gsap.to(speed.current, {
+      v: wantPaused || held.current ? 0 : 1,
+      duration: 0.45,
+      ease: "power2.out",
+      overwrite: true,
+    });
   }, []);
+
+  useGSAP(
+    () => {
+      const track = trackRef.current;
+      if (!track || reduced) return;
+
+      let last = gsap.ticker.time;
+      // The drift is sub-pixel per frame and `scrollLeft` rounds to whole
+      // pixels, so reading it back and adding 0.35 never moves: 10 + 0.35 reads
+      // as 10 again, forever. The position is accumulated here at full
+      // precision and only the rounded value reaches the DOM.
+      let pos = track.scrollLeft;
+
+      const tick = () => {
+        const now = gsap.ticker.time;
+        const dt = Math.min((now - last) * 60, 3); // ticker.time is seconds
+        last = now;
+
+        if (speed.current.v < 0.001) return;
+
+        // If the reader scrolled it themselves, adopt where they left it rather
+        // than dragging the rail back to our own idea of the position.
+        if (Math.abs(track.scrollLeft - Math.round(pos)) > 1) pos = track.scrollLeft;
+
+        const half = track.scrollWidth / 2;
+        pos += SPEED * dt * speed.current.v;
+        if (half > 0 && pos >= half) pos -= half;
+        track.scrollLeft = pos;
+      };
+
+      gsap.ticker.add(tick);
+      return () => gsap.ticker.remove(tick);
+    },
+    { dependencies: [reduced] },
+  );
+
+  const hold = useCallback(
+    (v: boolean) => {
+      held.current = v;
+      retarget(paused);
+    },
+    [paused, retarget],
+  );
 
   return (
     <div className={`relative ${className}`}>
@@ -97,7 +132,11 @@ export default function AutoCarousel({
       {!reduced && (
         <button
           type="button"
-          onClick={() => setPaused((v) => !v)}
+          onClick={() => {
+            const next = !paused;
+            setPaused(next);
+            retarget(next);
+          }}
           aria-pressed={paused}
           className="mono-label mt-3 cursor-pointer text-[10px] tracking-[0.14em] text-smoke transition-colors hover:text-ink"
         >

@@ -33,6 +33,7 @@ export const PROMISES = [
 
 export type Product = {
   no: string;
+  /** Product code. Also the route param for /product/[sku]. */
   sku: string;
   name: string;
   price: string;
@@ -49,17 +50,17 @@ const CARE_REPAIR = { k: "Sửa chữa", v: "Miễn phí trong hai năm" };
 export const PRODUCTS: Product[] = [
   {
     no: "01",
-    sku: "mv-sm-01",
+    sku: "mv-01",
     name: "Áo sơ mi lanh mộc",
     price: "1.480.000₫",
     material: "Lanh 100% · Nam Định",
     blurb:
       "Lanh 100% dệt tại Nam Định, giặt trước nên không rút thêm. Càng giặt càng mềm, và càng nhăn — đó là lanh, không phải lỗi.",
     gallery: [
-      { src: "/img/product/01-somi-lanh.jpg", alt: "Áo sơ mi lanh mộc, chính diện" },
-      { src: "/img/product/01-a.jpg", alt: "Cận cảnh thớ vải lanh" },
-      { src: "/img/product/01-b.jpg", alt: "Chi tiết cúc áo" },
-      { src: "/img/product/01-c.jpg", alt: "Áo gấp xếp chồng" },
+      { src: "/img/product/01-linen-shirt.jpg", alt: "Áo sơ mi lanh mộc, chính diện" },
+      { src: "/img/product/01-a.jpg", alt: "Áo treo trên cánh cửa gỗ dưới nắng xiên" },
+      { src: "/img/product/01-b.jpg", alt: "Vải lanh trắng trải trên sàn gỗ, nắng lốm đốm" },
+      { src: "/img/product/01-c.jpg", alt: "Vải lanh gấp xếp chồng trên rổ mây" },
     ],
     specs: [
       { k: "Chất liệu", v: "Lanh 100%, 180 g/m²" },
@@ -75,15 +76,15 @@ export const PRODUCTS: Product[] = [
   },
   {
     no: "02",
-    sku: "mv-qu-02",
+    sku: "mv-02",
     name: "Quần ống suông",
     price: "1.750.000₫",
     material: "Bông dệt chéo",
     blurb:
       "Bông dệt chéo 280 g/m². Cạp lửng, có chiết, ống suông từ gối xuống. Ngồi lâu không hằn, đứng dậy không phải kéo lại. Gấu để dư 4 cm nếu bạn muốn mang ra tiệm.",
     gallery: [
-      { src: "/img/product/02-quan-ong-suong.jpg", alt: "Quần ống suông, chính diện" },
-      { src: "/img/product/02-a.jpg", alt: "Cận cảnh vải cotton dệt chéo" },
+      { src: "/img/product/02-straight-trousers.jpg", alt: "Quần ống suông, chính diện" },
+      { src: "/img/product/02-a.jpg", alt: "Cận cảnh thớ vải với nếp gấp dưới ánh sáng xiên" },
       { src: "/img/product/02-b.jpg", alt: "Chi tiết gấu quần" },
       { src: "/img/product/02-c.jpg", alt: "Quần gấp xếp chồng" },
     ],
@@ -101,16 +102,16 @@ export const PRODUCTS: Product[] = [
   },
   {
     no: "03",
-    sku: "mv-kh-03",
+    sku: "mv-03",
     name: "Áo khoác không cổ",
     price: "3.200.000₫",
     material: "Lanh pha gai dầu",
     blurb:
       "Không cổ, hai túi khâu ngoài, lót vai bằng chính vải thân nên mặc chồng lên sơ mi không cộm. Lanh pha gai dầu dệt tại Bảo Lộc, 240 g/m².",
     gallery: [
-      { src: "/img/product/03-ao-khoac.jpg", alt: "Áo khoác không cổ, chính diện" },
-      { src: "/img/product/03-a.jpg", alt: "Cận cảnh vải lanh pha gai dầu" },
-      { src: "/img/product/03-b.jpg", alt: "Chi tiết đường may túi" },
+      { src: "/img/product/03-collarless-jacket.jpg", alt: "Áo khoác không cổ, chính diện" },
+      { src: "/img/product/03-a.jpg", alt: "Cận cảnh thớ lanh dệt phẳng" },
+      { src: "/img/product/03-b.jpg", alt: "Vải lanh trắng ngà với nếp nhăn tự nhiên" },
       { src: "/img/product/03-c.jpg", alt: "Áo khoác treo trên móc gỗ" },
     ],
     specs: [
@@ -127,17 +128,17 @@ export const PRODUCTS: Product[] = [
   },
   {
     no: "04",
-    sku: "mv-tt-04",
+    sku: "mv-04",
     name: "Áo thun cổ tròn",
     price: "620.000₫",
     material: "Sợi bông dài",
     blurb:
       "Sợi bông dài chải kỹ hai lần, 190 g/m², cổ bo dệt liền trên máy riêng. Thân thẳng, tay ngắn qua bắp.",
     gallery: [
-      { src: "/img/product/04-ao-thun.jpg", alt: "Áo thun cổ tròn, chính diện" },
+      { src: "/img/product/04-crew-neck-tee.jpg", alt: "Áo thun cổ tròn, chính diện" },
       { src: "/img/product/04-a.jpg", alt: "Cận cảnh vải cotton dệt kim" },
-      { src: "/img/product/04-b.jpg", alt: "Chi tiết cổ bo" },
-      { src: "/img/product/04-c.jpg", alt: "Áo thun gấp xếp chồng" },
+      { src: "/img/product/04-b.jpg", alt: "Áo thun cổ tròn treo trên móc gỗ" },
+      { src: "/img/product/04-c.jpg", alt: "Hai áo thun gấp, trắng và đen" },
     ],
     specs: [
       { k: "Chất liệu", v: "Sợi bông dài chải kỹ, 190 g/m²" },
@@ -179,14 +180,14 @@ export const CUSTOMER_POSTS: CustomerPost[] = [
     id: "u1", img: "/img/ugc/01.jpg", ratio: "2 / 3",
     alt: "Tay áo sơ mi lanh xắn lên",
     name: "Minh T.", city: "Hà Nội", date: "04.09.2026",
-    sku: "mv-sm-01", size: "M",
+    sku: "mv-01", size: "M",
     note: "Mua định để đi cưới, xong tuần nào cũng lôi ra mặc đi làm. Thằng em mượn hai lần rồi chưa trả!",
   },
   {
     id: "u2", img: "/img/ugc/02.jpg", ratio: "3 / 4",
     alt: "Dáng người mặc quần ống suông nhìn từ phía sau",
     name: "Đức A.", city: "TP.HCM", date: "02.09.2026",
-    sku: "mv-qu-02", size: "L",
+    sku: "mv-02", size: "L",
     note: "Đi xe máy cả ngày. Không nhăn nhiều như tôi tưởng.",
   },
   {
@@ -199,21 +200,21 @@ export const CUSTOMER_POSTS: CustomerPost[] = [
     id: "u4", img: "/img/ugc/04.jpg", ratio: "1 / 1",
     alt: "Cận cảnh cổ áo sơ mi lanh",
     name: "Tuấn K.", city: "Hà Nội", date: "28.08.2026",
-    sku: "mv-sm-01", size: "S",
+    sku: "mv-01", size: "S",
     note: "Trước mình hay mua sơ mi chỗ khác, rẻ hơn tầm ba trăm nghìn nhưng qua một mùa là cổ vênh. Cái này qua hè rồi chưa thấy vênh. Chưa dám nói trước gì thêm.",
   },
   {
     id: "u5", img: "/img/ugc/05.jpg", ratio: "3 / 4",
     alt: "Gấu quần và giày trên vỉa hè",
     name: "Bảo L.", city: "Huế", date: "26.08.2026",
-    sku: "mv-qu-02", size: "M",
+    sku: "mv-02", size: "M",
     note: "Màu ngoài đời nhạt hơn trên web một chút... với mình thì không sao, ai kỹ thì nên biết trước.",
   },
   {
     id: "u6", img: "/img/ugc/06.jpg", ratio: "4 / 5",
     alt: "Bàn tay đút túi áo khoác",
     name: "Nam H.", city: "Hà Nội", date: "23.08.2026",
-    sku: "mv-kh-03", size: "L",
+    sku: "mv-03", size: "L",
     note: "Ổn. Đi làm được, đi chơi được.",
   },
   {
@@ -226,14 +227,14 @@ export const CUSTOMER_POSTS: CustomerPost[] = [
     id: "u8", img: "/img/ugc/08.jpg", ratio: "3 / 2",
     alt: "Tay áo lanh bên bàn cà phê",
     name: "Quân P.", city: "Hải Phòng", date: "18.08.2026",
-    sku: "mv-sm-01", size: "M",
+    sku: "mv-01", size: "M",
     note: "Lanh thì nhăn thôi các bác ạ. Ai không chịu được nhăn thì đừng mua, mua rồi lại kêu.",
   },
   {
     id: "u9", img: "/img/ugc/09.jpg", ratio: "2 / 3",
     alt: "Cận cảnh vải áo thun cotton",
     name: "Trung V.", city: "Cần Thơ", date: "15.08.2026",
-    sku: "mv-tt-04", size: "M",
+    sku: "mv-04", size: "M",
     note: "Cao 1m72 nặng 68 mặc size M hơi ôm ở vai. Ai vai rộng chắc nên lên một size.",
   },
 ];

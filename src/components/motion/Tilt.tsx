@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { clamp, lerp, usePointerEffects } from "@/lib/motion";
+import { useRef } from "react";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { clamp, usePointerEffects } from "@/lib/motion";
 
 const MAX_DEG = 7;
 
@@ -12,8 +13,18 @@ const MAX_DEG = 7;
  * and a masked weave overlay rises on the leading edge, so the card reads as a
  * piece of cloth catching light rather than a rectangle rotating.
  *
- * All per-frame work writes CSS custom properties straight to the DOM inside one
- * rAF — never React state, which would re-render the tree on every pointer move.
+ * Five values are eased toward the pointer with `gsap.quickTo`, which retargets
+ * one long-lived tween per value instead of creating a new one on every
+ * pointermove — that is the whole reason it exists, and it replaces the hand
+ * written requestAnimationFrame lerp this used to run.
+ *
+ * Only the `x` tween carries `onUpdate`. All five share a duration and ease and
+ * are retargeted together, so they advance in lockstep and one callback is
+ * enough to write the whole set.
+ *
+ * `usePointerEffects` stays rather than `gsap.matchMedia`: it decides whether to
+ * attach pointer listeners at all, which is a React concern, not an animation
+ * one.
  */
 export default function Tilt({
   children,
@@ -27,97 +38,81 @@ export default function Tilt({
   const ref = useRef<HTMLDivElement>(null);
   const { enabled } = usePointerEffects();
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !enabled) return;
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el || !enabled) return;
 
-    // Target values written by pointer events; current values eased toward them.
-    const target = { x: 0, y: 0, px: 50, py: 50, mag: 0 };
-    const now = { x: 0, y: 0, px: 50, py: 50, mag: 0 };
-    let frame = 0;
-    let running = false;
+      const now = { x: 0, y: 0, px: 50, py: 50, mag: 0 };
 
-    const tick = () => {
-      now.x = lerp(now.x, target.x, 0.14);
-      now.y = lerp(now.y, target.y, 0.14);
-      now.px = lerp(now.px, target.px, 0.14);
-      now.py = lerp(now.py, target.py, 0.14);
-      now.mag = lerp(now.mag, target.mag, 0.14);
+      const write = () => {
+        el.style.setProperty("--tx", `${now.x.toFixed(3)}deg`);
+        el.style.setProperty("--ty", `${now.y.toFixed(3)}deg`);
+        el.style.setProperty("--px", `${now.px.toFixed(2)}%`);
+        el.style.setProperty("--py", `${now.py.toFixed(2)}%`);
+        el.style.setProperty("--mag", now.mag.toFixed(3));
+      };
 
-      el.style.setProperty("--tx", `${now.x.toFixed(3)}deg`);
-      el.style.setProperty("--ty", `${now.y.toFixed(3)}deg`);
-      el.style.setProperty("--px", `${now.px.toFixed(2)}%`);
-      el.style.setProperty("--py", `${now.py.toFixed(2)}%`);
-      el.style.setProperty("--mag", now.mag.toFixed(3));
+      const opts = { duration: 0.5, ease: "power3.out" };
+      const to = {
+        x: gsap.quickTo(now, "x", { ...opts, onUpdate: write }),
+        y: gsap.quickTo(now, "y", opts),
+        px: gsap.quickTo(now, "px", opts),
+        py: gsap.quickTo(now, "py", opts),
+        mag: gsap.quickTo(now, "mag", opts),
+      };
 
-      const settled =
-        Math.abs(now.x - target.x) < 0.01 &&
-        Math.abs(now.y - target.y) < 0.01 &&
-        Math.abs(now.mag - target.mag) < 0.002;
+      // Rect is cached per interaction rather than read every frame, so the
+      // pointer handler never forces a synchronous reflow.
+      let rect: DOMRect | null = null;
 
-      if (settled) {
-        running = false;
-        return;
-      }
-      frame = requestAnimationFrame(tick);
-    };
+      const onEnter = () => {
+        rect = el.getBoundingClientRect();
+        el.style.willChange = "transform";
+      };
 
-    const start = () => {
-      if (running) return;
-      running = true;
-      frame = requestAnimationFrame(tick);
-    };
+      const onMove = (e: PointerEvent) => {
+        if (!rect) rect = el.getBoundingClientRect();
+        const nx = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+        const ny = clamp((e.clientY - rect.top) / rect.height, 0, 1);
 
-    // Rect is cached per interaction rather than read every frame, so the
-    // pointer handler never forces a synchronous reflow.
-    let rect: DOMRect | null = null;
+        to.y((nx - 0.5) * 2 * MAX_DEG);
+        to.x(-(ny - 0.5) * 2 * MAX_DEG);
+        to.px(nx * 100);
+        to.py(ny * 100);
+        to.mag(Math.min(1, Math.hypot(nx - 0.5, ny - 0.5) * 2.2));
+      };
 
-    const onEnter = () => {
-      rect = el.getBoundingClientRect();
-      el.style.willChange = "transform";
-    };
+      const onLeave = () => {
+        rect = null;
+        to.x(0);
+        to.y(0);
+        to.px(50);
+        to.py(50);
+        to.mag(0);
+        el.style.willChange = "";
+      };
 
-    const onMove = (e: PointerEvent) => {
-      if (!rect) rect = el.getBoundingClientRect();
-      const nx = clamp((e.clientX - rect.left) / rect.width, 0, 1);
-      const ny = clamp((e.clientY - rect.top) / rect.height, 0, 1);
+      el.addEventListener("pointerenter", onEnter);
+      el.addEventListener("pointermove", onMove);
+      el.addEventListener("pointerleave", onLeave);
 
-      target.y = (nx - 0.5) * 2 * MAX_DEG;
-      target.x = -(ny - 0.5) * 2 * MAX_DEG;
-      target.px = nx * 100;
-      target.py = ny * 100;
-      target.mag = Math.min(1, Math.hypot(nx - 0.5, ny - 0.5) * 2.2);
-      start();
-    };
-
-    const onLeave = () => {
-      rect = null;
-      target.x = 0;
-      target.y = 0;
-      target.px = 50;
-      target.py = 50;
-      target.mag = 0;
-      el.style.willChange = "";
-      start();
-    };
-
-    el.addEventListener("pointerenter", onEnter);
-    el.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerleave", onLeave);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      el.removeEventListener("pointerenter", onEnter);
-      el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerleave", onLeave);
-      el.style.willChange = "";
-    };
-  }, [enabled]);
+      return () => {
+        el.removeEventListener("pointerenter", onEnter);
+        el.removeEventListener("pointermove", onMove);
+        el.removeEventListener("pointerleave", onLeave);
+        el.style.willChange = "";
+      };
+    },
+    { scope: ref, dependencies: [enabled] },
+  );
 
   return (
     <div ref={ref} className={`[perspective:1000px] ${className}`}>
       <div
         className="relative transition-transform duration-300 ease-out [transform:rotateX(var(--tx,0deg))_rotateY(var(--ty,0deg))_translateZ(0)] [transform-style:preserve-3d]"
+        // GSAP already eases these values; leaving the CSS transition on would
+        // smooth an already-smoothed number and lag the pointer.
         style={{ transitionDuration: enabled ? "0ms" : undefined }}
       >
         {fabric && (

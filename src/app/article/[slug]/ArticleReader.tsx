@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Photo from "@/components/Photo";
+import Parallax from "@/components/motion/Parallax";
 import Prose from "@/components/Prose";
 import ArticleCard from "@/components/ArticleCard";
 import type { Article } from "@/lib/data";
@@ -80,13 +81,15 @@ export default function ArticleReader({
       </div>
 
       <div className="mx-auto max-w-[1120px] px-4 pt-[22px] sm:px-6">
-        <Photo
-          src={article.hero}
-          alt={a.caption}
-          ratio="16 / 9"
-          priority
-          sizes="(max-width: 1120px) 100vw, 1072px"
-        />
+        <Parallax amount={80}>
+          <Photo
+            src={article.hero}
+            alt={a.caption}
+            ratio="16 / 9"
+            priority
+            sizes="(max-width: 1120px) 100vw, 1072px"
+          />
+        </Parallax>
         <div className="mt-2.5 font-mono text-[10.5px] text-smoke">{a.caption}</div>
       </div>
 

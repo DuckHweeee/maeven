@@ -4,7 +4,7 @@ import Marquee from "@/components/Marquee";
 import ArticleCard from "@/components/ArticleCard";
 import ProductCard from "@/components/ProductCard";
 import HeroStage from "@/components/hero/HeroStage";
-import Coverflow from "@/components/motion/Coverflow";
+import InfiniteSlider from "@/components/motion/InfiniteSlider";
 import KineticHeading from "@/components/motion/KineticHeading";
 import Reveal from "@/components/motion/Reveal";
 import AutoCarousel from "@/components/motion/AutoCarousel";
@@ -58,11 +58,11 @@ export default function HomePage() {
           </div>
         </Reveal>
 
-        <Coverflow label="Sản phẩm mới về">
+        <InfiniteSlider label="Sản phẩm mới về">
           {PRODUCTS.map((p) => (
             <ProductCard key={p.sku} product={p} />
           ))}
-        </Coverflow>
+        </InfiniteSlider>
       </section>
 
       {/* ----------------------------------------------------- tạp chí */}
