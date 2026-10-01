@@ -2,6 +2,8 @@
 
 *Kế hoạch đưa hai tính năng AI vào site hiện tại: **AI Stylist** (tư vấn phối đồ + chọn size) và **Virtual Try-On** (thử đồ trên ảnh). Viết dựa trên code đang có, theo cùng cách chia phase và cổng nghiệm thu với `maeven-journal-roadmap.md`.*
 
+> **Cập nhật 01.10.2026: chốt hướng minimalist cho Try-On.** Chỉ làm **Phase 4a**: ảnh try-on tạo sẵn một lần bằng dịch vụ có license thương mại (ví dụ web tool của WeShop), phục vụ tĩnh, không cần backend riêng cho try-on. **Bỏ Phase 4b**, không nhận ảnh của khách. Không gọi Space demo trên Hugging Face từ site, vì đó là bản dùng thử, không phải API. Phần học về model mã nguồn mở nằm trong [`research/`](research/README.md).
+
 ---
 
 ## 0. Hiện trạng và hệ quả
@@ -104,6 +106,8 @@ Virtual try-on cần model sinh ảnh chuyên cho quần áo. Các hướng cầ
 - **Virtual Try-On trên Google Cloud Vertex AI** — phù hợp nếu sẵn sàng dùng thêm GCP.
 - **Model mã nguồn mở (họ IDM-VTON, chạy qua Replicate hoặc GPU tự thuê)** — rẻ khi lưu lượng lớn, nhưng phải tự lo chất lượng và giấy phép thương mại.
 
+Model mã nguồn mở đã xem xét: CatVTON, IDM-VTON, OOTDiffusion, FitDiT đều là CC BY-NC-SA 4.0, không dùng thương mại được. Code Leffa là MIT nhưng dữ liệu train là phi thương mại. Các model này chỉ dùng để học, xem [`research/`](research/README.md).
+
 Cách chọn: chạy cùng **4 sản phẩm × 6 ảnh người** qua từng nhà cung cấp, chấm theo độ đúng màu, độ rủ của lanh, giữ nguyên khuôn mặt, độ trễ, giá mỗi ảnh và điều khoản lưu trữ dữ liệu. Đặt mọi nhà cung cấp sau một interface `TryOnProvider` để đổi được sau này.
 
 ---
@@ -165,16 +169,16 @@ Thêm vào `Article` trường `relatedSkus` (trùng Phase A của roadmap Journ
 
 **Cổng:** unit test cho hàm chọn size (biên giữa hai size, số đo thiếu); 10 ảnh thử nghiệm cho ra mô tả đúng loại món.
 
-### Phase 4a — Try-On trên người mẫu có sẵn
+### Phase 4a — Try-On trên người mẫu có sẵn *(hướng đã chốt)*
 
-1. Chọn nhà cung cấp theo bài đánh giá ở mục 3.
-2. Script `scripts/generate-tryon.mjs`: mỗi sản phẩm × 6 người mẫu (ảnh có license, đa dạng vóc dáng) → `public/img/tryon/`. Chạy offline, kết quả commit như ảnh thường.
+1. Chọn nhà cung cấp theo bài đánh giá ở mục 3. Bản minimalist: tạo tay trên web tool, không tích hợp API.
+2. Mỗi sản phẩm × 3–4 người mẫu (ảnh có license, đa dạng vóc dáng) → `public/img/tryon/`, commit như ảnh thường. Chỉ viết script `scripts/generate-tryon.mjs` khi nhà cung cấp có API trong gói đã mua.
 3. `TryOnViewer` trên trang sản phẩm: chọn vóc dáng gần mình nhất → xem áo trên người đó; dùng lại các component motion có sẵn.
 4. **photo-scout** chọn ảnh người mẫu; credits cập nhật trên `/credits`.
 
 **Cổng:** **preflight** qua mọi route; ảnh try-on có nhãn "do AI tạo"; người duyệt so màu với sản phẩm thật.
 
-### Phase 4b — Try-On trên ảnh của khách
+### Phase 4b — Try-On trên ảnh của khách *(đã bỏ theo hướng minimalist, giữ lại để tham khảo)*
 
 1. Màn hình đồng ý: ảnh dùng để làm gì, gửi cho bên thứ ba nào, **xoá sau 24 giờ**. Không tick đồng ý thì không tải lên được.
 2. Tải lên bằng presigned URL vào bucket riêng (mã hoá, lifecycle 1 ngày, không public).
