@@ -5,10 +5,10 @@ import Parallax from "@/components/motion/Parallax";
 import Reveal from "@/components/motion/Reveal";
 import {
   ARTICLES,
-  PRODUCTS,
   PROMISES,
   WORKSHOP_COUNT,
   WORKSHOP_PLACES,
+  WORKSHOPS,
   viCount,
   viList,
 } from "@/lib/data";
@@ -22,8 +22,9 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   // The workshops are the product data, not a second copy of it — a name that
-  // changes on a label changes here too.
-  const workshops = PRODUCTS.map((p) => ({ sku: p.sku, ...p.maker }));
+  // changes on a label changes here too. Deduplicated in data.ts, because two
+  // products can share a workshop and this list shows workshops, not products.
+  const workshops = WORKSHOPS;
   // Counted rather than written down: the sentence below is a promise about
   // what the magazine does, so it must not be able to drift from the articles.
   const disclosed = ARTICLES.filter((a) => a.relatedSkus.length > 0).length;

@@ -1,126 +1,34 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { store } from "@/store";
+import { cartActions } from "@/store/cartSlice";
+import { useAppSelector } from "@/store/hooks";
 
 export { priceToNumber } from "./constants";
-
-export type CartLine = { sku: string; size: string; qty: number };
-
-// v2: product codes changed (mv-sm-01 -> mv-01), so v1 lines would resolve
-// to no product and strand the header count against an empty drawer.
-const KEY = "maeven.cart.v2";
-const MAX_QTY = 9;
-
-/**
- * Cart as a tiny external store rather than React state.
- *
- * useSyncExternalStore is what makes this hydration-safe: the server snapshot is
- * a stable empty array, so server and first client render agree, and the stored
- * cart is read only once a subscriber attaches on the client.
- */
-const EMPTY: CartLine[] = [];
-
-let lines: CartLine[] = EMPTY;
-let open = false;
-let loaded = false;
-
-const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
-
-function load() {
-  if (loaded) return;
-  loaded = true;
-  try {
-    const raw = localStorage.getItem(KEY);
-    const parsed: unknown = raw ? JSON.parse(raw) : null;
-    if (Array.isArray(parsed)) {
-      lines = parsed.filter(
-        (l): l is CartLine =>
-          typeof l?.sku === "string" &&
-          typeof l?.size === "string" &&
-          Number.isFinite(l?.qty),
-      );
-    }
-  } catch {
-    // Private mode, blocked storage, corrupt JSON — an empty cart is fine.
-  }
-}
-
-function persist() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(lines));
-  } catch {
-    // Never let a storage failure break adding to the cart.
-  }
-}
-
-function subscribe(cb: () => void) {
-  listeners.add(cb);
-  if (!loaded) {
-    load();
-    cb();
-  }
-  return () => {
-    listeners.delete(cb);
-  };
-}
+export type { CartLine } from "@/store/cartSlice";
 
 /* ------------------------------------------------------------------ actions */
+// Plain functions rather than hooks so click handlers stay call-sites, not
+// `useDispatch` boilerplate. Safe against the module-level store for the same
+// reason the Provider is — the cart never renders on the server.
 
-export function addToCart(sku: string, size: string) {
-  load();
-  const found = lines.find((l) => l.sku === sku && l.size === size);
-  lines = found
-    ? lines.map((l) =>
-        l === found ? { ...l, qty: Math.min(MAX_QTY, l.qty + 1) } : l,
-      )
-    : [...lines, { sku, size, qty: 1 }];
-  persist();
-  open = true;
-  emit();
-}
+export const addToCart = (sku: string, size: string) =>
+  store.dispatch(cartActions.addToCart({ sku, size }));
 
-export function setQty(sku: string, size: string, qty: number) {
-  load();
-  lines =
-    qty <= 0
-      ? lines.filter((l) => !(l.sku === sku && l.size === size))
-      : lines.map((l) =>
-          l.sku === sku && l.size === size
-            ? { ...l, qty: Math.min(MAX_QTY, qty) }
-            : l,
-        );
-  persist();
-  emit();
-}
+export const setQty = (sku: string, size: string, qty: number) =>
+  store.dispatch(cartActions.setQty({ sku, size, qty }));
 
-export function removeLine(sku: string, size: string) {
-  setQty(sku, size, 0);
-}
+export const removeLine = (sku: string, size: string) => setQty(sku, size, 0);
 
-export function setCartOpen(next: boolean) {
-  open = next;
-  emit();
-}
+export const setCartOpen = (next: boolean) =>
+  store.dispatch(cartActions.setCartOpen(next));
 
 /* -------------------------------------------------------------------- hooks */
 
-export const useCart = () =>
-  useSyncExternalStore(
-    subscribe,
-    () => lines,
-    () => EMPTY,
-  );
-
-export const useCartOpen = () =>
-  useSyncExternalStore(
-    subscribe,
-    () => open,
-    () => false,
-  );
+export const useCart = () => useAppSelector((s) => s.cart.lines);
+export const useCartOpen = () => useAppSelector((s) => s.cart.open);
 
 /* ------------------------------------------------------------------- money */
-
 
 /** Grouped manually rather than via toLocaleString, whose output depends on the
  *  runtime's locale data and can differ between server and browser. */

@@ -59,11 +59,19 @@ export default async function ProductPage({ params }: Params) {
               priority
               sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="grid grid-cols-3 gap-3">
-              {thumbs.map((t) => (
-                <Photo key={t.src} src={t.src} alt={t.alt} ratio="1 / 1" sizes="200px" />
-              ))}
-            </div>
+            {/* Column count follows the gallery rather than being fixed at
+                three: a product photographed once should show one thumb at full
+                width, not one square and two empty cells. */}
+            {thumbs.length > 0 && (
+              <div
+                className="grid gap-3"
+                style={{ gridTemplateColumns: `repeat(${Math.min(thumbs.length, 3)}, minmax(0, 1fr))` }}
+              >
+                {thumbs.map((t) => (
+                  <Photo key={t.src} src={t.src} alt={t.alt} ratio="1 / 1" sizes="200px" />
+                ))}
+              </div>
+            )}
           </div>
 
           <BuyPanel product={product} />

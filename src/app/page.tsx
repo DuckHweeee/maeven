@@ -33,14 +33,13 @@ export default function HomePage() {
     <main>
       {/* ---------------------------------------------------------- hero */}
       <HeroStage
-        src="/img/home/hero.jpg"
+        src="/img/home/hero-poster.jpg"
         alt="Sổ mẫu SS26 — ánh sáng buổi sớm"
         video
-        poster="/img/home/hero-poster.jpg"
       >
         <div className="mx-auto w-full max-w-[1280px] px-4 pb-8 sm:px-6 sm:pb-10">
           <div className="mono-label mb-5 text-[10.5px] tracking-[0.22em] text-mint sm:mb-[26px]">
-            {BRAND.season} — Ánh sáng ban mai
+            {BRAND.season} — Hoạ sắc chiều tà
           </div>
           <KineticHeading
             text="La mer délivre"

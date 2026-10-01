@@ -31,7 +31,16 @@ export const PROMISES = [
  * a recommendation block pointing at a 404. The site is prerendered, so anything
  * that only fails at runtime fails after it has shipped.
  */
-export const SKUS = ["mv-01", "mv-02", "mv-03", "mv-04", "mv-05"] as const;
+export const SKUS = [
+  "mv-01",
+  "mv-02",
+  "mv-03",
+  "mv-04",
+  "mv-05",
+  "mv-06",
+  "mv-07",
+  "mv-08",
+] as const;
 export type Sku = (typeof SKUS)[number];
 
 export type Product = {
@@ -55,6 +64,14 @@ export type Product = {
 };
 
 const CARE_REPAIR = { k: "Sửa chữa", v: "Miễn phí trong hai năm" };
+
+/**
+ * The head-circumference scale, shared by both caps.
+ *
+ * Written once because two caps sold on two copies of the same three bands
+ * would drift the first time one of them is adjusted.
+ */
+const HEAD_SIZES = ["54–56", "57–58", "59–60"];
 
 export const PRODUCTS: Product[] = [
   {
@@ -147,7 +164,7 @@ export const PRODUCTS: Product[] = [
       { src: "/img/product/04-crew-neck-tee.jpg", alt: "Áo thun cổ tròn, chính diện" },
       { src: "/img/product/04-a.jpg", alt: "Cận cảnh vải cotton dệt kim" },
       { src: "/img/product/04-b.jpg", alt: "Áo thun cổ tròn treo trên móc gỗ" },
-      { src: "/img/product/04-c.jpg", alt: "Hai áo thun gấp, trắng và đen" },
+      { src: "/img/product/04-tee-stack.jpg", alt: "Bốn áo thun màu cát gấp chồng lên nhau, thẻ treo MAEVEN dựa bên cạnh" },
     ],
     specs: [
       { k: "Chất liệu", v: "Sợi bông dài chải kỹ, 190 g/m²" },
@@ -176,7 +193,7 @@ export const PRODUCTS: Product[] = [
     ],
     // A cap is sold by head circumference. Offering XS–XL here would contradict
     // the "Vòng đầu" row three lines below it.
-    sizes: ["54–56", "57–58", "59–60"],
+    sizes: HEAD_SIZES,
     specs: [
       { k: "Chất liệu", v: "Bông chéo 100%, giặt sẵn, 320 g/m²" },
       { k: "Xuất xứ", v: "Vải dệt tại Nam Định, may và thêu tại TP.HCM" },
@@ -189,6 +206,94 @@ export const PRODUCTS: Product[] = [
       workshop: "Xưởng Phú Thị",
       place: "TP.HCM",
       story: "Xưởng này làm mũ đồng phục trường học suốt mười tám năm. Máy thêu móc xích chạy chữ nổi là máy cũ, mỗi thân mũ mất bảy phút. Họ từ chối làm dưới năm trăm chiếc một đợt vì phải canh lại máy cho từng cỡ chữ.",
+    },
+  },
+  {
+    no: "06",
+    sku: "mv-06",
+    name: "Áo sơ mi poplin đen",
+    price: "1.380.000₫",
+    material: "Bông poplin · Nam Định",
+    blurb:
+      "Poplin bông 120 g/m², màu đen, tay dài. Nẹp che cúc, nên nhìn thẳng không thấy hàng khuy. Một túi ngực khâu ngoài bên trái, thêu chữ maeven cùng tông chỉ. Dáng vuông, gấu lượn cong, bỏ trong hay bỏ ngoài đều được.",
+    gallery: [
+      {
+        src: "/img/product/06-poplin-shirt.jpg",
+        alt: "Áo sơ mi poplin đen treo trên móc gỗ, nền màu yến mạch",
+      },
+    ],
+    specs: [
+      { k: "Chất liệu", v: "Bông poplin 100%, 120 g/m²" },
+      { k: "Xuất xứ", v: "Dệt tại Nam Định, may tại Hà Nội" },
+      { k: "Màu", v: "Đen" },
+      { k: "Chi tiết", v: "Cổ nhọn, nẹp che cúc, măng sét một cúc" },
+      { k: "Bảo quản", v: "Giặt máy 30°C, là hơi mặt trái" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Tân Tiến",
+      place: "Nam Định",
+      story: "Sợi nhuộm đen trước khi dệt. Xưởng chỉ chạy lô đen vào cuối tuần, vì sau mỗi lô phải súc khung hai tiếng mới quay lại được vải sáng màu. Mỗi tháng một lô, họ không nhận hơn.",
+    },
+  },
+  {
+    no: "07",
+    sku: "mv-07",
+    name: "Áo hoodie nỉ bông",
+    price: "1.180.000₫",
+    material: "Nỉ bông chải lông",
+    blurb:
+      "Nỉ bông 380 g/m², mặt trong chải lông. Chui đầu, mũ hai mảnh có lót, không dây rút. Vai trễ, túi kangaroo, bo tay và bo gấu. Dáng rộng. Chữ maeven thêu cùng tông ở ngực trái.",
+    gallery: [
+      {
+        src: "/img/product/07-hoodie.jpg",
+        alt: "Áo hoodie nỉ bông màu xám tiêu, trải phẳng trên nền trắng",
+      },
+    ],
+    specs: [
+      { k: "Chất liệu", v: "Nỉ bông 100%, chải lông mặt trong, 380 g/m²" },
+      { k: "Xuất xứ", v: "Dệt tại Nam Định, may tại Hà Nội" },
+      { k: "Màu", v: "Xám tiêu" },
+      { k: "Mũ", v: "Hai mảnh, có lót, không dây rút" },
+      { k: "Bảo quản", v: "Giặt máy 30°C, lộn trái, không sấy nóng" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Nam Thành",
+      place: "Nam Định",
+      story: "Máy chải lông chạy hai lượt. Xưởng không chải lượt thứ ba: ông Điệp đứng máy nói lượt đó mềm tay thật, nhưng ba tháng sau mặt vải xù lên.",
+    },
+  },
+  {
+    no: "08",
+    sku: "mv-08",
+    name: "Mũ lưỡi trai Cap Saint Jacques, chữ chân",
+    price: "420.000₫",
+    material: "Bông chéo xanh navy",
+    blurb:
+      "Bản trơn của chiếc mũ mv-05. Cùng phom sáu mảnh, thân thấp không đệm mụt, lưỡi cong định hình sẵn, bốn lỗ thoáng. Khác ở chữ: “Cap Saint Jacques” thêu chữ chân màu trắng ở thân trước, không có monogram bên hông và không có dòng chữ nào dưới lưỡi.",
+    gallery: [
+      {
+        src: "/img/product/08-navy-cap.jpg",
+        alt: "Mũ lưỡi trai xanh navy thêu chữ trắng, chụp nghiêng trên nền kem",
+      },
+    ],
+    // Same three bands as mv-05: a cap is sold by head circumference, and the
+    // two caps share one scale so they cannot drift apart.
+    sizes: HEAD_SIZES,
+    specs: [
+      { k: "Chất liệu", v: "Bông chéo 100%, 320 g/m²" },
+      { k: "Xuất xứ", v: "Vải dệt tại Nam Định, may và thêu tại TP.HCM" },
+      { k: "Màu", v: "Xanh navy, chữ thêu trắng" },
+      { k: "Thêu", v: "Chữ chân ở thân trước. Không monogram bên hông, không chữ dưới lưỡi." },
+      { k: "Vòng đầu", v: "54–60 cm" },
+      { k: "Bảo quản", v: "Giặt tay nước lạnh, phơi úp trong bóng râm" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Phú Thị",
+      place: "TP.HCM",
+      story: "Chữ chân chạy máy thêu phẳng, hai phút một thân, thay vì bảy phút như bản móc xích. Xưởng nhận với một điều kiện: thêu chung đợt với bản kia. Đổi đầu máy thì được, canh máy riêng cho một đợt nhỏ thì họ từ chối.",
     },
   },
 ];
@@ -215,8 +320,20 @@ export function getProduct(sku: string) {
  * anything failing — the sentence is only ever right by accident while it is
  * typed out by hand.
  */
-export const WORKSHOP_PLACES = [...new Set(PRODUCTS.map((p) => p.maker.place))];
-export const WORKSHOP_COUNT = new Set(PRODUCTS.map((p) => p.maker.workshop)).size;
+/**
+ * One entry per workshop, keyed by name, in catalogue order.
+ *
+ * Three of the eight products are made at a workshop an earlier product already
+ * named, so /about-us mapping PRODUCTS straight onto its card list printed eight
+ * cards — three of them a repeated name — under a heading that counted five.
+ * The first product to name a workshop supplies the story; the count below is
+ * this list's length, so heading and list cannot disagree.
+ */
+export const WORKSHOPS = [
+  ...new Map(PRODUCTS.map((p) => [p.maker.workshop, { sku: p.sku, ...p.maker }])).values(),
+];
+export const WORKSHOP_PLACES = [...new Set(WORKSHOPS.map((w) => w.place))];
+export const WORKSHOP_COUNT = WORKSHOPS.length;
 
 /** Small counts as words, because the rest of the copy writes them as words. */
 const VI_COUNT = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín", "mười"];

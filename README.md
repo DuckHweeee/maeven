@@ -20,13 +20,13 @@ npm run lint
 |---|---|
 | `/` | Trang chủ — hero, marquee, mới về, tạp chí, cam kết |
 | `/product` | Cửa hàng — cả bộ SS26 |
-| `/product/[sku]` | Chi tiết sản phẩm — gallery, kích cỡ, thông số (4 mẫu) |
+| `/product/[sku]` | Chi tiết sản phẩm — gallery, kích cỡ, thông số (8 mẫu) |
 | `/magazine` | Tạp chí — lọc theo chuyên mục |
 | `/article/[slug]` | Bài viết — tóm tắt AI, VI/EN, đọc tiếp (7 bài) |
-| `/about-us` | Giới thiệu — định vị, bốn xưởng, cam kết, vai trò của AI |
+| `/about-us` | Giới thiệu — định vị, năm xưởng, cam kết, vai trò của AI |
 | `/credits` | Tín dụng ảnh — Pexels attribution |
 
-Every card leads to a real page: all four products and all seven articles are
+Every card leads to a real page: all eight products and all seven articles are
 written out in full. Adding one means adding it to `ARTICLES` or `PRODUCTS` in
 `src/lib/data.ts` — `generateStaticParams` derives the routes from those arrays.
 

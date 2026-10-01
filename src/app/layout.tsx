@@ -3,6 +3,7 @@ import { Archivo, Nunito_Sans, IBM_Plex_Mono } from "next/font/google";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import CartDrawer from "@/components/cart/CartDrawer";
+import CartProvider from "@/store/CartProvider";
 import WelcomeOffer from "@/components/WelcomeOffer";
 import { BRAND } from "@/lib/data";
 import { SITE_URL } from "@/lib/constants";
@@ -74,10 +75,12 @@ export default function RootLayout({
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-paper text-ink"
       >
-        <SiteHeader />
-        <div className="flex-1">{children}</div>
-        <SiteFooter />
-        <CartDrawer />
+        <CartProvider>
+          <SiteHeader />
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
+          <CartDrawer />
+        </CartProvider>
         <WelcomeOffer />
       </body>
     </html>

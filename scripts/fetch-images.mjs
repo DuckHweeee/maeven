@@ -60,7 +60,6 @@ const MANIFEST = [
   { path: 'product/03-c.jpg', query: 'jacket on wooden hanger', orientation: 'square', ratio: 1.0 },
   { path: 'product/04-a.jpg', query: 'cotton jersey knit texture', orientation: 'square', ratio: 1.0 },
   { path: 'product/04-b.jpg', query: 'white t-shirt', orientation: 'landscape', ratio: 1.0, source: 'unsplash', pick: '8ACmRoleM24' },
-  { path: 'product/04-c.jpg', query: 'folded t-shirt', orientation: 'landscape', ratio: 1.0, source: 'unsplash', pick: 'pZfRXQhi1eg' },
 
   // MAEVEN by you — customer photo wall. Queries deliberately favour garment
   // detail, crops and back views over identifiable portraits.
@@ -86,6 +85,10 @@ const MANIFEST = [
   { path: 'editorial/cotton.jpg',          query: 'cotton plant field',                         orientation: 'landscape', ratio: 1.5 },
   { path: 'editorial/bang-mau.jpg',        query: 'neutral beige clothing rack',                orientation: 'landscape', ratio: 1.5 },
   { path: 'editorial/tho-may.jpg',         query: 'tailor sewing machine workshop',             orientation: 'landscape', ratio: 1.5 },
+
+  { path: 'editorial/cap-saint-jacques.jpg', query: 'vung tau vietnam coast',                  orientation: 'landscape', ratio: 1.5, pick: '16775848' },
+  { path: 'editorial/ao-den.jpg',          query: 'black shirt hanging hanger',                 orientation: 'landscape', ratio: 1.5, pick: '8532638' },
+  { path: 'editorial/lanh-trong-nha.jpg',  query: 'air conditioner unit on wall indoors',       orientation: 'landscape', ratio: 1.5, pick: '27427771' },
 ];
 
 const PER_PAGE = 5;            // candidates pulled per search
