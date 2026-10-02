@@ -27,12 +27,46 @@
     "sourceUrl": "https://unsplash.com/photos/a-white-shirt-hanging-on-a-clothes-line-lziP7ZPtghg",
     "alt": "a white shirt hanging on a clothes line"
   },
+  "/img/campaign/01.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nam mặc áo khoác vải bông màu cát, áo thun trắng, quần than, đứng trước tường bê tông"
+  },
+  "/img/campaign/02.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nữ mặc áo khoác màu cát và quần trắng ngà, trong phòng bê tông có rèm voan"
+  },
+  "/img/campaign/03.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nam mặc nguyên bộ màu cát, nắng xiên đổ chéo trên tường"
+  },
+  "/img/campaign/04.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Người mẫu nữ mặc nguyên bộ màu cát, đứng cạnh cột bê tông ngoài trời"
+  },
+  "/img/editorial/ao-den.jpg": {
+    "photographer": "Hanna Pad",
+    "photographerUrl": "https://www.pexels.com/@anna-nekrashevich",
+    "source": "Pexels",
+    "sourceUrl": "https://www.pexels.com/photo/a-black-shirt-hanging-on-the-wall-8532638/",
+    "alt": "Black t-shirt hanging on a white hanger against a plain wall with a dramatic shadow effect."
+  },
   "/img/editorial/bang-mau.jpg": {
     "photographer": "RDNE Stock project",
     "photographerUrl": "https://www.pexels.com/@rdne",
     "source": "Pexels",
     "sourceUrl": "https://www.pexels.com/photo/hanging-of-clothes-on-a-clothing-rack-8580765/",
     "alt": "Stylish beige and brown clothes on a rack with a hand reaching in."
+  },
+  "/img/editorial/cap-saint-jacques.jpg": {
+    "photographer": "Minh Tran",
+    "photographerUrl": "https://www.pexels.com/@minh-tran-559636809",
+    "source": "Pexels",
+    "sourceUrl": "https://www.pexels.com/photo/damaged-buildings-in-village-on-sea-shore-16775848/",
+    "alt": "Rustic coastal village in Vũng Tàu, Vietnam, with old buildings and small fishing boats along the rocky shore."
   },
   "/img/editorial/cotton.jpg": {
     "photographer": "Mark Stebnicki",
@@ -69,6 +103,13 @@
     "sourceUrl": "https://www.pexels.com/photo/vintage-textile-machine-16472144/",
     "alt": "Detailed view of a vintage textile machine showcasing industrial sewing equipment."
   },
+  "/img/editorial/lanh-trong-nha.jpg": {
+    "photographer": "Jan van der Wolf",
+    "photographerUrl": "https://www.pexels.com/@jan-van-der-wolf-11680885",
+    "source": "Pexels",
+    "sourceUrl": "https://www.pexels.com/photo/an-air-conditioner-on-a-wall-with-blue-lines-27427771/",
+    "alt": "Rusty air conditioning unit casting shadow on a peach wall with blue stripe."
+  },
   "/img/editorial/so-mi-mot-tuan.jpg": {
     "photographer": "Andrea Piacquadio",
     "photographerUrl": "https://www.pexels.com/@olly",
@@ -82,6 +123,12 @@
     "source": "Pexels",
     "sourceUrl": "https://www.pexels.com/photo/man-sitting-and-working-with-sewing-machine-19340518/",
     "alt": "A senior tailor skillfully operates a sewing machine, surrounded by fabric in a workshop setting."
+  },
+  "/img/home/hero-poster.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Sợi vải thẫm màu bay trên nền sáng",
+    "note": "Khung hình đầu của /img/home/hero.mp4, dùng làm ảnh chờ cho video ở đầu trang chủ."
   },
   "/img/home/hero.jpg": {
     "photographer": "Diana Light",
@@ -188,19 +235,47 @@
     "sourceUrl": "https://unsplash.com/photos/a-plain-white-t-shirt-hangs-on-a-wooden-hanger-8ACmRoleM24",
     "alt": "A plain white t-shirt hangs on a wooden hanger"
   },
-  "/img/product/04-c.jpg": {
-    "photographer": "tian dayong",
-    "photographerUrl": "https://unsplash.com/@tonnnyj",
-    "source": "Unsplash",
-    "sourceUrl": "https://unsplash.com/photos/two-black-and-white-shirts-sitting-next-to-each-other-pZfRXQhi1eg",
-    "alt": "two black and white shirts sitting next to each other"
-  },
   "/img/product/04-crew-neck-tee.jpg": {
     "photographer": "tian dayong",
     "photographerUrl": "https://unsplash.com/@tonnnyj",
     "source": "Unsplash",
     "sourceUrl": "https://unsplash.com/photos/Az7co_KPQsE",
     "alt": "cotton t-shirt"
+  },
+  "/img/product/04-tee-stack.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Bốn áo thun màu cát gấp chồng lên nhau, thẻ treo MAEVEN dựa bên cạnh"
+  },
+  "/img/product/05-a.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Mũ thân kem lưỡi nâu, chụp nghiêng"
+  },
+  "/img/product/05-b.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Mũ màu than thêu cùng tông, chụp nghiêng"
+  },
+  "/img/product/05-cap.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Mũ thân kem lưỡi xanh rêu, chụp nghiêng"
+  },
+  "/img/product/06-poplin-shirt.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Áo sơ mi poplin đen treo trên móc gỗ, nền màu yến mạch"
+  },
+  "/img/product/07-hoodie.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Áo hoodie nỉ bông màu xám tiêu, trải phẳng trên nền trắng"
+  },
+  "/img/product/08-navy-cap.jpg": {
+    "source": "Dựng bằng AI",
+    "tool": "Stytrix",
+    "alt": "Mũ lưỡi trai xanh navy thêu chữ trắng, chụp nghiêng trên nền kem"
   },
   "/img/ugc/01.jpg": {
     "photographer": "ShotPot",

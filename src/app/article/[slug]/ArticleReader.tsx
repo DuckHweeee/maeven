@@ -5,14 +5,22 @@ import Photo from "@/components/Photo";
 import Parallax from "@/components/motion/Parallax";
 import Prose from "@/components/Prose";
 import ArticleCard from "@/components/ArticleCard";
-import type { Article } from "@/lib/data";
+import ProductCard from "@/components/ProductCard";
+import type { Article, Product } from "@/lib/data";
 
 export default function ArticleReader({
   article,
   related,
+  products,
 }: {
   article: Article;
   related: Article[];
+  /**
+   * Resolved on the server. Passing the products in rather than importing the
+   * lookup here keeps every article body out of the browser bundle — the same
+   * reason constants.ts exists.
+   */
+  products: Product[];
 }) {
   const [en, setEn] = useState(false);
   const [summary, setSummary] = useState(true);
@@ -30,6 +38,20 @@ export default function ArticleReader({
         <p className="m-0 mb-[26px] text-[17px] leading-[1.65] text-graphite sm:text-[19px]">
           {a.dek}
         </p>
+
+        {/* /about-us promises that a piece touching a MAEVEN product says so
+            directly under its headline. This is that line — it is a disclosure,
+            not a cross-sell, so it sits with the byline and stays plain.
+            Deliberately not `.mono-label`: that class uppercases, and a whole
+            Vietnamese sentence in caps with 0.18em tracking is hard to read.
+            A disclosure that is hard to read is not much of a disclosure. */}
+        {products.length > 0 && (
+          <p className="m-0 mb-[26px] border-l-2 border-forest pl-3 font-mono text-[11.5px] leading-[1.7] text-graphite">
+            {en
+              ? `This piece discusses ${products.length === 1 ? "a MAEVEN product" : "MAEVEN products"}.`
+              : "Bài này có nhắc đến sản phẩm của MAEVEN."}
+          </p>
+        )}
 
         <div className="flex flex-wrap gap-x-5 gap-y-2 border-y border-line py-3.5 font-mono text-[10.5px] tracking-[0.1em] text-smoke">
           <span>{article.author}</span>
@@ -96,6 +118,19 @@ export default function ArticleReader({
       <div className="mx-auto max-w-[680px] px-4 pt-10 pb-16 text-[16.5px] leading-[1.8] text-[#22221f] sm:px-6 sm:pt-[42px] sm:pb-22 sm:text-[17.5px]">
         <Prose blocks={a.body} />
       </div>
+
+      {products.length > 0 && (
+        <section className="mx-auto max-w-[1120px] px-4 pb-16 sm:px-6 sm:pb-22">
+          <h2 className="m-0 mb-[22px] border-t border-ink pt-4 font-display text-[22px] font-semibold tracking-[-0.02em] sm:text-[26px]">
+            {en ? "Mentioned in this piece" : "Món nhắc trong bài"}
+          </h2>
+          <div className="grid grid-cols-2 gap-5 lg:grid-cols-3">
+            {products.map((product) => (
+              <ProductCard key={product.sku} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="border-t border-line bg-paper-2 px-4 py-12 sm:px-6 sm:py-[52px]">
         <div className="mx-auto max-w-[1120px]">

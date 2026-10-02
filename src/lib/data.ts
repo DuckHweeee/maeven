@@ -7,17 +7,10 @@
 // live in `constants.ts` so client components can pull them without this module.
 export { BRAND, NAV, SIZES } from "./constants";
 
-export const MARQUEE_ITEMS = [
-  "Giao 48 giờ toàn quốc",
-  "Dệt tại Nam Định và Bảo Lộc",
-  "Sửa chữa miễn phí hai năm",
-  "Tạp chí mới thứ Tư và thứ Bảy",
-];
-
 export const PROMISES = [
   {
     kicker: "Sản xuất",
-    body: "Mỗi mùa mười bốn mẫu, dệt tại Nam Định và Bảo Lộc. Tên xưởng in trên nhãn.",
+    body: "Mỗi mùa mười bốn mẫu, làm tại Nam Định, Bảo Lộc và TP.HCM. Tên xưởng in trên nhãn.",
   },
   {
     kicker: "Sửa miễn phí",
@@ -31,21 +24,54 @@ export const PROMISES = [
 
 /* ------------------------------------------------------------------ product */
 
+/**
+ * The product codes, as a literal union rather than `string`.
+ *
+ * This is what makes a broken article-to-product link a compile error instead of
+ * a recommendation block pointing at a 404. The site is prerendered, so anything
+ * that only fails at runtime fails after it has shipped.
+ */
+export const SKUS = [
+  "mv-01",
+  "mv-02",
+  "mv-03",
+  "mv-04",
+  "mv-05",
+  "mv-06",
+  "mv-07",
+  "mv-08",
+] as const;
+export type Sku = (typeof SKUS)[number];
+
 export type Product = {
   no: string;
   /** Product code. Also the route param for /product/[sku]. */
-  sku: string;
+  sku: Sku;
   name: string;
   price: string;
   material: string;
   blurb: string;
   gallery: { src: string; alt: string }[];
+  /**
+   * The size scale, when this item is not sold on the clothing scale in
+   * `SIZES`. Optional rather than required because four of five products do use
+   * that scale, and BuyPanel is the only read site — it falls back to `SIZES`.
+   */
+  sizes?: string[];
   specs: { k: string; v: string }[];
   /** The workshop that wove the cloth — printed on the label, shown on the card back. */
   maker: { workshop: string; place: string; story: string };
 };
 
 const CARE_REPAIR = { k: "Sửa chữa", v: "Miễn phí trong hai năm" };
+
+/**
+ * The head-circumference scale, shared by both caps.
+ *
+ * Written once because two caps sold on two copies of the same three bands
+ * would drift the first time one of them is adjusted.
+ */
+const HEAD_SIZES = ["54–56", "57–58", "59–60"];
 
 export const PRODUCTS: Product[] = [
   {
@@ -138,7 +164,7 @@ export const PRODUCTS: Product[] = [
       { src: "/img/product/04-crew-neck-tee.jpg", alt: "Áo thun cổ tròn, chính diện" },
       { src: "/img/product/04-a.jpg", alt: "Cận cảnh vải cotton dệt kim" },
       { src: "/img/product/04-b.jpg", alt: "Áo thun cổ tròn treo trên móc gỗ" },
-      { src: "/img/product/04-c.jpg", alt: "Hai áo thun gấp, trắng và đen" },
+      { src: "/img/product/04-tee-stack.jpg", alt: "Bốn áo thun màu cát gấp chồng lên nhau, thẻ treo MAEVEN dựa bên cạnh" },
     ],
     specs: [
       { k: "Chất liệu", v: "Sợi bông dài chải kỹ, 190 g/m²" },
@@ -152,11 +178,243 @@ export const PRODUCTS: Product[] = [
       story: "Cổ bo do một người làm, bà Thoa, hai mươi hai năm ở xưởng. Máy dệt cổ chạy riêng, chậm. Bà bảo nếu chạy nhanh thì ba tháng sau cổ giãn.",
     },
   },
+  {
+    no: "05",
+    sku: "mv-05",
+    name: "Mũ lưỡi trai Cap Saint Jacques",
+    price: "480.000₫",
+    material: "Bông chéo giặt sẵn",
+    blurb:
+      "Sáu mảnh, lưỡi cong, không đệm mụt. Chữ thêu móc xích nổi ba lớp ở thân trước, một dòng nữa thêu chìm dọc mép lưỡi. Cap Saint Jacques là tên cũ của Vũng Tàu; câu dưới lưỡi là dòng chữ ở trên cùng trang chủ này.",
+    gallery: [
+      { src: "/img/product/05-cap.jpg", alt: "Mũ thân kem lưỡi xanh rêu, chụp nghiêng" },
+      { src: "/img/product/05-a.jpg", alt: "Mũ thân kem lưỡi nâu, chụp nghiêng" },
+      { src: "/img/product/05-b.jpg", alt: "Mũ màu than thêu cùng tông, chụp nghiêng" },
+    ],
+    // A cap is sold by head circumference. Offering XS–XL here would contradict
+    // the "Vòng đầu" row three lines below it.
+    sizes: HEAD_SIZES,
+    specs: [
+      { k: "Chất liệu", v: "Bông chéo 100%, giặt sẵn, 320 g/m²" },
+      { k: "Xuất xứ", v: "Vải dệt tại Nam Định, may và thêu tại TP.HCM" },
+      { k: "Màu", v: "Kem/xanh rêu, kem/nâu, than thêu cùng tông" },
+      { k: "Vòng đầu", v: "54–60 cm, khóa đồng ở sau" },
+      { k: "Bảo quản", v: "Giặt tay nước lạnh, phơi úp trong bóng râm" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Phú Thị",
+      place: "TP.HCM",
+      story: "Xưởng này làm mũ đồng phục trường học suốt mười tám năm. Máy thêu móc xích chạy chữ nổi là máy cũ, mỗi thân mũ mất bảy phút. Họ từ chối làm dưới năm trăm chiếc một đợt vì phải canh lại máy cho từng cỡ chữ.",
+    },
+  },
+  {
+    no: "06",
+    sku: "mv-06",
+    name: "Áo sơ mi poplin đen",
+    price: "1.380.000₫",
+    material: "Bông poplin · Nam Định",
+    blurb:
+      "Poplin bông 120 g/m², màu đen, tay dài. Nẹp che cúc, nên nhìn thẳng không thấy hàng khuy. Một túi ngực khâu ngoài bên trái, thêu chữ maeven cùng tông chỉ. Dáng vuông, gấu lượn cong, bỏ trong hay bỏ ngoài đều được.",
+    gallery: [
+      {
+        src: "/img/product/06-poplin-shirt.jpg",
+        alt: "Áo sơ mi poplin đen treo trên móc gỗ, nền màu yến mạch",
+      },
+    ],
+    specs: [
+      { k: "Chất liệu", v: "Bông poplin 100%, 120 g/m²" },
+      { k: "Xuất xứ", v: "Dệt tại Nam Định, may tại Hà Nội" },
+      { k: "Màu", v: "Đen" },
+      { k: "Chi tiết", v: "Cổ nhọn, nẹp che cúc, măng sét một cúc" },
+      { k: "Bảo quản", v: "Giặt máy 30°C, là hơi mặt trái" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Tân Tiến",
+      place: "Nam Định",
+      story: "Sợi nhuộm đen trước khi dệt. Xưởng chỉ chạy lô đen vào cuối tuần, vì sau mỗi lô phải súc khung hai tiếng mới quay lại được vải sáng màu. Mỗi tháng một lô, họ không nhận hơn.",
+    },
+  },
+  {
+    no: "07",
+    sku: "mv-07",
+    name: "Áo hoodie nỉ bông",
+    price: "1.180.000₫",
+    material: "Nỉ bông chải lông",
+    blurb:
+      "Nỉ bông 380 g/m², mặt trong chải lông. Chui đầu, mũ hai mảnh có lót, không dây rút. Vai trễ, túi kangaroo, bo tay và bo gấu. Dáng rộng. Chữ maeven thêu cùng tông ở ngực trái.",
+    gallery: [
+      {
+        src: "/img/product/07-hoodie.jpg",
+        alt: "Áo hoodie nỉ bông màu xám tiêu, trải phẳng trên nền trắng",
+      },
+    ],
+    specs: [
+      { k: "Chất liệu", v: "Nỉ bông 100%, chải lông mặt trong, 380 g/m²" },
+      { k: "Xuất xứ", v: "Dệt tại Nam Định, may tại Hà Nội" },
+      { k: "Màu", v: "Xám tiêu" },
+      { k: "Mũ", v: "Hai mảnh, có lót, không dây rút" },
+      { k: "Bảo quản", v: "Giặt máy 30°C, lộn trái, không sấy nóng" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Nam Thành",
+      place: "Nam Định",
+      story: "Máy chải lông chạy hai lượt. Xưởng không chải lượt thứ ba: ông Điệp đứng máy nói lượt đó mềm tay thật, nhưng ba tháng sau mặt vải xù lên.",
+    },
+  },
+  {
+    no: "08",
+    sku: "mv-08",
+    name: "Mũ lưỡi trai Cap Saint Jacques, chữ chân",
+    price: "420.000₫",
+    material: "Bông chéo xanh navy",
+    blurb:
+      "Bản trơn của chiếc mũ mv-05. Cùng phom sáu mảnh, thân thấp không đệm mụt, lưỡi cong định hình sẵn, bốn lỗ thoáng. Khác ở chữ: “Cap Saint Jacques” thêu chữ chân màu trắng ở thân trước, không có monogram bên hông và không có dòng chữ nào dưới lưỡi.",
+    gallery: [
+      {
+        src: "/img/product/08-navy-cap.jpg",
+        alt: "Mũ lưỡi trai xanh navy thêu chữ trắng, chụp nghiêng trên nền kem",
+      },
+    ],
+    // Same three bands as mv-05: a cap is sold by head circumference, and the
+    // two caps share one scale so they cannot drift apart.
+    sizes: HEAD_SIZES,
+    specs: [
+      { k: "Chất liệu", v: "Bông chéo 100%, 320 g/m²" },
+      { k: "Xuất xứ", v: "Vải dệt tại Nam Định, may và thêu tại TP.HCM" },
+      { k: "Màu", v: "Xanh navy, chữ thêu trắng" },
+      { k: "Thêu", v: "Chữ chân ở thân trước. Không monogram bên hông, không chữ dưới lưỡi." },
+      { k: "Vòng đầu", v: "54–60 cm" },
+      { k: "Bảo quản", v: "Giặt tay nước lạnh, phơi úp trong bóng râm" },
+      CARE_REPAIR,
+    ],
+    maker: {
+      workshop: "Xưởng Phú Thị",
+      place: "TP.HCM",
+      story: "Chữ chân chạy máy thêu phẳng, hai phút một thân, thay vì bảy phút như bản móc xích. Xưởng nhận với một điều kiện: thêu chung đợt với bản kia. Đổi đầu máy thì được, canh máy riêng cho một đợt nhỏ thì họ từ chối.",
+    },
+  },
 ];
+
+// A code can be declared in SKUS and then never given a product. The types
+// cannot see that, so check it at module scope: data.ts is imported by every
+// prerendered route, which makes this a build failure rather than a bad page.
+for (const sku of SKUS) {
+  if (!PRODUCTS.some((p) => p.sku === sku)) {
+    throw new Error(`SKUS lists "${sku}" but no product defines it`);
+  }
+}
 
 export function getProduct(sku: string) {
   return PRODUCTS.find((p) => p.sku === sku);
 }
+
+/**
+ * Where the work happens, counted rather than asserted.
+ *
+ * Every page that used to write "bốn xưởng tại Nam Định và Bảo Lộc" now reads
+ * these two values instead. Adding the cap added a fifth workshop in a third
+ * province, and three pages went from true to false in the same commit without
+ * anything failing — the sentence is only ever right by accident while it is
+ * typed out by hand.
+ */
+/**
+ * One entry per workshop, keyed by name, in catalogue order.
+ *
+ * Three of the eight products are made at a workshop an earlier product already
+ * named, so /about-us mapping PRODUCTS straight onto its card list printed eight
+ * cards — three of them a repeated name — under a heading that counted five.
+ * The first product to name a workshop supplies the story; the count below is
+ * this list's length, so heading and list cannot disagree.
+ */
+export const WORKSHOPS = [
+  ...new Map(PRODUCTS.map((p) => [p.maker.workshop, { sku: p.sku, ...p.maker }])).values(),
+];
+export const WORKSHOP_PLACES = [...new Set(WORKSHOPS.map((w) => w.place))];
+export const WORKSHOP_COUNT = WORKSHOPS.length;
+
+/** Small counts as words, because the rest of the copy writes them as words. */
+const VI_COUNT = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín", "mười"];
+export const viCount = (n: number) => VI_COUNT[n] ?? String(n);
+
+/** "Nam Định, Bảo Lộc và TP.HCM" — the Vietnamese list, with "và" before the last. */
+export const viList = (items: readonly string[]) =>
+  items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} và ${items.at(-1)}`;
+
+/**
+ * The ticker of standing promises.
+ *
+ * Declared here rather than at the top of the file because the "where" line is
+ * read off PRODUCTS, and a module-scope array is evaluated where it is written.
+ */
+export const MARQUEE_ITEMS = [
+  "Giao 48 giờ toàn quốc",
+  `Làm tại ${viList(WORKSHOP_PLACES)}`,
+  "Sửa chữa miễn phí hai năm",
+  "Tạp chí mới thứ Tư và thứ Bảy",
+];
+
+
+/* ----------------------------------------------------------------- campaign */
+
+/**
+ * The season's lookbook.
+ *
+ * Deliberately not typed against `Sku`. These are campaign frames, not product
+ * photography: the garment in them is styled for a picture, and tying a frame to
+ * a code would make the site claim "this is item mv-0x" about a shot that was
+ * never lit to answer that question. The band links to the collection, not to a
+ * product page — which is also the only honest thing it can do while the jacket
+ * in frame is not the jacket in the catalogue.
+ */
+export type Look = {
+  id: string;
+  src: string;
+  alt: string;
+  /** One line of where and what. No adjectives that the photograph already shows. */
+  note: string;
+  /** How far this column drifts against the page, in px. Set per look so the
+      four columns move at four rates rather than as one block. */
+  drift: number;
+};
+
+export const CAMPAIGN = {
+  title: "Bê tông và ánh sáng ngang",
+  season: "SS26",
+  /** Shot in one room over one afternoon; the light moves, the clothes do not. */
+  looks: [
+    {
+      id: "l1",
+      src: "/img/campaign/01.jpg",
+      alt: "Người mẫu nam mặc áo khoác vải bông màu cát, áo thun trắng, quần than, đứng trước tường bê tông",
+      note: "Tường bê tông, nắng gián tiếp",
+      drift: 90,
+    },
+    {
+      id: "l2",
+      src: "/img/campaign/02.jpg",
+      alt: "Người mẫu nữ mặc áo khoác màu cát và quần trắng ngà, trong phòng bê tông có rèm voan",
+      note: "Rèm voan, sau mười một giờ",
+      drift: 40,
+    },
+    {
+      id: "l3",
+      src: "/img/campaign/03.jpg",
+      alt: "Người mẫu nam mặc nguyên bộ màu cát, nắng xiên đổ chéo trên tường",
+      note: "Nắng xiên qua cửa kính",
+      drift: 120,
+    },
+    {
+      id: "l4",
+      src: "/img/campaign/04.jpg",
+      alt: "Người mẫu nữ mặc nguyên bộ màu cát, đứng cạnh cột bê tông ngoài trời",
+      note: "Ngoài hiên, bóng cột",
+      drift: 62,
+    },
+  ] satisfies Look[],
+} as const;
 
 
 /* ------------------------------------------------------- MAEVEN by you */
@@ -267,12 +525,37 @@ export type ArticleBody = {
   body: Block[];
 };
 
+/**
+ * Funnel classification, from the journal spec. Deliberately separate from
+ * `rubric`: a rubric is how a reader navigates the magazine (Grooming, Phối đồ),
+ * a pillar is how the business classifies the piece. Collapsing them would force
+ * one of the two to lie.
+ */
+export const PILLARS = ["style", "education", "culture", "brand", "product"] as const;
+export type Pillar = (typeof PILLARS)[number];
+
+/** Channels a piece can be reworked for. Editorial checklist, nothing automated. */
+export const CHANNELS = ["instagram", "tiktok", "email"] as const;
+export type Channel = (typeof CHANNELS)[number];
+
 export type Article = ArticleBody & {
   slug: string;
   date: string;
   author: string;
   hero: string;
   card: string;
+  pillar: Pillar;
+  /**
+   * Products this piece is genuinely about, in display order.
+   *
+   * Empty is the normal case, not a gap to fill. The magazine states on
+   * /about-us that any piece touching a MAEVEN product will say so under its
+   * headline — so a link here is a disclosure, and adding one where the piece is
+   * not really about the garment would make that promise false.
+   */
+  relatedSkus: Sku[];
+  /** Which channels this has already been reworked for. */
+  repurposed: Channel[];
   /** Present only where a translation has actually been written. */
   en?: ArticleBody;
 };
@@ -280,6 +563,9 @@ export type Article = ArticleBody & {
 export const ARTICLES: Article[] = [
   {
     slug: "vietnamese-linen-returns",
+    pillar: "culture",
+    relatedSkus: ["mv-01", "mv-03"],
+    repurposed: ["instagram"],
     date: "09.09.2026",
     author: "Nguyễn Hà Trang",
     hero: "/img/article/hero.jpg",
@@ -378,6 +664,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "one-shirt-four-ways",
+    pillar: "style",
+    relatedSkus: ["mv-01", "mv-02"],
+    repurposed: ["instagram", "email"],
     date: "05.09.2026",
     author: "Lê Minh Quân",
     hero: "/img/editorial/so-mi-mot-tuan.jpg",
@@ -423,6 +712,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "two-days-in-hoi-an",
+    pillar: "culture",
+    relatedSkus: [],
+    repurposed: [],
     date: "02.09.2026",
     author: "Phạm Thu Hà",
     hero: "/img/editorial/hoi-an.jpg",
@@ -465,6 +757,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "minimal-grooming-humid-climate",
+    pillar: "education",
+    relatedSkus: [],
+    repurposed: ["email"],
     date: "29.08.2026",
     author: "Đỗ Anh Khoa",
     hero: "/img/editorial/grooming.jpg",
@@ -509,6 +804,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "three-hand-watches-under-20m",
+    pillar: "style",
+    relatedSkus: [],
+    repurposed: [],
     date: "26.08.2026",
     author: "Lê Minh Quân",
     hero: "/img/editorial/dong-ho.jpg",
@@ -554,6 +852,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "cotton-prices-rising",
+    pillar: "education",
+    relatedSkus: ["mv-02", "mv-04"],
+    repurposed: [],
     date: "22.08.2026",
     author: "Đỗ Anh Khoa",
     hero: "/img/editorial/cotton.jpg",
@@ -599,6 +900,9 @@ export const ARTICLES: Article[] = [
 
   {
     slug: "neutral-palette-rainy-season",
+    pillar: "style",
+    relatedSkus: ["mv-01", "mv-02", "mv-04"],
+    repurposed: [],
     date: "19.08.2026",
     author: "Phạm Thu Hà",
     hero: "/img/editorial/bang-mau.jpg",
@@ -643,6 +947,23 @@ export const FEATURE_SLUG = ARTICLES[0].slug;
 
 export function getArticle(slug: string) {
   return ARTICLES.find((a) => a.slug === slug);
+}
+
+/** Products a piece is about, resolved in the order the editor listed them. */
+export function productsForArticle(article: Article) {
+  return article.relatedSkus
+    .map((sku) => PRODUCTS.find((p) => p.sku === sku))
+    .filter((p): p is Product => Boolean(p));
+}
+
+/**
+ * The reverse link, derived rather than declared.
+ *
+ * Storing it on the product as well would be two places to forget; this way an
+ * editor adds `relatedSkus` to one article and both pages update.
+ */
+export function articlesForProduct(sku: string) {
+  return ARTICLES.filter((a) => a.relatedSkus.some((s) => s === sku));
 }
 
 /** Three most recent pieces other than the one being read. */

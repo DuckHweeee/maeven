@@ -3,25 +3,43 @@ import Link from "next/link";
 import Marquee from "@/components/Marquee";
 import ArticleCard from "@/components/ArticleCard";
 import ProductCard from "@/components/ProductCard";
+import Campaign from "@/components/Campaign";
 import HeroStage from "@/components/hero/HeroStage";
 import InfiniteSlider from "@/components/motion/InfiniteSlider";
 import KineticHeading from "@/components/motion/KineticHeading";
 import Reveal from "@/components/motion/Reveal";
 import AutoCarousel from "@/components/motion/AutoCarousel";
 import CustomerCard from "@/components/CustomerCard";
-import { ARTICLES, CUSTOMER_POSTS, PRODUCTS } from "@/lib/data";
+import {
+  ARTICLES,
+  CUSTOMER_POSTS,
+  PRODUCTS,
+  WORKSHOP_COUNT,
+  WORKSHOP_PLACES,
+  viCount,
+  viList,
+} from "@/lib/data";
 import { BRAND } from "@/lib/constants";
 
 export default function HomePage() {
   const latest = ARTICLES.slice(0, 3);
+  // Counted off the products, never typed out. Adding the cap added a fifth
+  // workshop in a third province; every sentence below that names either one
+  // reads it from here, so none of them can go stale behind the list.
+  const where = viList(WORKSHOP_PLACES);
+  const howMany = viCount(WORKSHOP_COUNT);
 
   return (
     <main>
       {/* ---------------------------------------------------------- hero */}
-      <HeroStage src="/img/home/hero.jpg" alt="Sổ mẫu SS26 — ánh sáng buổi sớm">
+      <HeroStage
+        src="/img/home/hero-poster.jpg"
+        alt="Sổ mẫu SS26 — ánh sáng buổi sớm"
+        video
+      >
         <div className="mx-auto w-full max-w-[1280px] px-4 pb-8 sm:px-6 sm:pb-10">
           <div className="mono-label mb-5 text-[10.5px] tracking-[0.22em] text-mint sm:mb-[26px]">
-            {BRAND.season} — Ánh sáng ban mai
+            {BRAND.season} — Hoạ sắc chiều tà
           </div>
           <KineticHeading
             text="La mer délivre"
@@ -32,7 +50,7 @@ export default function HomePage() {
         <div className="border-t border-hair-2">
           <div className="mono-label mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3.5 text-[10.5px] tracking-[0.16em] text-smoke sm:px-6 sm:py-4">
             <span>{BRAND.season} — Sổ mẫu</span>
-            <span>Dệt tại Nam Định và Bảo Lộc</span>
+            <span>Làm tại {where}</span>
             <Link href="/product" className="border-b border-mint pb-1 text-paper">
               Xem bộ sưu tập →
             </Link>
@@ -41,6 +59,8 @@ export default function HomePage() {
       </HeroStage>
 
       <Marquee />
+
+      <Campaign />
 
       {/* ------------------------------------------------------- mới về */}
       <section className="mx-auto max-w-[1280px] px-4 py-12 sm:px-6 sm:py-[60px]">
@@ -122,8 +142,8 @@ export default function HomePage() {
       <section className="overflow-hidden bg-ink pt-14 text-paper">
         <div className="mx-auto flex max-w-[1280px] flex-wrap items-end justify-between gap-7 px-4 sm:px-6">
           <p className="m-0 max-w-[34ch] text-[15.5px] leading-[1.75] text-chalk">
-            Mười bốn mẫu cho cả mùa, dệt tại Nam Định và Bảo Lộc. Tên xưởng in
-            trên nhãn áo.
+            Mười bốn mẫu cho cả mùa, làm tại {where}. Tên xưởng in trên nhãn
+            áo.
           </p>
           <span className="mono-label text-[10.5px] tracking-[0.2em] text-mint">
             {BRAND.est}
@@ -139,11 +159,11 @@ export default function HomePage() {
         <Reveal>
           <div className="mono-label mb-4 text-[11px] text-smoke">Giới thiệu</div>
           <h2 className="m-0 mb-4 font-display text-[clamp(26px,3.8vw,44px)] leading-[1.05] font-bold tracking-[-0.02em]">
-            Mười bốn mẫu, bốn xưởng
+            Mười bốn mẫu, {howMany} xưởng
           </h2>
           <p className="m-0 mb-6 max-w-[46ch] text-base leading-[1.75] text-graphite">
-            {BRAND.name} bắt đầu năm 2026. Vải dệt ở Nam Định và Bảo Lộc, tên
-            xưởng in trên nhãn từng chiếc áo.
+            {BRAND.name} bắt đầu năm 2026. Làm ở {howMany} xưởng tại {where},
+            tên xưởng in trên nhãn từng chiếc áo.
           </p>
           <Link
             href="/about-us"

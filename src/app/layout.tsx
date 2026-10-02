@@ -3,8 +3,10 @@ import { Archivo, Nunito_Sans, IBM_Plex_Mono } from "next/font/google";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import CartDrawer from "@/components/cart/CartDrawer";
+import CartProvider from "@/store/CartProvider";
 import WelcomeOffer from "@/components/WelcomeOffer";
 import { BRAND } from "@/lib/data";
+import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
 // Loaded as a true variable font (no `weight` list) so the wght and wdth axes
@@ -30,13 +32,28 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+const DESCRIPTION =
+  "Thương hiệu thời trang nam tối giản: mỗi mùa một bộ hẹp, chất liệu tự nhiên, phom dựng vai rõ. Kèm tạp chí lối sống.";
+
 export const metadata: Metadata = {
+  // Without this every canonical and og:image stays relative, which is the same
+  // as not having them — both require an absolute URL.
+  metadataBase: new URL(SITE_URL),
   title: {
     default: `${BRAND.name} — ${BRAND.tagline}`,
     template: `%s — ${BRAND.name}`,
   },
-  description:
-    "Thương hiệu thời trang nam tối giản: mỗi mùa một bộ hẹp, chất liệu tự nhiên, phom dựng vai rõ. Kèm tạp chí lối sống.",
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: BRAND.name,
+    locale: "vi_VN",
+    title: `${BRAND.name} — ${BRAND.tagline}`,
+    description: DESCRIPTION,
+    url: "/",
+    images: [{ url: "/img/home/hero.jpg", width: 1200, height: 750 }],
+  },
 };
 
 export default function RootLayout({
@@ -58,10 +75,12 @@ export default function RootLayout({
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-paper text-ink"
       >
-        <SiteHeader />
-        <div className="flex-1">{children}</div>
-        <SiteFooter />
-        <CartDrawer />
+        <CartProvider>
+          <SiteHeader />
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
+          <CartDrawer />
+        </CartProvider>
         <WelcomeOffer />
       </body>
     </html>
