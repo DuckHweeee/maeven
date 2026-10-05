@@ -14,8 +14,8 @@ output "cloudfront_url" {
 }
 
 output "site_url" {
-  description = "Public URL of this environment."
-  value       = "https://${var.domain_name}"
+  description = "Public URL of this environment: https://<domain_name>, or the CloudFront URL when domain_name is empty."
+  value       = local.use_custom_domain ? "https://${var.domain_name}" : "https://${aws_cloudfront_distribution.site.domain_name}"
 }
 
 output "deploy_role_arn" {

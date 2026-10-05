@@ -16,8 +16,9 @@ variable "environment" {
 }
 
 variable "domain_name" {
-  description = "Primary FQDN of this environment."
+  description = "Primary FQDN of this environment. Empty: serve on the CloudFront *.cloudfront.net domain (no ACM, no Route 53)."
   type        = string
+  default     = ""
 }
 
 variable "include_www" {

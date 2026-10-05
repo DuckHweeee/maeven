@@ -38,7 +38,7 @@ locals {
 
 resource "aws_cloudfront_response_headers_policy" "site" {
   name    = "${local.name_prefix}-security-headers"
-  comment = "Security headers for ${var.domain_name}"
+  comment = "Security headers for ${local.site_label}"
 
   security_headers_config {
     strict_transport_security {

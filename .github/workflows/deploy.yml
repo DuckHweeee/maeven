@@ -27,7 +27,14 @@ run-name: Deploy ${{ inputs.ref || github.sha }} (${{ github.event_name }})
 # The only secret in the repo is ALERT_EMAIL (terraform.yml). Here, roles and
 # resources come from the Environment variables (S3_BUCKET,
 # CLOUDFRONT_DISTRIBUTION_ID, SITE_URL, AWS_DEPLOY_ROLE_ARN) and repo variables
-# (AWS_REGION).
+# (AWS_REGION, SITE_URL_STAGING, SITE_URL_PROD).
+#
+# Site URL: the build-* jobs have no environment, so they read the repo-level
+# variables SITE_URL_STAGING / SITE_URL_PROD and pass the value to deploy-* as a
+# job output. deploy-* fail if the environment's SITE_URL differs. Until a
+# custom domain exists the value is the CloudFront default domain
+# (https://dxxxx.cloudfront.net), known only after the first terraform apply,
+# so set all four variables after apply (infra/DESIGN.md section 6, item 19).
 
 on:
   push:
@@ -60,11 +67,30 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-    env:
-      # No environment on this job, so the URL is hard-coded (it is public).
-      # deploy-staging asserts it equals the SITE_URL variable.
-      NEXT_PUBLIC_SITE_URL: https://staging.maeven.vn
+    outputs:
+      # The URL the artifact is built with; the deploy job compares its
+      # environment's SITE_URL against this, not against another literal.
+      site_url: ${{ steps.url.outputs.site_url }}
     steps:
+      # No environment on this job, so the URL comes from a repo-level variable.
+      # It is public (it ends up in every canonical link), so echoing it is fine.
+      - name: Resolve the site URL
+        id: url
+        env:
+          SITE_URL_VAR: ${{ vars.SITE_URL_STAGING }}
+        run: |
+          url="${SITE_URL_VAR%/}"
+          if [[ -z "$url" ]]; then
+            echo "::error::Repository variable SITE_URL_STAGING is empty or not set. With no custom domain yet, it is the CloudFront domain (https://dxxxx.cloudfront.net) of the staging distribution, which is only known after the first terraform apply: set it after apply (gh variable set SITE_URL_STAGING --body https://dxxxx.cloudfront.net), then re-run. Refusing to build a site with a wrong canonical URL."
+            exit 1
+          fi
+          if [[ ! "$url" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
+            echo "::error::SITE_URL_STAGING must look like https://host with no path (got: ${url})."
+            exit 1
+          fi
+          echo "site_url=${url}" >> "$GITHUB_OUTPUT"
+          echo "Building staging for ${url}"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # A push builds the pushed commit; a manual run builds the `ref` input.
@@ -92,6 +118,8 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ steps.url.outputs.site_url }}
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -117,7 +145,7 @@ jobs:
       S3_BUCKET: ${{ vars.S3_BUCKET }}
       CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
       SITE_URL: ${{ vars.SITE_URL }}
-      BUILT_SITE_URL: https://staging.maeven.vn # must match build-staging
+      BUILT_SITE_URL: ${{ needs.build-staging.outputs.site_url }}
       WAIT_FOR_INVALIDATION: "1"
       SMOKE_EXPECT_NOINDEX: "1"
     steps:
@@ -148,12 +176,16 @@ jobs:
 
       - name: Check the artifact matches SITE_URL
         run: |
+          if [[ -z "$BUILT_SITE_URL" ]]; then
+            echo "::error::The build job did not report the URL it built with."
+            exit 1
+          fi
           if [[ -z "$SITE_URL" ]]; then
-            echo "::error::Environment variable SITE_URL is not set for this environment."
+            echo "::error::Environment variable SITE_URL is not set for this environment. Without a custom domain it is the CloudFront domain (https://dxxxx.cloudfront.net), known only after the first terraform apply."
             exit 1
           fi
           if [[ "${SITE_URL%/}" != "$BUILT_SITE_URL" ]]; then
-            echo "::error::SITE_URL (${SITE_URL}) differs from the URL this artifact was built with (${BUILT_SITE_URL})."
+            echo "::error::SITE_URL (${SITE_URL}) differs from the URL this artifact was built with (${BUILT_SITE_URL}). Make the repo variable SITE_URL_STAGING/SITE_URL_PROD and the environment variable SITE_URL equal, then re-run."
             exit 1
           fi
           if ! grep -qF -e "rel=\"canonical\" href=\"${BUILT_SITE_URL}\"" \
@@ -181,9 +213,30 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-    env:
-      NEXT_PUBLIC_SITE_URL: https://maeven.vn # must match BUILT_SITE_URL below
+    outputs:
+      # The URL the artifact is built with; the deploy job compares its
+      # environment's SITE_URL against this, not against another literal.
+      site_url: ${{ steps.url.outputs.site_url }}
     steps:
+      # No environment on this job, so the URL comes from a repo-level variable.
+      # It is public (it ends up in every canonical link), so echoing it is fine.
+      - name: Resolve the site URL
+        id: url
+        env:
+          SITE_URL_VAR: ${{ vars.SITE_URL_PROD }}
+        run: |
+          url="${SITE_URL_VAR%/}"
+          if [[ -z "$url" ]]; then
+            echo "::error::Repository variable SITE_URL_PROD is empty or not set. With no custom domain yet, it is the CloudFront domain (https://dxxxx.cloudfront.net) of the prod distribution, which is only known after the first terraform apply: set it after apply (gh variable set SITE_URL_PROD --body https://dxxxx.cloudfront.net), then re-run. Refusing to build a site with a wrong canonical URL."
+            exit 1
+          fi
+          if [[ ! "$url" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
+            echo "::error::SITE_URL_PROD must look like https://host with no path (got: ${url})."
+            exit 1
+          fi
+          echo "site_url=${url}" >> "$GITHUB_OUTPUT"
+          echo "Building prod for ${url}"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.sha }}
@@ -210,6 +263,8 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ steps.url.outputs.site_url }}
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -235,9 +290,9 @@ jobs:
       S3_BUCKET: ${{ vars.S3_BUCKET }}
       CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
       SITE_URL: ${{ vars.SITE_URL }}
-      BUILT_SITE_URL: https://maeven.vn # must match build-prod
+      BUILT_SITE_URL: ${{ needs.build-prod.outputs.site_url }}
       WAIT_FOR_INVALIDATION: "1"
-      SMOKE_EXPECT_WWW: "1"
+      SMOKE_EXPECT_WWW: "1" # switched off below while on a *.cloudfront.net host
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -260,12 +315,16 @@ jobs:
 
       - name: Check the artifact matches SITE_URL
         run: |
+          if [[ -z "$BUILT_SITE_URL" ]]; then
+            echo "::error::The build job did not report the URL it built with."
+            exit 1
+          fi
           if [[ -z "$SITE_URL" ]]; then
-            echo "::error::Environment variable SITE_URL is not set for this environment."
+            echo "::error::Environment variable SITE_URL is not set for this environment. Without a custom domain it is the CloudFront domain (https://dxxxx.cloudfront.net), known only after the first terraform apply."
             exit 1
           fi
           if [[ "${SITE_URL%/}" != "$BUILT_SITE_URL" ]]; then
-            echo "::error::SITE_URL (${SITE_URL}) differs from the URL this artifact was built with (${BUILT_SITE_URL})."
+            echo "::error::SITE_URL (${SITE_URL}) differs from the URL this artifact was built with (${BUILT_SITE_URL}). Make the repo variable SITE_URL_STAGING/SITE_URL_PROD and the environment variable SITE_URL equal, then re-run."
             exit 1
           fi
           if ! grep -qF -e "rel=\"canonical\" href=\"${BUILT_SITE_URL}\"" \
@@ -283,4 +342,12 @@ jobs:
         run: ./scripts/deploy.sh
 
       - name: Smoke test
-        run: ./scripts/smoke.sh "$SITE_URL"
+        run: |
+          # The www -> apex redirect only exists with a custom domain; there is
+          # no www.<id>.cloudfront.net, so check 4 is skipped on the default domain.
+          host="${SITE_URL#*://}"
+          host="${host%%/*}"
+          if [[ "$host" == *.cloudfront.net ]]; then
+            unset SMOKE_EXPECT_WWW
+          fi
+          ./scripts/smoke.sh "$SITE_URL"

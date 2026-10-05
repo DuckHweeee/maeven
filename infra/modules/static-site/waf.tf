@@ -19,7 +19,7 @@ resource "aws_wafv2_web_acl" "site" {
   provider = aws.us_east_1
 
   name        = local.waf_name
-  description = "Managed rules and per-IP rate limit for ${var.domain_name}"
+  description = "Managed rules and per-IP rate limit for ${local.site_label}"
   scope       = "CLOUDFRONT"
 
   default_action {

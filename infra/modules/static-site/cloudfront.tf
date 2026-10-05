@@ -7,6 +7,8 @@ resource "aws_cloudfront_origin_access_control" "site" {
 }
 
 # www -> apex redirect plus clean-URL rewrite, see functions/viewer_request.js.
+# The redirect only fires for hosts starting with "www.", so on a
+# *.cloudfront.net domain (no www alias) it never triggers; the rewrite still does.
 resource "aws_cloudfront_function" "viewer_request" {
   name    = "${local.name_prefix}-viewer-request"
   runtime = "cloudfront-js-2.0"
@@ -109,9 +111,13 @@ resource "aws_cloudfront_distribution" "site" {
     }
   }
 
+  # Custom domain: our ACM cert, SNI only, TLS 1.2+. No domain: the CloudFront
+  # default certificate; ssl_support_method and minimum_protocol_version must
+  # then stay unset (CloudFront fixes them for *.cloudfront.net).
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate_validation.site.certificate_arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
+    cloudfront_default_certificate = local.use_custom_domain ? null : true
+    acm_certificate_arn            = local.use_custom_domain ? aws_acm_certificate_validation.site[0].certificate_arn : null
+    ssl_support_method             = local.use_custom_domain ? "sni-only" : null
+    minimum_protocol_version       = local.use_custom_domain ? "TLSv1.2_2021" : null
   }
 }

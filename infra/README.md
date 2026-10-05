@@ -6,7 +6,7 @@ trường, nằm chung một AWS account:
 
 | | staging | prod |
 |---|---|---|
-| URL | https://staging.maeven.vn | https://maeven.vn (`www` chuyển hướng 301 về apex) |
+| URL | địa chỉ CloudFront của staging (`dxxxx.cloudfront.net`) | địa chỉ CloudFront của prod, khi có tên miền thì là `maeven.vn` |
 | Deploy | tự động khi merge vào `main` | sau khi bạn bấm duyệt trên GitHub |
 | Khác biệt | có `X-Robots-Tag: noindex` để Google không index | có WAF chặn tấn công |
 
@@ -25,18 +25,19 @@ Tài liệu liên quan:
 - [Phần A — Terraform trong 5 phút](#phần-a--terraform-trong-5-phút)
 - [Phần B — Triển khai lần đầu, từng bước](#phần-b--triển-khai-lần-đầu-từng-bước)
   - [Bước 1. Kiểm tra máy và tài khoản AWS](#bước-1-kiểm-tra-máy-và-tài-khoản-aws)
-  - [Bước 2. Kiểm tra tên miền](#bước-2-kiểm-tra-tên-miền)
+  - [Bước 2. Tên miền — chưa có thì dùng tạm domain CloudFront](#bước-2-tên-miền--chưa-có-thì-dùng-tạm-domain-cloudfront)
   - [Bước 3. Thiết lập GitHub](#bước-3-thiết-lập-github)
   - [Bước 4. Merge code và chạy OIDC probe](#bước-4-merge-code-và-chạy-oidc-probe)
   - [Bước 5. Bootstrap — apply Terraform lần đầu tiên](#bước-5-bootstrap--apply-terraform-lần-đầu-tiên)
   - [Bước 6. Chuyển state của bootstrap lên S3](#bước-6-chuyển-state-của-bootstrap-lên-s3)
-  - [Bước 7. Trỏ nameserver về Route 53](#bước-7-trỏ-nameserver-về-route-53)
+  - [Bước 7. Trỏ nameserver về Route 53 (bỏ qua khi chưa có tên miền)](#bước-7-trỏ-nameserver-về-route-53--bỏ-qua-khi-chưa-có-tên-miền)
   - [Bước 8. Biến và secret cấp repo trên GitHub](#bước-8-biến-và-secret-cấp-repo-trên-github)
   - [Bước 9. Apply staging](#bước-9-apply-staging)
   - [Bước 10. Apply prod](#bước-10-apply-prod)
   - [Bước 11. Deploy site lần đầu và kiểm tra](#bước-11-deploy-site-lần-đầu-và-kiểm-tra)
 - [Phần C — Vận hành hằng ngày](#phần-c--vận-hành-hằng-ngày)
 - [Phần D — Lỗi thường gặp](#phần-d--lỗi-thường-gặp)
+- [Phần E — Chuyển sang tên miền riêng](#phần-e--chuyển-sang-tên-miền-riêng)
 
 ---
 
@@ -128,21 +129,29 @@ Ghi chú:
   code Terraform tự chỉ định region (`ap-southeast-1` cho dữ liệu, `us-east-1`
   cho phần gắn với CloudFront).
 
-### Bước 2. Kiểm tra tên miền
+### Bước 2. Tên miền — chưa có thì dùng tạm domain CloudFront
 
-> ⚠️ **Kiểm tra lúc 2026-10-05:** `dig NS maeven.vn` không trả về gì, và máy chủ
-> `.vn` xác nhận chưa có nameserver nào cho `maeven.vn`. Tức là tên miền
-> **chưa được đăng ký**, hoặc đã đăng ký nhưng **chưa gắn DNS**. Bạn phải giải
-> quyết việc này trước bước 9.
+**Chưa mua tên miền vẫn triển khai được.** `infra/envs/*/terraform.tfvars`
+không đặt `domain_name`, nên mỗi môi trường chạy bằng địa chỉ do CloudFront cấp,
+dạng `https://dxxxxxxxx.cloudfront.net`, với HTTPS hợp lệ sẵn.
 
-1. Đăng nhập trang quản lý của nhà đăng ký (ví dụ PA Vietnam, Mắt Bão, Nhân
-   Hoà) và xác nhận `maeven.vn` thuộc về bạn và còn hạn.
-2. Chưa có thì đăng ký. Tên miền `.vn` phải mua qua nhà đăng ký Việt Nam và
-   khai báo thông tin chủ thể.
-3. Chưa cần đổi nameserver lúc này. Việc đó làm ở **bước 7**, khi Route 53 đã
-   cấp 4 nameserver.
+Khác biệt khi chưa có tên miền:
 
-Bước 3 đến bước 6 làm được ngay cả khi tên miền chưa sẵn sàng.
+| | Có tên miền | Chưa có (hiện tại) |
+|---|---|---|
+| Địa chỉ | `staging.<domain>`, `<domain>` | `dxxxx.cloudfront.net` (mỗi env một địa chỉ) |
+| Chứng chỉ | ACM, TLS 1.2 trở lên | chứng chỉ mặc định của CloudFront |
+| `www` → apex | có | không có |
+| Route 53 / DNS | cần trỏ nameserver | **bỏ qua bước 7** |
+
+Địa chỉ CloudFront chỉ biết **sau khi apply**. Vì vậy các biến `SITE_URL*` trên
+GitHub được đặt ở bước 9 và 10, không phải trước đó.
+
+Khi mua tên miền, xem [Phần E — Chuyển sang tên miền riêng](#phần-e--chuyển-sang-tên-miền-riêng).
+
+> 💡 Tên thương hiệu là **MAEVEN** (`maeven`). Nếu định mua `maven.io.vn`, hãy
+> kiểm tra lại chính tả trước khi mua.
+
 
 ### Bước 3. Thiết lập GitHub
 
@@ -335,34 +344,15 @@ mv infra/bootstrap/terraform.tfstate* ~/maeven-tfstate-backup/
 
 **6.6 Commit.** Commit thay đổi `versions.tf` qua một PR nhỏ.
 
-### Bước 7. Trỏ nameserver về Route 53
+### Bước 7. Trỏ nameserver về Route 53 — BỎ QUA khi chưa có tên miền
 
-**7.1 Lấy 4 nameserver:**
+Chỉ làm bước này khi đã có tên miền, xem
+[Phần E](#phần-e--chuyển-sang-tên-miền-riêng). Chưa có thì sang bước 8.
 
-```bash
-terraform -chdir=infra/bootstrap output name_servers
-```
-
-**7.2 Khai báo ở nhà đăng ký.** Vào trang quản lý `maeven.vn`, mục
-*Nameserver* / *DNS server*:
-
-- **thay toàn bộ** nameserver bằng 4 giá trị trên;
-- bỏ dấu `.` ở cuối nếu trang không chấp nhận.
-
-**7.3 Chờ cập nhật.** Thời gian thường từ vài giờ tới 24–48 giờ. Kiểm tra bằng:
-
-```bash
-dig NS maeven.vn +short
-```
-
-✅ Kết quả đúng: đúng 4 dòng `ns-….awsdns-….` trùng với output ở 7.1.
-
-**Đừng chạy bước 9 khi chưa thấy kết quả này.** Lý do: chứng chỉ HTTPS (ACM)
-xác thực qua DNS. Nếu DNS chưa trỏ, `apply` sẽ treo tới 75 phút rồi báo lỗi.
 
 ### Bước 8. Biến và secret cấp repo trên GitHub
 
-Có thể làm trong lúc chờ DNS:
+Có thể làm ngay:
 
 ```bash
 gh variable set AWS_REGION           --body "ap-southeast-1"
@@ -374,9 +364,22 @@ gh secret   set ALERT_EMAIL          # gh sẽ hỏi giá trị: nhập email, k
 `ALERT_EMAIL` là **secret**, không phải variable. Biến thường bị in ra trong
 log công khai của repo public.
 
+Hai biến `SITE_URL_STAGING` và `SITE_URL_PROD` **chưa đặt được lúc này**, vì
+địa chỉ CloudFront chưa tồn tại. Chúng được đặt ở bước 9 và 10.
+
+
 ### Bước 9. Apply staging
 
-Điều kiện: bước 7 đã xong và `dig` đã ra đúng 4 nameserver.
+Không cần DNS. Có thể chạy ngay.
+
+**9.1 Dọn lần apply dở.** Lần apply đầu bị treo vì code cũ đòi chứng chỉ cho
+`staging.maeven.vn`. Xoá file plan cũ (nó không còn hợp lệ với code mới):
+
+```bash
+rm -f infra/envs/staging/tfplan
+```
+
+**9.2 `init` và `plan`:**
 
 ```bash
 export TF_VAR_alert_email="email-cua-ban@example.com"   # nếu đã mở terminal mới
@@ -386,37 +389,67 @@ terraform -chdir=infra/envs/staging init -backend-config="bucket=$STATE_BUCKET"
 terraform -chdir=infra/envs/staging plan -out=tfplan
 ```
 
-✅ Kết quả đúng: khoảng 30 dòng `+` và `0 to destroy`. Kiểm tra lướt plan:
+✅ Kết quả đúng (đã chạy thử trên state thật của bạn ngày 2026-10-05):
+`Plan: 7 to add, 1 to change, 2 to destroy.`
 
-- `domain_name` là `staging.maeven.vn`;
-- **không** có `aws_wafv2_web_acl` (staging không có WAF).
+**Hai dòng xoá (`-`) là chủ ý**, vì chúng là phần còn lại của lần apply treo:
 
-Apply đúng plan vừa xem:
+- `module.site.aws_acm_certificate.site[0]` (chứng chỉ `staging.maeven.vn` đang
+  chờ xác thực);
+- `module.site.aws_route53_record.cert_validation["staging.maeven.vn"]` (một
+  bản ghi trong zone `maeven.vn`).
+
+Đây là ngoại lệ duy nhất của quy tắc "`to destroy` phải bằng 0". Còn lại:
+
+- `aws_cloudfront_distribution.site` được **tạo mới**. Đây là phần quan trọng
+  nhất, vì lần apply trước chưa tạo được nó.
+- `aws_cloudfront_response_headers_policy.site` sửa tại chỗ (chỉ đổi dòng
+  `comment`).
+- Không có `aws_wafv2_web_acl` (staging không có WAF), và `site_url` ghi là
+  `(known after apply)`.
+
+**Dừng lại và gửi plan cho Claude nếu** thấy xoá hay thay thế (`-/+`) bất kỳ
+thứ gì khác: S3 bucket, IAM role, CloudFront. Riêng dòng
+`aws_sns_topic_subscription.email must be replaced` nghĩa là `TF_VAR_alert_email`
+của bạn **khác** email đã dùng lần trước: hãy `export` lại đúng email cũ.
+
+**9.3 Apply đúng plan vừa xem:**
 
 ```bash
 terraform -chdir=infra/envs/staging apply tfplan
 ```
 
-Khi apply file plan đã lưu, Terraform **không hỏi `yes` nữa**. Đó là lý do phải
-đọc plan ở bước trước.
+Khi apply file plan đã lưu, Terraform **không hỏi `yes`** nữa. Lần này mất
+khoảng **5–15 phút**, chủ yếu do CloudFront. Thấy
+`Still creating... [5m0s elapsed]` là bình thường.
 
-- Lệnh mất khoảng **5–15 phút**, chủ yếu do CloudFront và chứng chỉ.
-- Thấy `Still creating... [5m0s elapsed]` là bình thường.
-
-Sau khi xong:
+**9.4 Lấy địa chỉ staging và đặt biến.** Sau khi xong:
 
 1. **Bấm link xác nhận** trong email "AWS Notification - Subscription
    Confirmation". Đó là kênh nhận alarm của staging.
-2. Đặt biến cho environment `staging` trên GitHub:
+2. In địa chỉ:
+
+   ```bash
+   terraform -chdir=infra/envs/staging output -raw site_url   # https://dxxxx.cloudfront.net
+   ```
+
+3. Đặt biến (**hai biến `SITE_URL` này phải bằng nhau**, nếu không deploy sẽ
+   thất bại có chủ ý):
 
 ```bash
 O="terraform -chdir=infra/envs/staging output -raw"
+URL="$($O site_url)"
+gh variable set SITE_URL_STAGING                         --body "$URL"
+gh variable set SITE_URL                   --env staging --body "$URL"
 gh variable set AWS_TF_APPLY_ROLE_ARN      --env staging --body "$(terraform -chdir=infra/bootstrap output -json tf_apply_role_arns | python3 -c 'import json,sys;print(json.load(sys.stdin)["staging"])')"
 gh variable set AWS_DEPLOY_ROLE_ARN        --env staging --body "$($O deploy_role_arn)"
 gh variable set S3_BUCKET                  --env staging --body "$($O bucket_name)"
 gh variable set CLOUDFRONT_DISTRIBUTION_ID --env staging --body "$($O cloudfront_distribution_id)"
-gh variable set SITE_URL                   --env staging --body "https://staging.maeven.vn"
 ```
+
+Mở thử địa chỉ đó trên trình duyệt. Trước khi deploy site (bước 11) bạn sẽ thấy
+trang lỗi 404 hoặc AccessDenied, vì bucket còn trống. Đó là bình thường.
+
 
 ### Bước 10. Apply prod
 
@@ -425,44 +458,69 @@ Giống hệt bước 9, thay `staging` bằng `prod`:
 ```bash
 terraform -chdir=infra/envs/prod init -backend-config="bucket=$STATE_BUCKET"
 terraform -chdir=infra/envs/prod plan -out=tfplan
-terraform -chdir=infra/envs/prod apply tfplan
 ```
 
-✅ Kết quả đúng: plan của prod có thêm `aws_wafv2_web_acl`, alarm cho WAF, và
-các bản ghi DNS cho `www.maeven.vn`. Tổng cộng khoảng 35 resource, và
-`0 to destroy`.
+✅ Kết quả đúng: khoảng 30 dòng `+` và **`0 to destroy`** (prod chưa có gì từ
+trước). Plan của prod có thêm `aws_wafv2_web_acl` và alarm cho WAF. Không có bản
+ghi DNS vì chưa có tên miền.
+
+```bash
+terraform -chdir=infra/envs/prod apply tfplan
+```
 
 Sau khi xong:
 
 1. Xác nhận email SNS của prod.
-2. Đặt biến cho environment `production`. Lưu ý tên environment là
-   `production`, còn thư mục là `prod`:
+2. Đặt biến. Lưu ý tên environment là `production`, còn thư mục là `prod`:
 
 ```bash
 O="terraform -chdir=infra/envs/prod output -raw"
+URL="$($O site_url)"
+gh variable set SITE_URL_PROD                               --body "$URL"
+gh variable set SITE_URL                   --env production --body "$URL"
 gh variable set AWS_TF_APPLY_ROLE_ARN      --env production --body "$(terraform -chdir=infra/bootstrap output -json tf_apply_role_arns | python3 -c 'import json,sys;print(json.load(sys.stdin)["prod"])')"
 gh variable set AWS_DEPLOY_ROLE_ARN        --env production --body "$($O deploy_role_arn)"
 gh variable set S3_BUCKET                  --env production --body "$($O bucket_name)"
 gh variable set CLOUDFRONT_DISTRIBUTION_ID --env production --body "$($O cloudfront_distribution_id)"
-gh variable set SITE_URL                   --env production --body "https://maeven.vn"
 ```
+
 
 ### Bước 11. Deploy site lần đầu và kiểm tra
 
-**11.1 Chạy deploy.** Vào **Actions → Deploy to AWS → Run workflow**, chọn
-`main`, để trống `ref`.
+**11.0 Điều kiện: code mới phải nằm trên `main`.** "Run workflow → main" chạy
+file `deploy.yml` **đang có trên `main`**, không phải file ở nhánh của bạn. Nếu PR
+`feat/infra-staging-prod` chưa merge, `main` vẫn giữ workflow cũ. Workflow cũ chỉ
+chạy khi biến cấp repo `AWS_DEPLOY_ROLE_ARN` có giá trị, mà biến này không còn
+dùng, nên job luôn bị **skipped** (đúng triệu chứng này).
+
+Cách kiểm tra: mở PR, thấy trạng thái **Merged** là được.
+
+Trước khi merge, đảm bảo nhánh đã có các commit mới nhất (`git status` sạch và
+`git push`). Merge xong, GitHub tự chạy `Terraform` và `Deploy to AWS` trên push.
+Cả hai đều dùng đúng các biến bạn đặt ở bước 8–10, và job `production` dừng chờ
+bạn duyệt.
+
+**11.1 Chạy deploy.** Nếu workflow đã tự chạy sau khi merge thì bỏ qua bước này.
+Chưa thì vào **Actions → Deploy to AWS → Run workflow**, chọn `main`, để trống
+`ref`.
 
 1. Workflow build staging, deploy staging, rồi chạy `smoke.sh`.
 2. Sau đó nó **dừng chờ duyệt**. Bấm **Review deployments → production →
    Approve**.
 3. Workflow deploy prod và chạy `smoke.sh` lần nữa.
 
-**11.2 Kiểm tra bằng agent.** Nhờ Claude chạy agent **deploy-verifier** cho
+Ở lần chạy đầu, hai job build sẽ đọc `SITE_URL_STAGING` và `SITE_URL_PROD` (đã
+đặt ở bước 9 và 10). Nếu workflow báo `SITE_URL_... is empty`, quay lại bước đó.
+
+**11.2 Mở site.** Mở hai địa chỉ CloudFront (lệnh `terraform -chdir=infra/envs/<env> output -raw site_url`).
+Staging và prod là hai địa chỉ **khác nhau**.
+
+**11.3 Kiểm tra bằng agent.** Nhờ Claude chạy agent **deploy-verifier** cho
 `staging`, rồi cho `prod`.
 
 ✅ Kết quả đúng: `VERDICT: HEALTHY`.
 
-**11.3 Bật required status checks.** Quay lại ruleset của `main` (bước 3.3)
+**11.4 Bật required status checks.** Quay lại ruleset của `main` (bước 3.3)
 và thêm các check bắt buộc: `check`, `plan (staging)`, `plan (prod)`.
 
 Xong. Từ đây mọi thay đổi đi qua PR, xem Phần C.
@@ -561,10 +619,64 @@ Cẩn thận: các bước này không hoàn tác được.
 | `Error acquiring the state lock` | một lệnh Terraform khác (máy khác hoặc CI) đang chạy cùng root | Đợi nó xong. Chỉ khi **chắc chắn** không còn gì đang chạy mới dùng `terraform force-unlock <Lock ID>` |
 | `AccessDenied` khi chạy tay | sai account hoặc sai profile | `aws sts get-caller-identity` |
 | `AccessDenied` / `Not authorized to perform sts:AssumeRoleWithWebIdentity` trong CI | `sub` không khớp trust policy, hoặc biến role ARN sai | Xem lại bước 4.4 và các biến ở bước 8–10 |
-| `apply` treo lâu ở `aws_acm_certificate_validation` | DNS chưa trỏ về Route 53 | Ctrl-C **một lần** (Terraform dừng an toàn), kiểm tra `dig NS maeven.vn +short`, đợi rồi `apply` lại |
+| `apply` treo lâu ở `aws_acm_certificate_validation` | Đã đặt `domain_name` nhưng DNS chưa trỏ về Route 53 | Ctrl-C **một lần** (Terraform dừng an toàn), kiểm tra `dig NS <domain> +short`. Chưa có tên miền thì bỏ `domain_name` khỏi `terraform.tfvars` (xem bước 2). |
+| `SITE_URL_STAGING is empty` (hoặc `_PROD`) trong workflow | chưa đặt biến cấp repo sau lần apply đầu | Bước 9.4 và 10: `gh variable set SITE_URL_STAGING ...` |
+| `SITE_URL ... does not match` trong job deploy | biến cấp repo và biến của environment khác nhau | Đặt cả hai bằng cùng một giá trị `site_url` |
 | `BucketAlreadyOwnedByYou` / `EntityAlreadyExists` | resource đã có nhưng không có trong state, thường do mất state | **Đừng xoá gì.** Hỏi Claude cách `import` |
 | Plan có `-/+` (replace) mà bạn không muốn | thay đổi một thuộc tính bắt buộc tạo lại resource | Đừng apply. Hỏi lại người viết thay đổi |
 | `Error: deleting ... prevent_destroy` | đang cố xoá resource được bảo vệ | Đúng như thiết kế. Xem lại vì sao plan muốn xoá nó |
+
+## Phần E — Chuyển sang tên miền riêng
+
+Làm khi đã mua tên miền. Vì Route 53 zone nằm trong bootstrap và có
+`prevent_destroy`, **hãy nhờ Claude làm cùng**, đừng tự sửa.
+
+**Hiện trạng:** bootstrap đã tạo zone cho `maeven.vn` (khoảng $0.5/tháng). Zone
+này chưa dùng, và để nguyên cũng vô hại.
+
+**Nếu tên miền thật chính là `maeven.vn`:** zone đã có sẵn, chỉ cần làm các
+bước 1–4 dưới đây (bỏ qua việc tạo zone mới).
+
+**Nếu là tên miền khác (ví dụ `maven.io.vn`):**
+
+1. **Đổi zone trong bootstrap.** Đổi `domain_name` ở `infra/bootstrap`. Plan sẽ
+   muốn **xoá** zone cũ và tạo zone mới. `prevent_destroy` sẽ chặn, và đó là
+   chủ ý. Nhờ Claude gỡ `prevent_destroy` cho riêng lần này, apply, rồi đặt lại.
+2. **Trỏ nameserver** ở nhà đăng ký về 4 nameserver của zone mới:
+   `terraform -chdir=infra/bootstrap output name_servers`. Chờ tới khi
+   `dig NS <domain> +short` ra đúng 4 dòng của Route 53 (vài giờ tới 48 giờ).
+3. **Bật domain cho từng môi trường**, staging trước. Ví dụ với `maeven.vn`:
+
+   ```hcl
+   # infra/envs/staging/terraform.tfvars
+   domain_name = "staging.maeven.vn"
+   # infra/envs/prod/terraform.tfvars
+   domain_name = "maeven.vn"
+   include_www = true
+   ```
+
+   Đặt thêm `hosted_zone_name` nếu tên zone khác tên miền chính.
+4. **Plan, đọc kỹ, apply.** Lần đầu có chứng chỉ ACM nên mất thêm vài phút. Bản
+   ghi `A`/`AAAA` trỏ về CloudFront được tạo tự động.
+5. **Cập nhật URL cho CI.** Đổi 4 biến sang tên miền mới:
+
+   ```bash
+   gh variable set SITE_URL_STAGING                         --body "https://staging.<domain>"
+   gh variable set SITE_URL_PROD                            --body "https://<domain>"
+   gh variable set SITE_URL                   --env staging    --body "https://staging.<domain>"
+   gh variable set SITE_URL                   --env production --body "https://<domain>"
+   ```
+
+   Rồi chạy lại workflow **Deploy to AWS**. Site phải build lại, vì canonical URL
+   được ghi cứng vào HTML lúc build.
+6. **Kiểm tra** bằng agent `deploy-verifier`. Khi đã có `www`, smoke check 4
+   (www → apex) tự bật lại cho prod.
+
+**Việc cần nhớ:** `maeven-tf-apply` (role chạy trong CI) có quyền Route 53 và
+ACM giới hạn theo zone của bootstrap. Đổi tên miền thì quyền này đi theo zone
+mới, nhờ bootstrap tính ra. Hãy chạy `infra-security-auditor` sau thay đổi.
+
+---
 
 ## Lưu ý kỹ thuật
 

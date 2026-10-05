@@ -338,6 +338,39 @@ Viết tắt dùng trong bảng dưới:
       dòng comment dẫn nguồn, vì encode thêm lần nữa sẽ hỏng query (audit LOW-5).
 15. **`.gitignore`**: thêm `infra/**/tfplan`.
 
+### Chế độ chưa có tên miền (thêm 2026-10-05)
+
+Chủ repo chưa mua tên miền, nên module phải chạy được với **domain CloudFront**
+(`*.cloudfront.net`) và chuyển sang tên miền riêng sau chỉ bằng một PR.
+
+16. **`domain_name` có thể để trống** (`default = ""`), và `local.use_custom_domain = var.domain_name != ""`:
+    - Để trống thì **không** tạo ACM cert, bản ghi xác thực, bản ghi A/AAAA,
+      và **không** tra `aws_route53_zone`. `aliases = []`.
+    - `viewer_certificate` dùng `cloudfront_default_certificate = true`. Khi đó
+      không được đặt `ssl_support_method` hay `minimum_protocol_version`.
+    - `include_www` bị bỏ qua khi không có domain (validation hoặc `&&` trong local).
+    - Output `site_url` trả `https://<distribution>.cloudfront.net` khi không có
+      domain, ngược lại trả `https://<domain_name>`.
+    - Dùng cùng một kỹ thuật `count` như code `domain.tf` ban đầu: khoá theo giá
+      trị biết ở thời điểm plan.
+    - Nếu `trivy` báo TLS policy của cert mặc định (AWS-0010), thêm vào
+      `.trivyignore` kèm lý do: cert mặc định của CloudFront không cho chọn policy.
+17. **`envs/*/terraform.tfvars`**: bỏ `domain_name` (staging, prod) và `include_www`
+    (prod). Chú thích rõ cách bật lại khi đã có tên miền.
+18. **Bootstrap giữ nguyên** (zone `maeven.vn` đã tồn tại, phí $0.50/tháng).
+    Khi có tên miền thật, bootstrap cần đổi `domain_name`. Zone có
+    `prevent_destroy`, nên đổi tên miền là một quyết định có chủ đích (xem README).
+19. **CI**:
+    - `SITE_URL` của build không còn hard-code. `build-staging` và `build-prod`
+      (không có environment) đọc **biến cấp repo** `SITE_URL_STAGING` và
+      `SITE_URL_PROD`.
+    - `deploy-*` vẫn đọc `vars.SITE_URL` của environment, và **thất bại nếu hai
+      giá trị khác nhau**.
+    - Nếu biến trống thì thất bại ngay với thông báo rõ ràng (đừng build ra
+      canonical sai).
+    - `smoke.sh` tự bỏ qua check 4 (www) khi `SMOKE_EXPECT_WWW` không đặt, đúng
+      như hiện tại. Các check còn lại chạy được trên domain CloudFront.
+
 ## 7. Môi trường (`envs/staging`, `envs/prod`)
 
 `versions.tf` (khác nhau ở `key`):

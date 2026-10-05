@@ -15,18 +15,24 @@ variable "environment" {
 }
 
 variable "domain_name" {
-  description = "Primary FQDN of this environment, e.g. \"staging.maeven.vn\" or \"maeven.vn\"."
+  description = "Primary FQDN of this environment, e.g. \"staging.maeven.vn\" or \"maeven.vn\". Empty (the default) serves the site on the CloudFront *.cloudfront.net domain: no ACM certificate, no Route 53 lookup or records."
   type        = string
+  default     = ""
+
+  validation {
+    condition     = var.domain_name == "" || can(regex("^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$", var.domain_name))
+    error_message = "domain_name must be empty or a lowercase FQDN such as \"staging.maeven.vn\"."
+  }
 }
 
 variable "hosted_zone_name" {
-  description = "Route 53 public hosted zone (created in bootstrap) that holds the DNS records. Looked up, not created."
+  description = "Route 53 public hosted zone (created in bootstrap) that holds the DNS records. Looked up, not created, and only when domain_name is set."
   type        = string
   default     = "maeven.vn"
 }
 
 variable "include_www" {
-  description = "Also serve www.<domain_name>, which the viewer-request function 301-redirects to the apex."
+  description = "Also serve www.<domain_name>, which the viewer-request function 301-redirects to the apex. Ignored when domain_name is empty."
   type        = bool
   default     = false
 }
