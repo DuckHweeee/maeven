@@ -1,18 +1,30 @@
-# Optional custom domain. Active only when var.domain_name is set, and expects
-# the domain's DNS to be a Route 53 public hosted zone in this account.
+# Optional custom domain for this environment. The hosted zone is created in
+# bootstrap and only looked up here.
+#
+# With domain_name = "" (the default) none of this exists: no zone lookup, no
+# ACM certificate, no DNS records, aliases = [], and the distribution uses the
+# CloudFront default certificate on *.cloudfront.net (see cloudfront.tf).
+# Every count / for_each below keys on var.domain_name and var.include_www, both
+# known at plan time, so the plan never depends on apply-time values.
 
 locals {
   use_custom_domain = var.domain_name != ""
+
+  # include_www is ignored without a domain: there is no apex to redirect to.
   aliases = local.use_custom_domain ? concat(
     [var.domain_name],
     var.include_www ? ["www.${var.domain_name}"] : []
   ) : []
+
+  # Short human label for descriptions / comments. Must stay valid when
+  # domain_name is empty (and within WAFv2 description character limits).
+  site_label = local.use_custom_domain ? var.domain_name : local.name_prefix
 }
 
 data "aws_route53_zone" "site" {
   count = local.use_custom_domain ? 1 : 0
 
-  name         = var.hosted_zone_name != "" ? var.hosted_zone_name : var.domain_name
+  name         = var.hosted_zone_name
   private_zone = false
 }
 
@@ -56,12 +68,12 @@ resource "aws_acm_certificate_validation" "site" {
 }
 
 resource "aws_route53_record" "site" {
-  for_each = local.use_custom_domain ? {
+  for_each = {
     for pair in setproduct(local.aliases, ["A", "AAAA"]) : "${pair[0]}-${pair[1]}" => {
       name = pair[0]
       type = pair[1]
     }
-  } : {}
+  }
 
   zone_id = data.aws_route53_zone.site[0].zone_id
   name    = each.value.name

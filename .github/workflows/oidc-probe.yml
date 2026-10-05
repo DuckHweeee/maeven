@@ -1,0 +1,87 @@
+name: OIDC probe
+
+# Prints the OIDC `sub` and `job_workflow_ref` that GitHub would present to AWS
+# for this repo, so the lead can compare them with the trust policies in
+# infra/ (and with the subject customization of the repo) BEFORE the first
+# bootstrap apply. Design: infra/DESIGN.md section 8.
+#
+# No AWS call, no secret, no checkout. It asks GitHub for a token with
+# audience sts.amazonaws.com and prints two claims, never the token. Do not
+# add steps here that use the token for anything else.
+#
+# Run it from Actions > OIDC probe > Run workflow (on main), or let a PR that
+# edits this file run it. Compare the two jobs' output with the roles' trust
+# conditions: the first job has no environment, the second has `staging`.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/oidc-probe.yml"
+
+# Minimum for every job. id-token is widened per job below, never here.
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash # explicit shell turns on `set -eo pipefail`
+
+jobs:
+  probe-no-environment:
+    name: probe (no environment)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      id-token: write # to request the token, nothing else
+    steps:
+      - name: Print sub and job_workflow_ref
+        run: |
+          if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
+            echo "::error::No OIDC token is available to this run (a PR from a fork gets none)."
+            exit 1
+          fi
+          resp="$(curl -sS --fail --max-time 20 \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")"
+          token="$(printf '%s' "$resp" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>process.stdout.write(JSON.parse(d).value||""))')"
+          if [[ -z "$token" ]]; then
+            echo "::error::The token endpoint returned no token."
+            exit 1
+          fi
+          # Belt and braces: if anything ever echoes the token, the log masks it.
+          echo "::add-mask::${token}"
+          TOKEN="$token" node -e '
+            const p = JSON.parse(Buffer.from(process.env.TOKEN.split(".")[1], "base64url").toString("utf8"));
+            console.log("sub:              " + p.sub);
+            console.log("job_workflow_ref: " + p.job_workflow_ref);
+          '
+
+  probe-staging:
+    name: probe (environment staging)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: staging
+    permissions:
+      id-token: write # to request the token, nothing else
+    steps:
+      - name: Print sub and job_workflow_ref
+        run: |
+          if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
+            echo "::error::No OIDC token is available to this run (a PR from a fork gets none)."
+            exit 1
+          fi
+          resp="$(curl -sS --fail --max-time 20 \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")"
+          token="$(printf '%s' "$resp" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>process.stdout.write(JSON.parse(d).value||""))')"
+          if [[ -z "$token" ]]; then
+            echo "::error::The token endpoint returned no token."
+            exit 1
+          fi
+          echo "::add-mask::${token}"
+          TOKEN="$token" node -e '
+            const p = JSON.parse(Buffer.from(process.env.TOKEN.split(".")[1], "base64url").toString("utf8"));
+            console.log("sub:              " + p.sub);
+            console.log("job_workflow_ref: " + p.job_workflow_ref);
+          '
