@@ -1,0 +1,18 @@
+# Accepted trivy exceptions. Each needs a reason that cites infra/DESIGN.md.
+# CI passes this file with `trivy config --ignorefile infra/.trivyignore`; from
+# the repo root run: trivy config --severity HIGH,CRITICAL --ignorefile infra/.trivyignore infra
+
+# AWS-0132: S3 buckets use SSE-S3 (AES256), not a customer-managed KMS key.
+# DESIGN.md section 5 (state bucket: "SSE-S3") and section 6.1 (site bucket:
+# "keep the existing configuration") fix this choice. A CMK would add key
+# policy, key cost and kms:* permissions to the CI roles, and CloudFront log
+# delivery would need grants on it, for buckets holding only public site
+# assets, access logs and Terraform state in a private single-account bucket.
+AWS-0132
+
+# AWS-0095: the alarm SNS topic is not KMS-encrypted. CloudWatch alarms cannot
+# publish to a topic encrypted with the AWS-managed aws/sns key, and a
+# customer-managed key is not in DESIGN.md section 6.7 (nor in the kms-less
+# maeven-tf-apply policy, section 5). The messages hold alarm names and
+# thresholds only, no customer data.
+AWS-0095

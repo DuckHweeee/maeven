@@ -44,9 +44,12 @@ next-env.d.ts
 shots/
 
 # terraform
-infra/.terraform/
-infra/*.tfstate
-infra/*.tfstate.*
-infra/*.tfvars
-!infra/*.tfvars.example
-infra/crash.log
+infra/**/.terraform/
+infra/**/*.tfstate
+infra/**/*.tfstate.*
+infra/**/*.tfplan
+infra/**/tfplan
+infra/**/crash.log
+# bootstrap vars hold alert_email; envs/*/terraform.tfvars stay tracked
+infra/bootstrap/terraform.tfvars
+infra/bootstrap/*.auto.tfvars

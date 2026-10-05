@@ -1,23 +1,19 @@
-# Optional custom domain. Active only when var.domain_name is set, and expects
-# the domain's DNS to be a Route 53 public hosted zone in this account.
+# Custom domain for this environment. The hosted zone is created in bootstrap
+# and only looked up here.
 
 locals {
-  use_custom_domain = var.domain_name != ""
-  aliases = local.use_custom_domain ? concat(
+  aliases = concat(
     [var.domain_name],
     var.include_www ? ["www.${var.domain_name}"] : []
-  ) : []
+  )
 }
 
 data "aws_route53_zone" "site" {
-  count = local.use_custom_domain ? 1 : 0
-
-  name         = var.hosted_zone_name != "" ? var.hosted_zone_name : var.domain_name
+  name         = var.hosted_zone_name
   private_zone = false
 }
 
 resource "aws_acm_certificate" "site" {
-  count    = local.use_custom_domain ? 1 : 0
   provider = aws.us_east_1
 
   domain_name               = var.domain_name
@@ -30,16 +26,16 @@ resource "aws_acm_certificate" "site" {
 }
 
 locals {
-  cert_dvo = local.use_custom_domain ? {
-    for dvo in aws_acm_certificate.site[0].domain_validation_options : dvo.domain_name => dvo
-  } : {}
+  cert_dvo = {
+    for dvo in aws_acm_certificate.site.domain_validation_options : dvo.domain_name => dvo
+  }
 }
 
 # Keyed by the static alias list so the plan never depends on apply-time values.
 resource "aws_route53_record" "cert_validation" {
   for_each = toset(local.aliases)
 
-  zone_id         = data.aws_route53_zone.site[0].zone_id
+  zone_id         = data.aws_route53_zone.site.zone_id
   name            = local.cert_dvo[each.key].resource_record_name
   type            = local.cert_dvo[each.key].resource_record_type
   records         = [local.cert_dvo[each.key].resource_record_value]
@@ -48,22 +44,21 @@ resource "aws_route53_record" "cert_validation" {
 }
 
 resource "aws_acm_certificate_validation" "site" {
-  count    = local.use_custom_domain ? 1 : 0
   provider = aws.us_east_1
 
-  certificate_arn         = aws_acm_certificate.site[0].arn
+  certificate_arn         = aws_acm_certificate.site.arn
   validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
 }
 
 resource "aws_route53_record" "site" {
-  for_each = local.use_custom_domain ? {
+  for_each = {
     for pair in setproduct(local.aliases, ["A", "AAAA"]) : "${pair[0]}-${pair[1]}" => {
       name = pair[0]
       type = pair[1]
     }
-  } : {}
+  }
 
-  zone_id = data.aws_route53_zone.site[0].zone_id
+  zone_id = data.aws_route53_zone.site.zone_id
   name    = each.value.name
   type    = each.value.type
 

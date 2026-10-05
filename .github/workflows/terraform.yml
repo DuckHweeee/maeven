@@ -1,0 +1,471 @@
+name: Terraform
+
+# PR:   check -> plan (one comment per environment)
+# main: check -> apply-staging, plan-prod (parallel) -> apply-prod
+# Design: infra/DESIGN.md section 8.
+#
+# All AWS access is OIDC. The only secret is ALERT_EMAIL; roles and the state
+# bucket come from GitHub variables (see infra/DESIGN.md section 8).
+#
+# The OIDC `sub` includes job_workflow_ref, so the apply roles only trust this
+# exact file on refs/heads/main. Do not move these jobs into a reusable
+# workflow or rename the file without updating the roles in Terraform.
+
+on:
+  # No `paths` filter on pull_request on purpose: a filtered workflow never
+  # reports its checks, so a required check would hang at "Expected". Instead
+  # the first step of `check` and `plan` diffs against the base and skips the
+  # heavy steps when neither infra/** nor this file changed (the job still
+  # succeeds). `push` can keep `paths`: nothing requires a check there.
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform.yml"
+  workflow_dispatch:
+
+# Minimum for every job. id-token (jobs that assume a role) and pull-requests
+# (the plan comment) are widened per job below, never here.
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash # explicit shell turns on `set -eo pipefail`
+
+env:
+  TF_VERSION: "1.16.4"
+  TFLINT_VERSION: "v0.64.0"
+  TRIVY_VERSION: "v0.74.0"
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # First step: did this PR touch infra/** or this workflow? Every later step
+      # is gated on the result, so an unrelated PR gets a green job, not a
+      # missing check. push and workflow_dispatch always run. A failed diff
+      # counts as "changed": better a needless run than a skipped one.
+      - name: Detect infra changes
+        id: changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed=true
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            changed=false
+            if git fetch --no-tags --depth=1 origin "$BASE_SHA" &&
+              files="$(git diff --name-only "$BASE_SHA" HEAD)"; then
+              if grep -qE '^(infra/|\.github/workflows/terraform\.yml$)' <<<"$files"; then
+                changed=true
+              fi
+            else
+              echo "Could not diff against the base; running everything."
+              changed=true
+            fi
+          fi
+          echo "run=${changed}" >> "$GITHUB_OUTPUT"
+          echo "infra changed: ${changed}"
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        if: steps.changes.outputs.run == 'true'
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: terraform fmt
+        if: steps.changes.outputs.run == 'true'
+        run: terraform fmt -check -recursive -diff infra
+
+      - uses: terraform-linters/setup-tflint@6ffdbaa3be476b3431f7275c26966ef32ff60337 # v6.3.2
+        if: steps.changes.outputs.run == 'true'
+        with:
+          tflint_version: ${{ env.TFLINT_VERSION }}
+          tflint_wrapper: false
+
+      - name: tflint
+        if: steps.changes.outputs.run == 'true'
+        working-directory: infra
+        env:
+          # Lets `tflint --init` download the aws ruleset without hitting the
+          # anonymous GitHub API rate limit.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          tflint --init
+          tflint --recursive
+
+      - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+        if: steps.changes.outputs.run == 'true'
+        with:
+          version: ${{ env.TRIVY_VERSION }}
+
+      - name: trivy config
+        if: steps.changes.outputs.run == 'true'
+        run: |
+          args=(--exit-code 1 --severity "HIGH,CRITICAL")
+          # Accepted exceptions live in infra/.trivyignore, each with a reason.
+          if [[ -f infra/.trivyignore ]]; then
+            args+=(--ignorefile infra/.trivyignore)
+          fi
+          trivy config "${args[@]}" infra
+
+  plan:
+    name: plan (${{ matrix.env }})
+    needs: check
+    # Fork PRs get no OIDC token, so there is nothing a plan could assume.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      id-token: write # OIDC for aws-actions/configure-aws-credentials
+      contents: read
+      pull-requests: write # the single updatable plan comment, nothing else
+    concurrency:
+      group: terraform-plan-${{ github.event.pull_request.number }}-${{ matrix.env }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [staging, prod]
+    env:
+      TF_DIR: infra/envs/${{ matrix.env }}
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # First step: did this PR touch infra/** or this workflow? Every later step
+      # is gated on the result, so an unrelated PR gets a green job, not a
+      # missing check. push and workflow_dispatch always run. A failed diff
+      # counts as "changed": better a needless run than a skipped one.
+      - name: Detect infra changes
+        id: changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed=true
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            changed=false
+            if git fetch --no-tags --depth=1 origin "$BASE_SHA" &&
+              files="$(git diff --name-only "$BASE_SHA" HEAD)"; then
+              if grep -qE '^(infra/|\.github/workflows/terraform\.yml$)' <<<"$files"; then
+                changed=true
+              fi
+            else
+              echo "Could not diff against the base; running everything."
+              changed=true
+            fi
+          fi
+          echo "run=${changed}" >> "$GITHUB_OUTPUT"
+          echo "infra changed: ${changed}"
+
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        if: steps.changes.outputs.run == 'true'
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        if: steps.changes.outputs.run == 'true'
+        with:
+          role-to-assume: ${{ vars.AWS_TF_PLAN_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-southeast-1' }}
+
+      - name: Init, validate, plan
+        id: plan
+        if: steps.changes.outputs.run == 'true'
+        continue-on-error: true # the comment step below must still run
+        run: |
+          terraform -chdir="$TF_DIR" init -input=false -lockfile=readonly \
+            -backend-config="bucket=${TF_STATE_BUCKET}"
+          terraform -chdir="$TF_DIR" validate -no-color
+          terraform -chdir="$TF_DIR" plan -input=false -lock=false -no-color \
+            -out=tfplan 2>&1 | tee "${RUNNER_TEMP}/plan.txt"
+
+      # The repo is public and resource names embed the account ID, so the plan
+      # is redacted here, in the same step that posts it, with no AWS call. If
+      # redaction fails nothing is posted and the job fails.
+      - name: Redact and post the plan to the PR (create or update)
+        if: always() && steps.changes.outputs.run == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          TF_ENV: ${{ matrix.env }}
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+        with:
+          script: |
+            const fs = require("fs");
+            const env = process.env.TF_ENV;
+            const outcome = process.env.PLAN_OUTCOME;
+            const file = `${process.env.RUNNER_TEMP}/plan.txt`;
+            const marker = `<!-- terraform-plan:${env} -->`;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+
+            // Digits not glued to other digits, so an ID inside a longer token (an ARN
+            // segment, a name suffix) is caught where \b would miss it.
+            const ACCOUNT_ID = /(?<!\d)\d{12}(?!\d)/g;
+            const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g;
+
+            let plan = "";
+            try {
+              const raw = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+              plan = raw.replace(ACCOUNT_ID, "<account-id>").replace(EMAIL, "<email>");
+              // Guard: ANY run of 12 digits left (even inside a longer number) fails closed.
+              if (/\d{12}/.test(plan)) {
+                throw new Error("a 12-digit number survived redaction");
+              }
+            } catch (err) {
+              core.setFailed(`Redaction failed, the plan was NOT posted: ${err.message}`);
+              return;
+            }
+
+            const summary =
+              (plan.match(/^(Plan:.*|No changes\..*|Error:.*)$/m) || [])[0] ||
+              (outcome === "success" ? "Plan finished." : "Plan did not complete.");
+            const limit = 55000; // issue comments cap at 65536 characters
+            if (plan.length > limit) {
+              plan = plan.slice(0, limit) + "\n\n... truncated, see the workflow run for the full plan.";
+            }
+
+            const status = outcome === "success" ? "succeeded" : "failed";
+            const detail = plan
+              ? `<details><summary>Show plan</summary>\n\n\`\`\`text\n${plan}\n\`\`\`\n\n</details>`
+              : "No plan output was produced; init or validate failed before planning.";
+            const body = [
+              marker,
+              `### Terraform plan: \`${env}\` (${status})`,
+              "",
+              `**${summary}**`,
+              "",
+              detail,
+              "",
+              `Commit \`${sha}\` · [workflow run](${runUrl})`,
+            ].join("\n");
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const existing = comments.find(
+              (c) => c.user.login === "github-actions[bot]" && c.body.includes(marker),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail the job if the plan failed
+        if: always() && steps.plan.outcome == 'failure'
+        run: exit 1
+
+  # Runs on push to main, in parallel with apply-staging and before the
+  # `production` approval gate, so reviewers can read the prod plan first.
+  # No environment, read-only plan role. The redacted plan goes to the job
+  # summary only: artifacts of a public repo are public, so none is uploaded.
+  plan-prod:
+    name: plan (prod, pre-approval)
+    needs: check
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      TF_DIR: infra/envs/prod
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_TF_PLAN_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-southeast-1' }}
+
+      - name: Init, validate, plan
+        id: plan
+        continue-on-error: true # the summary step below must still run
+        run: |
+          terraform -chdir="$TF_DIR" init -input=false -lockfile=readonly \
+            -backend-config="bucket=${TF_STATE_BUCKET}"
+          terraform -chdir="$TF_DIR" validate -no-color
+          terraform -chdir="$TF_DIR" plan -input=false -lock=false -no-color \
+            2>&1 | tee "${RUNNER_TEMP}/plan.txt"
+
+      - name: Redact and write the plan to the job summary
+        if: always()
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+        with:
+          script: |
+            const fs = require("fs");
+            const file = `${process.env.RUNNER_TEMP}/plan.txt`;
+            const outcome = process.env.PLAN_OUTCOME;
+
+            // Digits not glued to other digits, so an ID inside a longer token (an ARN
+            // segment, a name suffix) is caught where \b would miss it.
+            const ACCOUNT_ID = /(?<!\d)\d{12}(?!\d)/g;
+            const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g;
+
+            let plan = "";
+            try {
+              const raw = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+              plan = raw.replace(ACCOUNT_ID, "<account-id>").replace(EMAIL, "<email>");
+              // Guard: ANY run of 12 digits left (even inside a longer number) fails closed.
+              if (/\d{12}/.test(plan)) {
+                throw new Error("a 12-digit number survived redaction");
+              }
+            } catch (err) {
+              core.setFailed(`Redaction failed, the plan was NOT written to the summary: ${err.message}`);
+              return;
+            }
+
+            const headline =
+              (plan.match(/^(Plan:.*|No changes\..*|Error:.*)$/m) || [])[0] ||
+              (outcome === "success" ? "Plan finished." : "Plan did not complete.");
+            const limit = 500000; // a step summary is capped at 1 MiB
+            if (plan.length > limit) {
+              plan = plan.slice(0, limit) + "\n\n... truncated, see the step log for the full plan.";
+            }
+
+            core.summary
+              .addHeading("Terraform plan: prod (before approval)", 3)
+              .addRaw(`<p><strong>${headline.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</strong></p>`, true)
+              .addRaw(`Commit <code>${context.sha.slice(0, 7)}</code>. apply (prod) waits for this job and for the production approval.`, true);
+            if (plan) {
+              core.summary.addCodeBlock(plan, "text");
+            }
+            await core.summary.write();
+
+      - name: Fail the job if the plan failed
+        if: always() && steps.plan.outcome == 'failure'
+        run: exit 1
+
+  apply-staging:
+    name: apply (staging)
+    needs: check
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging # required reviewers gate this job
+    permissions:
+      id-token: write
+      contents: read
+    concurrency:
+      group: terraform-apply-staging
+      cancel-in-progress: false
+    env:
+      TF_DIR: infra/envs/staging
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_TF_APPLY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-southeast-1' }}
+
+      - name: Init
+        run: |
+          terraform -chdir="$TF_DIR" init -input=false -lockfile=readonly \
+            -backend-config="bucket=${TF_STATE_BUCKET}"
+
+      - name: Plan
+        run: terraform -chdir="$TF_DIR" plan -input=false -lock-timeout=5m -out=tfplan
+
+      - name: Apply the saved plan
+        run: terraform -chdir="$TF_DIR" apply -input=false -lock-timeout=5m tfplan
+
+  apply-prod:
+    name: apply (prod)
+    needs: [apply-staging, plan-prod]
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production # required reviewers gate this job
+    permissions:
+      id-token: write
+      contents: read
+    concurrency:
+      group: terraform-apply-prod
+      cancel-in-progress: false
+    env:
+      TF_DIR: infra/envs/prod
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_TF_APPLY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-southeast-1' }}
+
+      - name: Init
+        run: |
+          terraform -chdir="$TF_DIR" init -input=false -lockfile=readonly \
+            -backend-config="bucket=${TF_STATE_BUCKET}"
+
+      - name: Plan
+        run: terraform -chdir="$TF_DIR" plan -input=false -lock-timeout=5m -out=tfplan
+
+      - name: Apply the saved plan
+        run: terraform -chdir="$TF_DIR" apply -input=false -lock-timeout=5m tfplan

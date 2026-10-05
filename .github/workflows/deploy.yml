@@ -1,30 +1,91 @@
 name: Deploy to AWS
 
+# Shows the ref being built in the Actions list and in the approval prompt, so
+# a reviewer of `production` sees WHICH version they are approving.
+run-name: Deploy ${{ inputs.ref || github.sha }} (${{ github.event_name }})
+
+# build-staging -> deploy-staging -> deploy-prod (gated by the `production`
+# environment's required reviewers); build-prod runs in parallel with staging.
+# Design: infra/DESIGN.md section 8.
+#
+# Build and deploy are separate jobs on purpose. `npm ci` and `next build` run
+# third-party code, so they only ever run in build-* jobs that have
+# `contents: read` and nothing else: no environment, no id-token, no AWS. The
+# deploy-* jobs hold the OIDC token but run no npm code; they only download the
+# built `out/` artifact and run scripts/deploy.sh and scripts/smoke.sh.
+#
+# Rollback: run this workflow manually (workflow_dispatch) on main and give
+# `ref` an older commit SHA, tag or branch. That ref is what gets built, and
+# build-* refuses any commit that is not an ancestor of origin/main. The
+# deploy and smoke scripts always come from main, so a rollback still uses the
+# current smoke.sh.
+#
+# The OIDC `sub` includes job_workflow_ref, so the deploy roles only trust
+# THIS file on refs/heads/main. Do not move the deploy jobs into a reusable
+# workflow or rename this file without updating the roles in Terraform.
+#
+# The only secret in the repo is ALERT_EMAIL (terraform.yml). Here, roles and
+# resources come from the Environment variables (S3_BUCKET,
+# CLOUDFRONT_DISTRIBUTION_ID, SITE_URL, AWS_DEPLOY_ROLE_ARN) and repo variables
+# (AWS_REGION).
+
 on:
   push:
     branches: [main]
+    # Infra-only changes do not redeploy the site; terraform.yml handles them.
+    paths-ignore:
+      - "infra/**"
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (commit SHA, tag or branch) to build and deploy. Use an older one to roll back."
+        required: false
+        default: main
+        type: string
 
+# Minimum for every job. id-token is widened per deploy job below, never here.
 permissions:
-  id-token: write # OIDC token for aws-actions/configure-aws-credentials
   contents: read
 
-concurrency:
-  group: deploy-production
-  cancel-in-progress: false
+defaults:
+  run:
+    shell: bash # explicit shell turns on `set -eo pipefail`
 
 jobs:
-  deploy:
-    # Skipped until the repository variables below are set (see infra/README.md).
-    if: vars.AWS_DEPLOY_ROLE_ARN != ''
+  build-staging:
+    name: build (staging)
+    # Environments only trust main; a dispatch from another branch stops here.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     env:
-      S3_BUCKET: ${{ vars.S3_BUCKET }}
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      # No environment on this job, so the URL is hard-coded (it is public).
+      # deploy-staging asserts it equals the SITE_URL variable.
+      NEXT_PUBLIC_SITE_URL: https://staging.maeven.vn
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # A push builds the pushed commit; a manual run builds the `ref` input.
+          ref: ${{ inputs.ref || github.sha }}
+          fetch-depth: 0 # full history, so origin/main exists for the check below
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      # Only code that is on main may be built and shipped, so a rollback `ref`
+      # cannot point at an unreviewed branch or a fork-style commit.
+      - name: Require the ref to be on main
+        run: |
+          git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null || {
+            echo "::error::origin/main was not fetched."
+            exit 1
+          }
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::$(git rev-parse --short HEAD) is not an ancestor of origin/main; refusing to build it."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
           cache: npm
@@ -32,9 +93,194 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: site-staging
+          path: out/
+          retention-days: 1 # artifacts of a public repo are public; keep it short
+          if-no-files-found: error
+
+  deploy-staging:
+    name: deploy (staging)
+    needs: build-staging
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    permissions:
+      id-token: write # OIDC for aws-actions/configure-aws-credentials
+      contents: read
+    concurrency:
+      group: deploy-staging
+      cancel-in-progress: false
+    env:
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      SITE_URL: ${{ vars.SITE_URL }}
+      BUILT_SITE_URL: https://staging.maeven.vn # must match build-staging
+      WAIT_FOR_INVALIDATION: "1"
+      SMOKE_EXPECT_NOINDEX: "1"
+    steps:
+      # Scripts only, and from main (github.sha is main's tip on a push and on a
+      # dispatch from main), never from the `ref` input. Checkout runs first
+      # because it cleans the workspace; the artifact lands after it.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: scripts
+          persist-credentials: false
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: site-staging
+          path: out
+
+      # The artifact was built with BUILT_SITE_URL. If the environment's
+      # SITE_URL says otherwise, the canonical URLs are wrong: stop before any
+      # AWS call.
+      - name: Refuse symlinks in the artifact
+        run: |
+          links="$(find out -type l | wc -l | tr -d ' ')"
+          if [[ "$links" != "0" ]]; then
+            echo "::error::out/ contains ${links} symlink(s); refusing to deploy."
+            exit 1
+          fi
+
+      - name: Check the artifact matches SITE_URL
+        run: |
+          if [[ -z "$SITE_URL" ]]; then
+            echo "::error::Environment variable SITE_URL is not set for this environment."
+            exit 1
+          fi
+          if [[ "${SITE_URL%/}" != "$BUILT_SITE_URL" ]]; then
+            echo "::error::SITE_URL (${SITE_URL}) differs from the URL this artifact was built with (${BUILT_SITE_URL})."
+            exit 1
+          fi
+          if ! grep -qF -e "rel=\"canonical\" href=\"${BUILT_SITE_URL}\"" \
+            -e "rel=\"canonical\" href=\"${BUILT_SITE_URL}/\"" out/index.html; then
+            echo "::error::out/index.html has no canonical link to ${BUILT_SITE_URL}."
+            exit 1
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'ap-southeast-1' }}
 
-      - run: ./scripts/deploy.sh
+      - name: Upload to S3 and invalidate CloudFront
+        run: ./scripts/deploy.sh
+
+      - name: Smoke test
+        run: ./scripts/smoke.sh "$SITE_URL"
+
+  build-prod:
+    name: build (prod)
+    # Starts in parallel with staging; only its deploy waits for staging.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      NEXT_PUBLIC_SITE_URL: https://maeven.vn # must match BUILT_SITE_URL below
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Only code that is on main may be built and shipped, so a rollback `ref`
+      # cannot point at an unreviewed branch or a fork-style commit.
+      - name: Require the ref to be on main
+        run: |
+          git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null || {
+            echo "::error::origin/main was not fetched."
+            exit 1
+          }
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::$(git rev-parse --short HEAD) is not an ancestor of origin/main; refusing to build it."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: site-prod
+          path: out/
+          retention-days: 1
+          if-no-files-found: error
+
+  deploy-prod:
+    name: deploy (prod)
+    needs: [deploy-staging, build-prod]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production # required reviewers gate this job
+    permissions:
+      id-token: write
+      contents: read
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      SITE_URL: ${{ vars.SITE_URL }}
+      BUILT_SITE_URL: https://maeven.vn # must match build-prod
+      WAIT_FOR_INVALIDATION: "1"
+      SMOKE_EXPECT_WWW: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: scripts
+          persist-credentials: false
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: site-prod
+          path: out
+
+      - name: Refuse symlinks in the artifact
+        run: |
+          links="$(find out -type l | wc -l | tr -d ' ')"
+          if [[ "$links" != "0" ]]; then
+            echo "::error::out/ contains ${links} symlink(s); refusing to deploy."
+            exit 1
+          fi
+
+      - name: Check the artifact matches SITE_URL
+        run: |
+          if [[ -z "$SITE_URL" ]]; then
+            echo "::error::Environment variable SITE_URL is not set for this environment."
+            exit 1
+          fi
+          if [[ "${SITE_URL%/}" != "$BUILT_SITE_URL" ]]; then
+            echo "::error::SITE_URL (${SITE_URL}) differs from the URL this artifact was built with (${BUILT_SITE_URL})."
+            exit 1
+          fi
+          if ! grep -qF -e "rel=\"canonical\" href=\"${BUILT_SITE_URL}\"" \
+            -e "rel=\"canonical\" href=\"${BUILT_SITE_URL}/\"" out/index.html; then
+            echo "::error::out/index.html has no canonical link to ${BUILT_SITE_URL}."
+            exit 1
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-southeast-1' }}
+
+      - name: Upload to S3 and invalidate CloudFront
+        run: ./scripts/deploy.sh
+
+      - name: Smoke test
+        run: ./scripts/smoke.sh "$SITE_URL"
