@@ -434,7 +434,14 @@ khoảng **5–15 phút**, chủ yếu do CloudFront. Thấy
    ```
 
 3. Đặt biến (**hai biến `SITE_URL` này phải bằng nhau**, nếu không deploy sẽ
-   thất bại có chủ ý):
+   thất bại có chủ ý).
+
+   > ⚠️ **Đừng copy giá trị từ màn hình terminal.** Khi một lệnh in ra không có
+   > xuống dòng, zsh thêm một dấu `%` ở cuối chỉ để báo hiệu. Nó **không** thuộc
+   > giá trị. Copy cả dấu `%` vào biến sẽ làm build thất bại với lỗi
+   > `SITE_URL_STAGING must look like https://host with no path`. Các lệnh dưới
+   > đã lấy giá trị bằng `$(...)` nên không bị. Kiểm tra lại bằng
+   > `gh variable list --json name,value`.
 
 ```bash
 O="terraform -chdir=infra/envs/staging output -raw"
