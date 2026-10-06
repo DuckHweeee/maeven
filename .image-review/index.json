@@ -1,0 +1,927 @@
+{
+  "product/01-linen-shirt.jpg": {
+    "source": "Unsplash",
+    "query": "beige linen shirt",
+    "ratio": 0.75,
+    "candidates": [
+      {
+        "id": "S4f4apZd-hA",
+        "ratio": 0.67,
+        "photographer": "tian dayong",
+        "alt": "a white shirt hanging on a clothes line",
+        "pageUrl": "https://unsplash.com/photos/a-white-shirt-hanging-on-a-clothes-line-S4f4apZd-hA",
+        "preview": ".image-review/product__01-linen-shirt/01-S4f4apZd-hA.jpg"
+      },
+      {
+        "id": "FZBoZOmI9hs",
+        "ratio": 0.67,
+        "photographer": "Safwan Thottoli",
+        "alt": "blank beige textured parchment paper",
+        "pageUrl": "https://unsplash.com/photos/blank-beige-textured-parchment-paper-FZBoZOmI9hs",
+        "preview": ".image-review/product__01-linen-shirt/02-FZBoZOmI9hs.jpg"
+      },
+      {
+        "id": "lziP7ZPtghg",
+        "ratio": 0.67,
+        "photographer": "tian dayong",
+        "alt": "a white shirt hanging on a clothes line",
+        "pageUrl": "https://unsplash.com/photos/a-white-shirt-hanging-on-a-clothes-line-lziP7ZPtghg",
+        "preview": ".image-review/product__01-linen-shirt/03-lziP7ZPtghg.jpg"
+      },
+      {
+        "id": "fbwPvGN6U1Y",
+        "ratio": 0.67,
+        "photographer": "Oriol Hausmann",
+        "alt": "man in white button up shirt standing during daytime",
+        "pageUrl": "https://unsplash.com/photos/man-in-white-button-up-shirt-standing-during-daytime-fbwPvGN6U1Y",
+        "preview": ".image-review/product__01-linen-shirt/04-fbwPvGN6U1Y.jpg"
+      },
+      {
+        "id": "roCq3E1xNak",
+        "ratio": 0.67,
+        "photographer": "Polly Alexandra",
+        "alt": "a person's legs and a person's pants",
+        "pageUrl": "https://unsplash.com/photos/a-persons-legs-and-a-persons-pants-roCq3E1xNak",
+        "preview": ".image-review/product__01-linen-shirt/05-roCq3E1xNak.jpg"
+      },
+      {
+        "id": "XtqnVagL3wo",
+        "ratio": 0.67,
+        "photographer": "Samantha Castillo",
+        "alt": "Man standing in front of a japanese temple",
+        "pageUrl": "https://unsplash.com/photos/man-standing-in-front-of-a-japanese-temple-XtqnVagL3wo",
+        "preview": ".image-review/product__01-linen-shirt/06-XtqnVagL3wo.jpg"
+      }
+    ]
+  },
+  "product/02-straight-trousers.jpg": {
+    "source": "Unsplash",
+    "query": "trousers hanger",
+    "ratio": 0.75,
+    "candidates": [
+      {
+        "id": "WF0LSThlRmw",
+        "ratio": 0.67,
+        "photographer": "Alexandra Gorn",
+        "alt": "women's four assorted apparel hanged on clothes rack",
+        "pageUrl": "https://unsplash.com/photos/womens-four-assorted-apparel-hanged-on-clothes-rack-WF0LSThlRmw",
+        "preview": ".image-review/product__02-straight-trousers/01-WF0LSThlRmw.jpg"
+      },
+      {
+        "id": "2QSK4kFoVZE",
+        "ratio": 0.67,
+        "photographer": "TuanAnh Blue",
+        "alt": "five pairs of jeans hanging on a clothes rack",
+        "pageUrl": "https://unsplash.com/photos/five-pairs-of-jeans-hanging-on-a-clothes-rack-2QSK4kFoVZE",
+        "preview": ".image-review/product__02-straight-trousers/02-2QSK4kFoVZE.jpg"
+      },
+      {
+        "id": "O0j9EivTKfI",
+        "ratio": 0.67,
+        "photographer": "Andrej Lišakov",
+        "alt": "white clothes hanger on orange flooring",
+        "pageUrl": "https://unsplash.com/photos/white-clothes-hanger-on-orange-flooring-O0j9EivTKfI",
+        "preview": ".image-review/product__02-straight-trousers/03-O0j9EivTKfI.jpg"
+      },
+      {
+        "id": "Jbh7Q32I5so",
+        "ratio": 0.67,
+        "photographer": "Sofia Mvila",
+        "alt": "brown wooden clothes hangers",
+        "pageUrl": "https://unsplash.com/photos/brown-wooden-clothes-hangers-Jbh7Q32I5so",
+        "preview": ".image-review/product__02-straight-trousers/04-Jbh7Q32I5so.jpg"
+      },
+      {
+        "id": "-iKnGdW24yM",
+        "ratio": 0.67,
+        "photographer": "Signature June",
+        "alt": "a wooden hanger holding a pair of scissors",
+        "pageUrl": "https://unsplash.com/photos/a-wooden-hanger-holding-a-pair-of-scissors--iKnGdW24yM",
+        "preview": ".image-review/product__02-straight-trousers/05--iKnGdW24yM.jpg"
+      },
+      {
+        "id": "DWuhdofmE5Q",
+        "ratio": 0.67,
+        "photographer": "Alexandra Gorn",
+        "alt": "two white and red long-sleeved shirt with belt and jeans",
+        "pageUrl": "https://unsplash.com/photos/two-white-and-red-long-sleeved-shirt-with-belt-and-jeans-DWuhdofmE5Q",
+        "preview": ".image-review/product__02-straight-trousers/06-DWuhdofmE5Q.jpg"
+      }
+    ]
+  },
+  "product/03-collarless-jacket.jpg": {
+    "source": "Unsplash",
+    "query": "linen jacket",
+    "ratio": 0.75,
+    "candidates": [
+      {
+        "id": "SVMaSpddK7o",
+        "ratio": 0.86,
+        "photographer": "Robert Richman",
+        "alt": "A row of shirts hanging on a clothes rack",
+        "pageUrl": "https://unsplash.com/photos/a-row-of-shirts-hanging-on-a-clothes-rack-SVMaSpddK7o",
+        "preview": ".image-review/product__03-collarless-jacket/01-SVMaSpddK7o.jpg"
+      },
+      {
+        "id": "cYRsB4liZPs",
+        "ratio": 0.86,
+        "photographer": "Robert Richman",
+        "alt": "Two jackets hanging on a clothes line",
+        "pageUrl": "https://unsplash.com/photos/two-jackets-hanging-on-a-clothes-line-cYRsB4liZPs",
+        "preview": ".image-review/product__03-collarless-jacket/02-cYRsB4liZPs.jpg"
+      },
+      {
+        "id": "UaDDhosgra8",
+        "ratio": 0.8,
+        "photographer": "Masoud Razeghi",
+        "alt": "A woman standing in front of a brick wall",
+        "pageUrl": "https://unsplash.com/photos/a-woman-standing-in-front-of-a-brick-wall-UaDDhosgra8",
+        "preview": ".image-review/product__03-collarless-jacket/03-UaDDhosgra8.jpg"
+      },
+      {
+        "id": "Sibk_aCtL2Q",
+        "ratio": 0.86,
+        "photographer": "Robert Richman",
+        "alt": "A row of shirts hanging on a clothes line",
+        "pageUrl": "https://unsplash.com/photos/a-row-of-shirts-hanging-on-a-clothes-line-Sibk_aCtL2Q",
+        "preview": ".image-review/product__03-collarless-jacket/04-Sibk_aCtL2Q.jpg"
+      },
+      {
+        "id": "dBhCSiJUAUY",
+        "ratio": 0.8,
+        "photographer": "Maksat Zhumanov",
+        "alt": "girl in blue long sleeve shirt standing and smiling",
+        "pageUrl": "https://unsplash.com/photos/girl-in-blue-long-sleeve-shirt-standing-and-smiling-dBhCSiJUAUY",
+        "preview": ".image-review/product__03-collarless-jacket/05-dBhCSiJUAUY.jpg"
+      }
+    ]
+  },
+  "product/01-a.jpg": {
+    "source": "Pexels",
+    "query": "natural linen fabric weave undyed",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "11255290",
+        "ratio": 1,
+        "photographer": "Seamlesstextures",
+        "alt": "High-quality close-up of gray fabric texture, ideal for backgrounds or design projects.",
+        "pageUrl": "https://www.pexels.com/photo/photograph-of-gray-fabric-11255290/",
+        "preview": ".image-review/product__01-a/01-11255290.jpg"
+      },
+      {
+        "id": "11255285",
+        "ratio": 1,
+        "photographer": "Seamlesstextures",
+        "alt": "Detailed texture of gray knitted fabric in a square format.",
+        "pageUrl": "https://www.pexels.com/photo/close-up-of-a-gray-fabric-texture-11255285/",
+        "preview": ".image-review/product__01-a/02-11255285.jpg"
+      },
+      {
+        "id": "8967723",
+        "ratio": 1,
+        "photographer": "Mikhail Morozov",
+        "alt": "A simple shirt hanging on a wooden door with warm sunlight streaming in, creating a minimalist aesthetic.",
+        "pageUrl": "https://www.pexels.com/photo/shirt-hanging-on-door-8967723/",
+        "preview": ".image-review/product__01-a/03-8967723.jpg"
+      },
+      {
+        "id": "15997613",
+        "ratio": 1,
+        "photographer": "Hac Hai",
+        "alt": "Elderly woman in traditional attire weaves yarn on a loom in a black and white setting.",
+        "pageUrl": "https://www.pexels.com/photo/old-woman-weaving-on-retro-machine-15997613/",
+        "preview": ".image-review/product__01-a/04-15997613.jpg"
+      },
+      {
+        "id": "19579420",
+        "ratio": 1,
+        "photographer": "Danyal Malik",
+        "alt": "Close-up of ears of grain on gray fabric and net, showing rustic textures.",
+        "pageUrl": "https://www.pexels.com/photo/ears-of-grain-on-gray-fabric-19579420/",
+        "preview": ".image-review/product__01-a/05-19579420.jpg"
+      },
+      {
+        "id": "8714794",
+        "ratio": 1,
+        "photographer": "Emmanuel Zua",
+        "alt": "Top view of golden croissants in a linen basket, perfect for breakfast setting.",
+        "pageUrl": "https://www.pexels.com/photo/top-view-of-croissants-in-a-basket-8714794/",
+        "preview": ".image-review/product__01-a/06-8714794.jpg"
+      }
+    ]
+  },
+  "product/01-b.jpg": {
+    "source": "Pexels",
+    "query": "white linen fabric soft folds",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "30550128",
+        "ratio": 1,
+        "photographer": "Natalia S",
+        "alt": "White fabric with soft folds creating an elegant texture and appearance, ideal for backgrounds.",
+        "pageUrl": "https://www.pexels.com/photo/elegant-white-fabric-texture-with-soft-folds-30550128/",
+        "preview": ".image-review/product__01-b/01-30550128.jpg"
+      },
+      {
+        "id": "31034512",
+        "ratio": 1,
+        "photographer": "HS Studio By Hussnain",
+        "alt": "High-resolution image of a white fabric showcasing elegant draping and soft folds.",
+        "pageUrl": "https://www.pexels.com/photo/elegant-white-fabric-texture-with-soft-folds-31034512/",
+        "preview": ".image-review/product__01-b/02-31034512.jpg"
+      },
+      {
+        "id": "8850650",
+        "ratio": 1,
+        "photographer": "Varvara Galvas",
+        "alt": "Abstract arrangement of white fabric with soft shadows, creating a minimalist aesthetic.",
+        "pageUrl": "https://www.pexels.com/photo/creased-white-cloth-8850650/",
+        "preview": ".image-review/product__01-b/03-8850650.jpg"
+      },
+      {
+        "id": "36507130",
+        "ratio": 1,
+        "photographer": "C '",
+        "alt": "A delicate dry branch on white fabric with natural light patterns.",
+        "pageUrl": "https://www.pexels.com/photo/minimalist-botanical-still-life-with-light-play-36507130/",
+        "preview": ".image-review/product__01-b/04-36507130.jpg"
+      },
+      {
+        "id": "31034511",
+        "ratio": 1,
+        "photographer": "HS Studio By Hussnain",
+        "alt": "Close-up of premium brown fabric with fringed edges, perfect for fashion design and textiles.",
+        "pageUrl": "https://www.pexels.com/photo/high-quality-brown-fabric-with-fringed-edges-31034511/",
+        "preview": ".image-review/product__01-b/05-31034511.jpg"
+      }
+    ]
+  },
+  "product/01-c.jpg": {
+    "source": "Unsplash",
+    "query": "folded linen",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "ZRcD8IxeXUw",
+        "ratio": 1.07,
+        "photographer": "Zoe",
+        "alt": "brown and black textile on black textile",
+        "pageUrl": "https://unsplash.com/photos/brown-and-black-textile-on-black-textile-ZRcD8IxeXUw",
+        "preview": ".image-review/product__01-c/01-ZRcD8IxeXUw.jpg"
+      },
+      {
+        "id": "DmnML_S_sq4",
+        "ratio": 1,
+        "photographer": "Darrell Jonathan",
+        "alt": "a folded yellow blanket in a white box",
+        "pageUrl": "https://unsplash.com/photos/a-folded-yellow-blanket-in-a-white-box-DmnML_S_sq4",
+        "preview": ".image-review/product__01-c/02-DmnML_S_sq4.jpg"
+      },
+      {
+        "id": "porAZtNVkyk",
+        "ratio": 1,
+        "photographer": "Studio Crevettes",
+        "alt": "white textile on brown woven basket",
+        "pageUrl": "https://unsplash.com/photos/white-textile-on-brown-woven-basket-porAZtNVkyk",
+        "preview": ".image-review/product__01-c/03-porAZtNVkyk.jpg"
+      },
+      {
+        "id": "9eH5WWklIak",
+        "ratio": 1.02,
+        "photographer": "Jose Miranda",
+        "alt": "black and white textile on white surface",
+        "pageUrl": "https://unsplash.com/photos/black-and-white-textile-on-white-surface-9eH5WWklIak",
+        "preview": ".image-review/product__01-c/04-9eH5WWklIak.jpg"
+      },
+      {
+        "id": "_LnqNEEeGUo",
+        "ratio": 1,
+        "photographer": "Zachary Keimig",
+        "alt": "blue and white throw pillow",
+        "pageUrl": "https://unsplash.com/photos/blue-and-white-throw-pillow-_LnqNEEeGUo",
+        "preview": ".image-review/product__01-c/05-_LnqNEEeGUo.jpg"
+      },
+      {
+        "id": "IIXtlWowNpQ",
+        "ratio": 1,
+        "photographer": "Eric Human",
+        "alt": "Stack of linen napkins and ceramic cups on table",
+        "pageUrl": "https://unsplash.com/photos/stack-of-linen-napkins-and-ceramic-cups-on-table-IIXtlWowNpQ",
+        "preview": ".image-review/product__01-c/06-IIXtlWowNpQ.jpg"
+      }
+    ]
+  },
+  "product/04-crew-neck-tee.jpg": {
+    "source": "Unsplash",
+    "query": "cotton t-shirt",
+    "ratio": 0.75,
+    "candidates": [
+      {
+        "id": "acn5ERAeSb4",
+        "ratio": 0.67,
+        "photographer": "Haryo Setyadi",
+        "alt": "white crew neck t-shirt",
+        "pageUrl": "https://unsplash.com/photos/white-crew-neck-t-shirt-acn5ERAeSb4",
+        "preview": ".image-review/product__04-crew-neck-tee/01-acn5ERAeSb4.jpg"
+      },
+      {
+        "id": "tWOz2_EK5EQ",
+        "ratio": 0.56,
+        "photographer": "Md Salman",
+        "alt": "assorted color folded shirts on wooden panel",
+        "pageUrl": "https://unsplash.com/photos/assorted-color-folded-shirts-on-wooden-panel-tWOz2_EK5EQ",
+        "preview": ".image-review/product__04-crew-neck-tee/02-tWOz2_EK5EQ.jpg"
+      },
+      {
+        "id": "GREEBEtyR9Y",
+        "ratio": 0.67,
+        "photographer": "Bao Bao",
+        "alt": "man in white crew neck t-shirt",
+        "pageUrl": "https://unsplash.com/photos/man-in-white-crew-neck-t-shirt-GREEBEtyR9Y",
+        "preview": ".image-review/product__04-crew-neck-tee/03-GREEBEtyR9Y.jpg"
+      },
+      {
+        "id": "mlKE8dEMc_8",
+        "ratio": 0.67,
+        "photographer": "Bao Bao",
+        "alt": "man in black crew neck t-shirt",
+        "pageUrl": "https://unsplash.com/photos/man-in-black-crew-neck-t-shirt-mlKE8dEMc_8",
+        "preview": ".image-review/product__04-crew-neck-tee/04-mlKE8dEMc_8.jpg"
+      },
+      {
+        "id": "wl2TODALiAY",
+        "ratio": 0.67,
+        "photographer": "Moonstarious Project",
+        "alt": "a stack of folded cloths with a cotton ball on top",
+        "pageUrl": "https://unsplash.com/photos/a-stack-of-folded-cloths-with-a-cotton-ball-on-top-wl2TODALiAY",
+        "preview": ".image-review/product__04-crew-neck-tee/05-wl2TODALiAY.jpg"
+      }
+    ]
+  },
+  "product/02-a.jpg": {
+    "source": "Unsplash",
+    "query": "cotton trousers",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "9wwHrhSGQAY",
+        "ratio": 1.33,
+        "photographer": "Scott Tobin",
+        "alt": "a cotton plant with lots of white flowers",
+        "pageUrl": "https://unsplash.com/photos/a-cotton-plant-with-lots-of-white-flowers-9wwHrhSGQAY",
+        "preview": ".image-review/product__02-a/01-9wwHrhSGQAY.jpg"
+      },
+      {
+        "id": "YS1HW1emM_U",
+        "ratio": 1.33,
+        "photographer": "Scott Tobin",
+        "alt": "a close up of leaves on a tree",
+        "pageUrl": "https://unsplash.com/photos/a-close-up-of-leaves-on-a-tree-YS1HW1emM_U",
+        "preview": ".image-review/product__02-a/02-YS1HW1emM_U.jpg"
+      },
+      {
+        "id": "VBf7RPTezEc",
+        "ratio": 1.5,
+        "photographer": "Roberto Sorin",
+        "alt": "a close up of a pair of blue jeans",
+        "pageUrl": "https://unsplash.com/photos/a-close-up-of-a-pair-of-blue-jeans-VBf7RPTezEc",
+        "preview": ".image-review/product__02-a/03-VBf7RPTezEc.jpg"
+      },
+      {
+        "id": "38agrOgtKT0",
+        "ratio": 1.5,
+        "photographer": "Sinitta Leunen",
+        "alt": "brown and black striped textile",
+        "pageUrl": "https://unsplash.com/photos/brown-and-black-striped-textile-38agrOgtKT0",
+        "preview": ".image-review/product__02-a/04-38agrOgtKT0.jpg"
+      },
+      {
+        "id": "0tDuW9e-tc4",
+        "ratio": 1.5,
+        "photographer": "Pasquale Farro",
+        "alt": "Piles of folded pants neatly stacked on shelves",
+        "pageUrl": "https://unsplash.com/photos/piles-of-folded-pants-neatly-stacked-on-shelves-0tDuW9e-tc4",
+        "preview": ".image-review/product__02-a/05-0tDuW9e-tc4.jpg"
+      }
+    ]
+  },
+  "product/02-b.jpg": {
+    "source": "Unsplash",
+    "query": "beige fabric",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "HZm2XR0whdw",
+        "ratio": 1.35,
+        "photographer": "Olga Thelavart",
+        "alt": "white printer paper on white surface",
+        "pageUrl": "https://unsplash.com/photos/white-printer-paper-on-white-surface-HZm2XR0whdw",
+        "preview": ".image-review/product__02-b/01-HZm2XR0whdw.jpg"
+      },
+      {
+        "id": "xTaOPMa6wAE",
+        "ratio": 1.29,
+        "photographer": "Annie Spratt",
+        "alt": "beige linen fabric texture background",
+        "pageUrl": "https://unsplash.com/photos/beige-linen-fabric-texture-background-xTaOPMa6wAE",
+        "preview": ".image-review/product__02-b/02-xTaOPMa6wAE.jpg"
+      },
+      {
+        "id": "2a2xFRwkr_U",
+        "ratio": 1.5,
+        "photographer": "Pawel Czerwinski",
+        "alt": "Smooth beige fabric folds creating soft abstract curves and shadows",
+        "pageUrl": "https://unsplash.com/photos/beige-fabric-abstract-curves-2a2xFRwkr_U",
+        "preview": ".image-review/product__02-b/03-2a2xFRwkr_U.jpg"
+      },
+      {
+        "id": "epgqiRNfNHw",
+        "ratio": 1.5,
+        "photographer": "engin akyurt",
+        "alt": "brown textile in close up image",
+        "pageUrl": "https://unsplash.com/photos/brown-textile-in-close-up-image-epgqiRNfNHw",
+        "preview": ".image-review/product__02-b/04-epgqiRNfNHw.jpg"
+      },
+      {
+        "id": "q1s75bvggOw",
+        "ratio": 1.5,
+        "photographer": "Pawel Czerwinski",
+        "alt": "A close up of a wall with a white background",
+        "pageUrl": "https://unsplash.com/photos/a-close-up-of-a-wall-with-a-white-background-q1s75bvggOw",
+        "preview": ".image-review/product__02-b/05-q1s75bvggOw.jpg"
+      }
+    ]
+  },
+  "product/02-c.jpg": {
+    "source": "Unsplash",
+    "query": "folded linen",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "cTA8m7VwejE",
+        "ratio": 1.5,
+        "photographer": "Katsia Jazwinska",
+        "alt": "beige curtain",
+        "pageUrl": "https://unsplash.com/photos/beige-curtain-cTA8m7VwejE",
+        "preview": ".image-review/product__02-c/01-cTA8m7VwejE.jpg"
+      },
+      {
+        "id": "BDJy8J3R4GY",
+        "ratio": 1.5,
+        "photographer": "Jacinta Christos",
+        "alt": "white textile in close up photography",
+        "pageUrl": "https://unsplash.com/photos/white-textile-in-close-up-photography-BDJy8J3R4GY",
+        "preview": ".image-review/product__02-c/02-BDJy8J3R4GY.jpg"
+      },
+      {
+        "id": "iJv0qTMZ2Fg",
+        "ratio": 1.5,
+        "photographer": "Matthew Cassidy",
+        "alt": "white and black throw pillow on white bed",
+        "pageUrl": "https://unsplash.com/photos/white-and-black-throw-pillow-on-white-bed-iJv0qTMZ2Fg",
+        "preview": ".image-review/product__02-c/03-iJv0qTMZ2Fg.jpg"
+      },
+      {
+        "id": "FseXc3OsIic",
+        "ratio": 1.5,
+        "photographer": "Luca Laurence",
+        "alt": "grey linen",
+        "pageUrl": "https://unsplash.com/photos/grey-linen-FseXc3OsIic",
+        "preview": ".image-review/product__02-c/04-FseXc3OsIic.jpg"
+      },
+      {
+        "id": "9Pspyy5lEMw",
+        "ratio": 1.5,
+        "photographer": "tian dayong",
+        "alt": "a pair of glasses, a ball of yarn, a pair of sunglasses, and",
+        "pageUrl": "https://unsplash.com/photos/a-pair-of-glasses-a-ball-of-yarn-a-pair-of-sunglasses-and-9Pspyy5lEMw",
+        "preview": ".image-review/product__02-c/05-9Pspyy5lEMw.jpg"
+      }
+    ]
+  },
+  "product/03-a.jpg": {
+    "source": "Unsplash",
+    "query": "linen texture",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "6gvk4fE7Ufs",
+        "ratio": 1.78,
+        "photographer": "Logan Voss",
+        "alt": "A textured light gray background with subtle lines",
+        "pageUrl": "https://unsplash.com/photos/a-textured-light-gray-background-with-subtle-lines-6gvk4fE7Ufs",
+        "preview": ".image-review/product__03-a/01-6gvk4fE7Ufs.jpg"
+      },
+      {
+        "id": "I6Sqy9qh3Iw",
+        "ratio": 1.33,
+        "photographer": "Kier in Sight Archives",
+        "alt": "brown and beige striped textile",
+        "pageUrl": "https://unsplash.com/photos/brown-and-beige-striped-textile-I6Sqy9qh3Iw",
+        "preview": ".image-review/product__03-a/02-I6Sqy9qh3Iw.jpg"
+      },
+      {
+        "id": "ZToHTyQO008",
+        "ratio": 1.78,
+        "photographer": "Logan Voss",
+        "alt": "A textured beige fabric background",
+        "pageUrl": "https://unsplash.com/photos/a-textured-beige-fabric-background-ZToHTyQO008",
+        "preview": ".image-review/product__03-a/03-ZToHTyQO008.jpg"
+      },
+      {
+        "id": "ZnKC0csB1WY",
+        "ratio": 1.78,
+        "photographer": "Logan Voss",
+        "alt": "A solid light blue textured background",
+        "pageUrl": "https://unsplash.com/photos/a-solid-light-blue-textured-background-ZnKC0csB1WY",
+        "preview": ".image-review/product__03-a/04-ZnKC0csB1WY.jpg"
+      },
+      {
+        "id": "HQDSBDmYen0",
+        "ratio": 1.5,
+        "photographer": "Logan Cameron",
+        "alt": "white and gray plaid curtain",
+        "pageUrl": "https://unsplash.com/photos/white-and-gray-plaid-curtain-HQDSBDmYen0",
+        "preview": ".image-review/product__03-a/05-HQDSBDmYen0.jpg"
+      }
+    ]
+  },
+  "product/03-b.jpg": {
+    "source": "Unsplash",
+    "query": "linen detail",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "cTA8m7VwejE",
+        "ratio": 1.5,
+        "photographer": "Katsia Jazwinska",
+        "alt": "beige curtain",
+        "pageUrl": "https://unsplash.com/photos/beige-curtain-cTA8m7VwejE",
+        "preview": ".image-review/product__03-b/01-cTA8m7VwejE.jpg"
+      },
+      {
+        "id": "BDJy8J3R4GY",
+        "ratio": 1.5,
+        "photographer": "Jacinta Christos",
+        "alt": "white textile in close up photography",
+        "pageUrl": "https://unsplash.com/photos/white-textile-in-close-up-photography-BDJy8J3R4GY",
+        "preview": ".image-review/product__03-b/02-BDJy8J3R4GY.jpg"
+      },
+      {
+        "id": "FseXc3OsIic",
+        "ratio": 1.5,
+        "photographer": "Luca Laurence",
+        "alt": "grey linen",
+        "pageUrl": "https://unsplash.com/photos/grey-linen-FseXc3OsIic",
+        "preview": ".image-review/product__03-b/03-FseXc3OsIic.jpg"
+      },
+      {
+        "id": "Iea-uSWWfhs",
+        "ratio": 1.5,
+        "photographer": "Rita K",
+        "alt": "A close up of a bed with a white sheet",
+        "pageUrl": "https://unsplash.com/photos/a-close-up-of-a-bed-with-a-white-sheet-Iea-uSWWfhs",
+        "preview": ".image-review/product__03-b/04-Iea-uSWWfhs.jpg"
+      },
+      {
+        "id": "kwepwyvPWmM",
+        "ratio": 1.33,
+        "photographer": "Kier in Sight Archives",
+        "alt": "a close up of a piece of cloth",
+        "pageUrl": "https://unsplash.com/photos/a-close-up-of-a-piece-of-cloth-kwepwyvPWmM",
+        "preview": ".image-review/product__03-b/05-kwepwyvPWmM.jpg"
+      }
+    ]
+  },
+  "product/03-c.jpg": {
+    "source": "Unsplash",
+    "query": "linen shirt hanging",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "AqLIkOzWDAk",
+        "ratio": 1.5,
+        "photographer": "Cristofer Maximilian",
+        "alt": "hanged grey shirt on white wall",
+        "pageUrl": "https://unsplash.com/photos/hanged-grey-shirt-on-white-wall-AqLIkOzWDAk",
+        "preview": ".image-review/product__03-c/01-AqLIkOzWDAk.jpg"
+      },
+      {
+        "id": "hT1R6Z5pY5I",
+        "ratio": 1.25,
+        "photographer": "M. Ghufanil Muta Ali",
+        "alt": "blue button up long sleeve shirt",
+        "pageUrl": "https://unsplash.com/photos/blue-button-up-long-sleeve-shirt-hT1R6Z5pY5I",
+        "preview": ".image-review/product__03-c/02-hT1R6Z5pY5I.jpg"
+      },
+      {
+        "id": "_ysU7TqBiZI",
+        "ratio": 1.5,
+        "photographer": "Content Pixie",
+        "alt": "white crew-neck sleeveless top with gold-colored necklace",
+        "pageUrl": "https://unsplash.com/photos/white-crew-neck-sleeveless-top-with-gold-colored-necklace-_ysU7TqBiZI",
+        "preview": ".image-review/product__03-c/03-_ysU7TqBiZI.jpg"
+      },
+      {
+        "id": "DRM_6zFkPFw",
+        "ratio": 1.5,
+        "photographer": "Nimble Made",
+        "alt": "white button up shirt on brown clothes hanger",
+        "pageUrl": "https://unsplash.com/photos/white-button-up-shirt-on-brown-clothes-hanger-DRM_6zFkPFw",
+        "preview": ".image-review/product__03-c/04-DRM_6zFkPFw.jpg"
+      },
+      {
+        "id": "j2xVSId3nWI",
+        "ratio": 1.5,
+        "photographer": "Content Pixie",
+        "alt": "gold-colored pendant necklace on hanged dress",
+        "pageUrl": "https://unsplash.com/photos/gold-colored-pendant-necklace-on-hanged-dress-j2xVSId3nWI",
+        "preview": ".image-review/product__03-c/05-j2xVSId3nWI.jpg"
+      }
+    ]
+  },
+  "product/04-a.jpg": {
+    "source": "Unsplash",
+    "query": "cotton fabric",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "iwBPEw_Oq5k",
+        "ratio": 1.5,
+        "photographer": "engin akyurt",
+        "alt": "blue textile in close up photography",
+        "pageUrl": "https://unsplash.com/photos/blue-textile-in-close-up-photography-iwBPEw_Oq5k",
+        "preview": ".image-review/product__04-a/01-iwBPEw_Oq5k.jpg"
+      },
+      {
+        "id": "4byBtNuIyIg",
+        "ratio": 1.25,
+        "photographer": "Mel Poole",
+        "alt": "pile of cloth on white surface",
+        "pageUrl": "https://unsplash.com/photos/pile-of-cloth-on-white-surface-4byBtNuIyIg",
+        "preview": ".image-review/product__04-a/02-4byBtNuIyIg.jpg"
+      },
+      {
+        "id": "-X401Lkrm0g",
+        "ratio": 1.5,
+        "photographer": "Karl Wiggers",
+        "alt": "a close up of a cotton plant with a blurry background",
+        "pageUrl": "https://unsplash.com/photos/a-close-up-of-a-cotton-plant-with-a-blurry-background--X401Lkrm0g",
+        "preview": ".image-review/product__04-a/03--X401Lkrm0g.jpg"
+      },
+      {
+        "id": "cE35j-5Y7Ug",
+        "ratio": 1.78,
+        "photographer": "Sze Yin Chan",
+        "alt": "a field full of cotton plants covered in snow",
+        "pageUrl": "https://unsplash.com/photos/a-field-full-of-cotton-plants-covered-in-snow-cE35j-5Y7Ug",
+        "preview": ".image-review/product__04-a/04-cE35j-5Y7Ug.jpg"
+      },
+      {
+        "id": "LoNfl2iIMK0",
+        "ratio": 1.51,
+        "photographer": "Nika Benedictova",
+        "alt": "a close up of a white flower",
+        "pageUrl": "https://unsplash.com/photos/a-close-up-of-a-white-flower-LoNfl2iIMK0",
+        "preview": ".image-review/product__04-a/05-LoNfl2iIMK0.jpg"
+      }
+    ]
+  },
+  "product/04-b.jpg": {
+    "source": "Unsplash",
+    "query": "white t-shirt",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "PH2m1TPTkV8",
+        "ratio": 1.5,
+        "photographer": "Brando Makes Branding",
+        "alt": "man holding his back pocket",
+        "pageUrl": "https://unsplash.com/photos/man-holding-his-back-pocket-PH2m1TPTkV8",
+        "preview": ".image-review/product__04-b/01-PH2m1TPTkV8.jpg"
+      },
+      {
+        "id": "9ugEeqflo70",
+        "ratio": 1.5,
+        "photographer": "Masaaki Komori",
+        "alt": "white hotel-printed crew-neck shirt on black surface",
+        "pageUrl": "https://unsplash.com/photos/white-hotel-printed-crew-neck-shirt-on-black-surface-9ugEeqflo70",
+        "preview": ".image-review/product__04-b/02-9ugEeqflo70.jpg"
+      },
+      {
+        "id": "elbKS4DY21g",
+        "ratio": 1.33,
+        "photographer": "Mediamodifier",
+        "alt": "white crew neck t-shirt",
+        "pageUrl": "https://unsplash.com/photos/white-crew-neck-t-shirt-elbKS4DY21g",
+        "preview": ".image-review/product__04-b/03-elbKS4DY21g.jpg"
+      },
+      {
+        "id": "8ACmRoleM24",
+        "ratio": 1.5,
+        "photographer": "Avtar Singh",
+        "alt": "A plain white t-shirt hangs on a wooden hanger",
+        "pageUrl": "https://unsplash.com/photos/a-plain-white-t-shirt-hangs-on-a-wooden-hanger-8ACmRoleM24",
+        "preview": ".image-review/product__04-b/04-8ACmRoleM24.jpg"
+      },
+      {
+        "id": "JskqEILt-ds",
+        "ratio": 1.33,
+        "photographer": "Mediamodifier",
+        "alt": "white crew neck shirt on white and green floral textile",
+        "pageUrl": "https://unsplash.com/photos/white-crew-neck-shirt-on-white-and-green-floral-textile-JskqEILt-ds",
+        "preview": ".image-review/product__04-b/05-JskqEILt-ds.jpg"
+      }
+    ]
+  },
+  "product/04-c.jpg": {
+    "source": "Unsplash",
+    "query": "folded t-shirt",
+    "ratio": 1,
+    "candidates": [
+      {
+        "id": "4rUYuwJ2vGw",
+        "ratio": 1.5,
+        "photographer": "mockupbee",
+        "alt": "a white shirt on a white background",
+        "pageUrl": "https://unsplash.com/photos/a-white-shirt-on-a-white-background-4rUYuwJ2vGw",
+        "preview": ".image-review/product__04-c/01-4rUYuwJ2vGw.jpg"
+      },
+      {
+        "id": "9ugEeqflo70",
+        "ratio": 1.5,
+        "photographer": "Masaaki Komori",
+        "alt": "white hotel-printed crew-neck shirt on black surface",
+        "pageUrl": "https://unsplash.com/photos/white-hotel-printed-crew-neck-shirt-on-black-surface-9ugEeqflo70",
+        "preview": ".image-review/product__04-c/02-9ugEeqflo70.jpg"
+      },
+      {
+        "id": "AqLIkOzWDAk",
+        "ratio": 1.5,
+        "photographer": "Cristofer Maximilian",
+        "alt": "hanged grey shirt on white wall",
+        "pageUrl": "https://unsplash.com/photos/hanged-grey-shirt-on-white-wall-AqLIkOzWDAk",
+        "preview": ".image-review/product__04-c/03-AqLIkOzWDAk.jpg"
+      },
+      {
+        "id": "pZfRXQhi1eg",
+        "ratio": 1.5,
+        "photographer": "tian dayong",
+        "alt": "two black and white shirts sitting next to each other",
+        "pageUrl": "https://unsplash.com/photos/two-black-and-white-shirts-sitting-next-to-each-other-pZfRXQhi1eg",
+        "preview": ".image-review/product__04-c/04-pZfRXQhi1eg.jpg"
+      },
+      {
+        "id": "BKYeLLB1OxI",
+        "ratio": 1.5,
+        "photographer": "Nimble Made",
+        "alt": "blue button up shirt on white table",
+        "pageUrl": "https://unsplash.com/photos/blue-button-up-shirt-on-white-table-BKYeLLB1OxI",
+        "preview": ".image-review/product__04-c/05-BKYeLLB1OxI.jpg"
+      }
+    ]
+  },
+  "editorial/cap-saint-jacques.jpg": {
+    "source": "Pexels",
+    "query": "vung tau vietnam coast",
+    "ratio": 1.5,
+    "candidates": [
+      {
+        "id": "20988601",
+        "ratio": 1.48,
+        "photographer": "Toàn Văn",
+        "alt": "People enjoy a peaceful evening by the waterfront with a view of distant hills and calm seas.",
+        "pageUrl": "https://www.pexels.com/photo/people-on-pier-near-island-on-sea-20988601/",
+        "preview": ".image-review/editorial__cap-saint-jacques/01-20988601.jpg"
+      },
+      {
+        "id": "16775848",
+        "ratio": 1.5,
+        "photographer": "Minh Tran",
+        "alt": "Rustic coastal village in Vũng Tàu, Vietnam, with old buildings and small fishing boats along the rocky shore.",
+        "pageUrl": "https://www.pexels.com/photo/damaged-buildings-in-village-on-sea-shore-16775848/",
+        "preview": ".image-review/editorial__cap-saint-jacques/02-16775848.jpg"
+      },
+      {
+        "id": "23973684",
+        "ratio": 1.5,
+        "photographer": "Tường Chopper",
+        "alt": "Discover the serene beauty of Vũng Tàu's coastline with colorful boats and a clear blue sky.",
+        "pageUrl": "https://www.pexels.com/photo/view-of-boats-sailing-near-the-shore-under-a-blue-sky-23973684/",
+        "preview": ".image-review/editorial__cap-saint-jacques/03-23973684.jpg"
+      },
+      {
+        "id": "20791496",
+        "ratio": 1.5,
+        "photographer": "Thang Cao",
+        "alt": "A man in a hat walks along a vibrant ocean promenade in Phước Hải, Vietnam.",
+        "pageUrl": "https://www.pexels.com/photo/a-man-covering-face-with-a-panama-hat-walking-on-a-promenade-at-the-phuoc-hai-beach-vietnam-20791496/",
+        "preview": ".image-review/editorial__cap-saint-jacques/04-20791496.jpg"
+      },
+      {
+        "id": "11520807",
+        "ratio": 1.48,
+        "photographer": "Đỗ Huy",
+        "alt": "Scenic view of Vũng Tàu promenade, sea, and hills under a clear sky.",
+        "pageUrl": "https://www.pexels.com/photo/wall-on-sea-shore-11520807/",
+        "preview": ".image-review/editorial__cap-saint-jacques/05-11520807.jpg"
+      }
+    ]
+  },
+  "editorial/ao-den.jpg": {
+    "source": "Pexels",
+    "query": "black shirt hanging hanger",
+    "ratio": 1.5,
+    "candidates": [
+      {
+        "id": "8306388",
+        "ratio": 1.5,
+        "photographer": "Ron Lach",
+        "alt": "Black and white image of clothes hanged neatly on hangers, showcasing a minimalist aesthetic.",
+        "pageUrl": "https://www.pexels.com/photo/a-grayscale-of-hanged-clothes-8306388/",
+        "preview": ".image-review/editorial__ao-den/01-8306388.jpg"
+      },
+      {
+        "id": "996329",
+        "ratio": 1.5,
+        "photographer": "Kai Pilger",
+        "alt": "A close-up view of a row of clothes on wooden hangers, showcasing various fabrics and colors in a wardrobe setting.",
+        "pageUrl": "https://www.pexels.com/photo/assorted-clothes-996329/",
+        "preview": ".image-review/editorial__ao-den/02-996329.jpg"
+      },
+      {
+        "id": "8532638",
+        "ratio": 1.5,
+        "photographer": "Hanna Pad",
+        "alt": "Black t-shirt hanging on a white hanger against a plain wall with a dramatic shadow effect.",
+        "pageUrl": "https://www.pexels.com/photo/a-black-shirt-hanging-on-the-wall-8532638/",
+        "preview": ".image-review/editorial__ao-den/03-8532638.jpg"
+      },
+      {
+        "id": "2517866",
+        "ratio": 1.5,
+        "photographer": "Muhammad-Taha Ibrahim",
+        "alt": "Close-up of vibrant clothes hanging on a line, showcasing various patterns and colors on hangers.",
+        "pageUrl": "https://www.pexels.com/photo/hanged-dress-close-up-photography-2517866/",
+        "preview": ".image-review/editorial__ao-den/04-2517866.jpg"
+      },
+      {
+        "id": "1682699",
+        "ratio": 1.5,
+        "photographer": "Craig Adderley",
+        "alt": "Stylish men's wardrobe featuring a formal suit and pink dress shirt neatly hung on hangers.",
+        "pageUrl": "https://www.pexels.com/photo/close-up-photo-of-hang-clothes-in-wardrobe-1682699/",
+        "preview": ".image-review/editorial__ao-den/05-1682699.jpg"
+      }
+    ]
+  },
+  "editorial/lanh-trong-nha.jpg": {
+    "source": "Pexels",
+    "query": "air conditioner unit on wall indoors",
+    "ratio": 1.5,
+    "candidates": [
+      {
+        "id": "38788452",
+        "ratio": 1.5,
+        "photographer": "NEOSiAM 18+",
+        "alt": "Close-up of a wall-mounted air conditioner indoors, showcasing sleek design for modern cooling solutions.",
+        "pageUrl": "https://www.pexels.com/photo/wall-mounted-air-conditioner-in-modern-interior-38788452/",
+        "preview": ".image-review/editorial__lanh-trong-nha/01-38788452.jpg"
+      },
+      {
+        "id": "24551564",
+        "ratio": 1.78,
+        "photographer": "Berna",
+        "alt": "Facade of a city apartment building equipped with air conditioners on each window.",
+        "pageUrl": "https://www.pexels.com/photo/wall-of-block-of-flats-24551564/",
+        "preview": ".image-review/editorial__lanh-trong-nha/02-24551564.jpg"
+      },
+      {
+        "id": "5505098",
+        "ratio": 1.5,
+        "photographer": "Mike van Schoonderwalt",
+        "alt": "Red building exterior with multiple windows and air conditioners, showcasing urban architecture.",
+        "pageUrl": "https://www.pexels.com/photo/wall-with-windows-and-air-conditioning-5505098/",
+        "preview": ".image-review/editorial__lanh-trong-nha/03-5505098.jpg"
+      },
+      {
+        "id": "6316067",
+        "ratio": 1.5,
+        "photographer": "Max Vakhtbovych",
+        "alt": "Interior of contemporary spacious living room with comfortable soft couches with cushions and TV set on wall",
+        "pageUrl": "https://www.pexels.com/photo/cozy-living-room-with-sofas-and-television-set-6316067/",
+        "preview": ".image-review/editorial__lanh-trong-nha/04-6316067.jpg"
+      },
+      {
+        "id": "27427771",
+        "ratio": 1.5,
+        "photographer": "Jan van der Wolf",
+        "alt": "Rusty air conditioning unit casting shadow on a peach wall with blue stripe.",
+        "pageUrl": "https://www.pexels.com/photo/an-air-conditioner-on-a-wall-with-blue-lines-27427771/",
+        "preview": ".image-review/editorial__lanh-trong-nha/05-27427771.jpg"
+      }
+    ]
+  }
+}
