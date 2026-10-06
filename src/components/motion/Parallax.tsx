@@ -1,10 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { gsap, useGSAP } from "@/lib/gsap";
-
-gsap.registerPlugin(ScrollTrigger);
 
 /**
  * Drifts a photo against the page as it scrolls past.

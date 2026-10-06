@@ -34,7 +34,7 @@ export default function AboutPage() {
   const where = viList(WORKSHOP_PLACES);
 
   return (
-    <main className="mx-auto max-w-[1280px] px-4 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-24">
+    <main id="main" tabIndex={-1} className="mx-auto outline-none max-w-[1280px] px-4 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-24">
       <div className="grid items-end gap-8 border-b border-line pb-10 md:grid-cols-2 md:gap-12 md:pb-[52px]">
         <div>
           <div className="mono-label mb-5 text-[11px] text-smoke">Giới thiệu</div>

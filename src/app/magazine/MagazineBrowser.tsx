@@ -13,7 +13,7 @@ export default function MagazineBrowser() {
   const [feature, ...rest] = all;
 
   return (
-    <main className="mx-auto max-w-[1280px] px-4 pt-8 pb-16 sm:px-6 sm:pt-11 sm:pb-24">
+    <main id="main" tabIndex={-1} className="mx-auto outline-none max-w-[1280px] px-4 pt-8 pb-16 sm:px-6 sm:pt-11 sm:pb-24">
       <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-line pb-5">
         <h1 className="m-0 font-display text-[clamp(30px,4.8vw,58px)] font-extrabold tracking-[-0.01em]">
           Tạp chí
