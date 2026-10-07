@@ -433,19 +433,25 @@ khoảng **5–15 phút**, chủ yếu do CloudFront. Thấy
    terraform -chdir=infra/envs/staging output -raw site_url   # https://dxxxx.cloudfront.net
    ```
 
-3. Đặt biến (**hai biến `SITE_URL` này phải bằng nhau**, nếu không deploy sẽ
-   thất bại có chủ ý):
+3. Đặt toàn bộ biến của staging bằng **một lệnh**:
 
-```bash
-O="terraform -chdir=infra/envs/staging output -raw"
-URL="$($O site_url)"
-gh variable set SITE_URL_STAGING                         --body "$URL"
-gh variable set SITE_URL                   --env staging --body "$URL"
-gh variable set AWS_TF_APPLY_ROLE_ARN      --env staging --body "$(terraform -chdir=infra/bootstrap output -json tf_apply_role_arns | python3 -c 'import json,sys;print(json.load(sys.stdin)["staging"])')"
-gh variable set AWS_DEPLOY_ROLE_ARN        --env staging --body "$($O deploy_role_arn)"
-gh variable set S3_BUCKET                  --env staging --body "$($O bucket_name)"
-gh variable set CLOUDFRONT_DISTRIBUTION_ID --env staging --body "$($O cloudfront_distribution_id)"
-```
+   ```bash
+   ./scripts/set-github-vars.sh staging
+   ```
+
+   Script lấy giá trị thẳng từ Terraform và **từ chối ghi** nếu giá trị sai
+   định dạng. Nó chạy bằng bash dù terminal của bạn là zsh. Muốn xem trước mà
+   chưa ghi gì thì thêm `DRY_RUN=1` ở đầu lệnh.
+
+   > ⚠️ **Đừng gõ tay hay copy giá trị từ màn hình terminal.** Hai lỗi đã gặp:
+   > - zsh thêm dấu `%` ở cuối khi lệnh in ra không có xuống dòng. Copy cả dấu
+   >   đó vào biến làm build thất bại (`must look like https://host`).
+   > - Các lệnh kiểu `O="terraform ... output -raw"; $($O tên_output)` **chỉ chạy
+   >   trên bash**, còn zsh không tách chuỗi theo khoảng trắng. Kết quả là biến bị
+   >   điền sai, ví dụ `AWS_DEPLOY_ROLE_ARN` chứa một URL, và deploy báo
+   >   `Source Account ID is needed if the Role Name is provided and not the Role Arn`.
+   >
+   > Kiểm tra lại bất cứ lúc nào: `gh variable list --env staging`.
 
 Mở thử địa chỉ đó trên trình duyệt. Trước khi deploy site (bước 11) bạn sẽ thấy
 trang lỗi 404 hoặc AccessDenied, vì bucket còn trống. Đó là bình thường.
@@ -471,19 +477,12 @@ terraform -chdir=infra/envs/prod apply tfplan
 Sau khi xong:
 
 1. Xác nhận email SNS của prod.
-2. Đặt biến. Lưu ý tên environment là `production`, còn thư mục là `prod`:
+2. Đặt toàn bộ biến của prod bằng một lệnh. Script tự dùng environment
+   `production` (thư mục thì tên là `prod`):
 
-```bash
-O="terraform -chdir=infra/envs/prod output -raw"
-URL="$($O site_url)"
-gh variable set SITE_URL_PROD                               --body "$URL"
-gh variable set SITE_URL                   --env production --body "$URL"
-gh variable set AWS_TF_APPLY_ROLE_ARN      --env production --body "$(terraform -chdir=infra/bootstrap output -json tf_apply_role_arns | python3 -c 'import json,sys;print(json.load(sys.stdin)["prod"])')"
-gh variable set AWS_DEPLOY_ROLE_ARN        --env production --body "$($O deploy_role_arn)"
-gh variable set S3_BUCKET                  --env production --body "$($O bucket_name)"
-gh variable set CLOUDFRONT_DISTRIBUTION_ID --env production --body "$($O cloudfront_distribution_id)"
-```
-
+   ```bash
+   ./scripts/set-github-vars.sh prod
+   ```
 
 ### Bước 11. Deploy site lần đầu và kiểm tra
 

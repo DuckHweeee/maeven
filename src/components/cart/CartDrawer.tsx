@@ -13,6 +13,7 @@ import {
   useCartOpen,
 } from "@/lib/cart";
 import { getProduct } from "@/lib/data";
+import { pauseScroll } from "@/lib/scroll";
 
 export default function CartDrawer() {
   const lines = useCart();
@@ -33,7 +34,8 @@ export default function CartDrawer() {
   const count = lines.reduce((n, l) => n + l.qty, 0);
 
   // Escape to close, focus moved in and restored on the way out, and the page
-  // behind locked so the drawer does not scroll the document with it.
+  // behind locked so the drawer does not scroll the document with it
+  // (pauseScroll pauses ScrollSmoother, or locks body overflow without it).
   useEffect(() => {
     if (!open) return;
 
@@ -60,13 +62,12 @@ export default function CartDrawer() {
       }
     };
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    pauseScroll(true);
     document.addEventListener("keydown", onKey);
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
+      pauseScroll(false);
       restoreTo.current?.focus?.();
     };
   }, [open]);
@@ -88,8 +89,9 @@ export default function CartDrawer() {
         aria-label="Giỏ hàng"
         aria-hidden={!open}
         inert={!open}
-        className={`absolute inset-y-0 right-0 flex w-full max-w-[420px] flex-col bg-paper shadow-[0_0_60px_rgba(13,13,12,0.18)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
-          open ? "translate-x-0" : "translate-x-full"
+        className={`absolute inset-y-0 right-0 flex w-full max-w-[420px] flex-col bg-paper transition-[translate,box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+          // Shadow only while open: off-canvas it bled 60px onto the page edge.
+          open ? "translate-x-0 shadow-[0_0_60px_rgba(13,13,12,0.18)]" : "translate-x-full shadow-none"
         }`}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4 sm:px-6">
