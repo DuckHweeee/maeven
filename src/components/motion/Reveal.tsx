@@ -1,10 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DUR, EASE_OUT, gsap, useGSAP } from "@/lib/gsap";
-
-gsap.registerPlugin(ScrollTrigger);
 
 /**
  * Reveals children once they enter the viewport.

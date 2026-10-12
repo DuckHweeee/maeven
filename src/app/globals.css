@@ -30,7 +30,10 @@
   --color-graphite: #26262a;
   --color-slate: #55554f;
   --color-slate-2: #6b6b66;
-  --color-smoke: #8a8a84;
+  /* Small mono labels on light grounds: 5.15:1 on paper, 5.77:1 on white,
+     4.53:1 on ash. (Was #8a8a84, 3.10:1 on paper.) Never used on ink —
+     dark grounds use chalk / chalk-dim. */
+  --color-smoke: #666661;
   --color-chalk: #d2d2cc;
   --color-chalk-dim: #93938c;
   --color-chalk-dim-2: #8f887c;
@@ -40,19 +43,102 @@
   --color-mint-dim: #8fbf94;
   --color-forest: #1c6b45;
 
-  /* ---- Type ---- */
+  /* ---- Type ----
+     One family + mono. Archivo is both body (wdth 100, wght 400) and display
+     (wdth 62–125 as a visual variable). `--font-sans` stays as an alias so the
+     existing `font-sans` classes keep working. */
   --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  /* ---- Type scale (classes: text-mega, text-display, text-headline,
+     text-body, text-label) ----
+     Contrast of scale is the style: there is deliberately no "medium" step.
+     Display leading never goes below 0.92 — tighter than that and Vietnamese
+     stacked diacritics (Ộ Ẫ Ữ) collide with the line above. */
+  --text-mega: clamp(4.5rem, 1rem + 20vw, 22vw);
+  --text-mega--line-height: 0.92;
+  --text-mega--letter-spacing: -0.045em;
+  --text-display: clamp(3rem, 1rem + 8vw, 9rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.035em;
+  --text-headline: clamp(1.75rem, 1rem + 2.6vw, 3.5rem);
+  --text-headline--line-height: 1;
+  --text-headline--letter-spacing: -0.025em;
+  --text-body: 1.03125rem;
+  --text-body--line-height: 1.6;
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.14em;
+}
+
+/* Scroll pins (hero, Campaign rail, PDP BuyPanel) only run on a screen that is
+   wide AND tall enough, with motion allowed — the same query as PIN_OK in
+   `@/lib/gsap`. `pinned:` styles the pinned layout; `md-still:` is the desktop
+   layout without the pin (reduced motion, or a short screen such as a phone in
+   landscape or a 1024×600 laptop window). Keep the three in step. */
+@custom-variant pinned {
+  @media (min-width: 768px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
+}
+@custom-variant md-still {
+  @media (min-width: 768px) and (prefers-reduced-motion: reduce),
+    (min-width: 768px) and (max-height: 699.98px) {
+    @slot;
+  }
+}
+
+/* Layout constants that are not Tailwind theme values. */
+:root {
+  /* Height of the fixed SiteHeader. SiteHeader measures itself and overwrites
+     this on the client; these defaults match the measured bar so the first
+     paint does not jump. Use `pt-(--header-h)` / `-mt-(--header-h)`. */
+  --header-h: 57px;
+  /* Fixed gutter of the 12-column grid. */
+  --grid-gutter: 12px;
+  /* Extra room above/below each SplitReveal line mask so stacked diacritics
+     and descenders are not clipped by the mask. */
+  --mask-pad-top: 0.36em;
+  --mask-pad-bottom: 0.14em;
+}
+@media (min-width: 640px) {
+  :root { --header-h: 68px; }
+}
+@media (min-width: 768px) {
+  :root { --grid-gutter: 24px; }
+}
+
+/* 12-column container: same max-width and side padding as the old
+   `mx-auto max-w-[1280px] px-4 sm:px-6`, with a fixed gutter. Children place
+   themselves with `col-span-*` / `col-start-*`. */
+@utility grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
 }
 
 @layer base {
-  html { -webkit-text-size-adjust: 100%; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Native hash jumps and focus scrolling (reduced-motion path) land below
+       the fixed header instead of under it. */
+    scroll-padding-top: var(--header-h);
+  }
   body {
     background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 16.5px;
+    font-weight: 400;
+    font-stretch: 100%;
     -webkit-font-smoothing: antialiased;
   }
   p { text-wrap: pretty; }
@@ -84,4 +170,36 @@
       repeating-linear-gradient(90deg, rgba(255,255,255,0.11) 2px 3px, transparent 3px 4px);
     background-size: 4px 4px;
   }
+}
+
+/* ---- Header over a dark hero ----
+   Unlayered on purpose so it beats the header's Tailwind utilities. Toggle with
+   `setHeaderOverHero(true)` from `@/lib/scroll` (sets
+   `data-over-hero` on #site-header); the header then drops its glass and
+   inherits paper-coloured type. While the mobile menu is open (`data-open`)
+   the header keeps its solid ground, so the menu never floats over the photo. */
+#site-header[data-over-hero]:not([data-open]) {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--color-paper);
+}
+
+/* ---- SplitReveal line masks ----
+   The mask (overflow: clip, added by SplitText) grows by the pad on both sides
+   and gives it back with a negative margin, so line spacing is unchanged while
+   the clip box clears Vietnamese stacked marks and dot-below. The parent
+   becomes a flex column only while split, because sibling negative margins
+   would otherwise collapse to the larger one and loosen the leading. */
+.split-reveal:has(> .sr-line-mask) {
+  display: flex;
+  flex-direction: column;
+}
+.sr-line-mask {
+  margin-block: calc(var(--mask-pad-top) * -1) calc(var(--mask-pad-bottom) * -1);
+}
+.sr-line {
+  padding-block: var(--mask-pad-top) var(--mask-pad-bottom);
 }

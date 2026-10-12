@@ -93,6 +93,26 @@ for (const name of targets) {
 
   await page.goto(BASE + preset.path, { waitUntil: "networkidle" });
 
+  // ScrollSmoother keeps the page in a fixed wrapper and drives it from the
+  // native window scroll, so window.scrollTo still works — the content then
+  // eases to the new position over ~1s, which the wait below covers.
+  //
+  // Full-page shots first walk the whole page: scroll-triggered reveals are
+  // `once`, so anything never scrolled past would be captured in its hidden
+  // from-state. Then back to the top so the smoother's transform is 0 when
+  // Playwright stretches the viewport for the capture.
+  if (preset.full) {
+    await page.evaluate(async () => {
+      const step = window.innerHeight * 0.6;
+      for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 120));
+      }
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      await new Promise((r) => setTimeout(r, 1200));
+      window.scrollTo(0, 0);
+    });
+  }
   if (preset.scrollY) {
     await page.evaluate((y) => window.scrollTo(0, y), preset.scrollY);
   }
@@ -110,6 +130,23 @@ for (const name of targets) {
     const ctx = c.getContext("webgl2") || c.getContext("webgl");
     return ctx ? `canvas ${c.width}x${c.height}` : "canvas, no context";
   });
+
+  // With ScrollSmoother the page lives in a position:fixed, viewport-tall
+  // wrapper, so a fullPage capture would show one screen and blank below.
+  // At scroll 0 the content transform is identity, so un-fixing the wrapper
+  // for the capture shows exactly what a reader scrolling down would see.
+  if (preset.full) {
+    await page.evaluate(() => {
+      const w = document.getElementById("smooth-wrapper");
+      if (!w || getComputedStyle(w).position !== "fixed") return;
+      Object.assign(w.style, { position: "relative", overflow: "visible", height: "auto" });
+      // The content's matrix3d makes it a composited layer, and Chrome only
+      // rasterises the tiles of such a layer near the viewport — the rest of a
+      // full-page capture comes out blank. Identity at scroll 0, so drop it.
+      const c = document.getElementById("smooth-content");
+      if (c) c.style.transform = "none";
+    });
+  }
 
   const file = `${OUT}/${name}${suffix}.png`;
   await page.screenshot({ path: file, fullPage: Boolean(preset.full) });

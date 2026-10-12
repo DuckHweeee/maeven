@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-type Props = {
+export type PhotoProps = {
   src: string;
   alt: string;
   /** CSS aspect-ratio, e.g. "3 / 4". */
@@ -26,7 +26,7 @@ export default function Photo({
   priority = false,
   dark = false,
   children,
-}: Props) {
+}: PhotoProps) {
   return (
     <div
       className={`relative overflow-hidden ${dark ? "hatch-dark" : "hatch"} ${className}`}

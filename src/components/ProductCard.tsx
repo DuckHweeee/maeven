@@ -1,106 +1,65 @@
-"use client";
-
-import { useRef } from "react";
 import Link from "next/link";
 import Photo from "@/components/Photo";
-import { DUR, EASE_OUT, gsap, useGSAP } from "@/lib/gsap";
-import { usePointerEffects } from "@/lib/motion";
 import type { Product } from "@/lib/data";
 
-/** Scoped selector, resting state, hovered state, timing. */
-const STEPS = [
-  { sel: "img", rest: { scale: 1 }, over: { scale: 1.045 }, dur: DUR, at: 0 },
-  { sel: "[data-rule]", rest: { scaleX: 0 }, over: { scaleX: 1 }, dur: DUR * 0.8, at: 0 },
-  { sel: "[data-no]", rest: { y: 0 }, over: { y: 3 }, dur: DUR * 0.7, at: 0 },
-  { sel: "[data-name]", rest: { x: 0 }, over: { x: 3 }, dur: DUR * 0.7, at: 0.05 },
-] as const;
-
 /**
- * Product card with a GSAP hover.
+ * Flat product card: 4:5 frame, mono number, name, price, material.
  *
- * Four properties across four elements, offset against each other — that
- * orchestration is what GSAP is here for. `overwrite: "auto"` is the other half:
- * the settle tween kills the entry tween and starts from whatever value it had
- * reached, so a pointer sweeping along a row leaves four overlapping settles
- * rather than four jumps.
+ * Hover / keyboard focus:
+ * - the photograph scales to 1.03 inside its frame (motion-safe only),
+ * - the price rolls up one line, like a mechanical counter,
+ * - an ink rule draws across the top of the caption (scaleX from the left).
  *
- * Written as paired tweens rather than a paused timeline played and reversed,
- * which keeps it the same shape as FlipCard — one `gsap.to` per state change,
- * `overwrite` sorting out the rest. A timeline would work equally well here.
+ * Pure CSS on purpose: three transform transitions need no JavaScript, no
+ * client bundle, and work before hydration. Reduced motion drops the
+ * transitions, so the rule simply appears. Nothing transforms the card root,
+ * because the home slider owns the transform on its own wrapper. The grid mode
+ * of `src/app/product/ProductIndex.tsx` uses the same language.
  *
- * Colour stays on the CSS `group-hover` below on purpose — it is the one part of
- * the hover a reader without JavaScript still gets.
- *
- * Nothing here transforms the card root: on the home page these sit inside
- * Coverflow, which owns the transform on its own inner wrapper.
+ * Transitions use expo.out as a CSS curve, the same as EASE_OUT in `@/lib/gsap`.
  */
 export default function ProductCard({ product }: { product: Product }) {
-  const root = useRef<HTMLAnchorElement>(null);
-  const { enabled } = usePointerEffects();
-
-  const { contextSafe } = useGSAP({ scope: root });
-
-  const set = contextSafe((over: boolean) => {
-    for (const step of STEPS) {
-      gsap.to(step.sel, {
-        ...(over ? step.over : step.rest),
-        duration: step.dur,
-        // Settling happens together; only the entry is staggered.
-        delay: over ? step.at : 0,
-        ease: EASE_OUT,
-        overwrite: "auto",
-      });
-    }
-  });
-
-  // Focus gets the same treatment as hover, which `group-hover` alone would miss.
-  const play = () => {
-    if (enabled) set(true);
-  };
-  const reverse = () => {
-    if (enabled) set(false);
-  };
-
   return (
-    <Link
-      ref={root}
-      href={`/product/${product.sku}`}
-      className="group block"
-      onMouseEnter={play}
-      onMouseLeave={reverse}
-      onFocus={play}
-      onBlur={reverse}
-    >
+    <Link href={`/product/${product.sku}`} className="group block">
       <Photo
         src={product.gallery[0].src}
         alt={product.gallery[0].alt}
-        ratio="3 / 4"
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
-        className="[&>img]:will-change-transform"
-      >
+        ratio="4 / 5"
+        sizes="(max-width: 640px) 75vw, (max-width: 1024px) 50vw, 320px"
+        className="[&>img]:transition-transform [&>img]:duration-700 [&>img]:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:[&>img]:scale-[1.03] motion-safe:group-focus-visible:[&>img]:scale-[1.03]"
+      />
+
+      <div className="@container relative mt-3 pt-2.5">
+        <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-line" />
         <span
-          data-no
-          className="mono-label absolute top-2.5 left-3 z-10 text-[10.5px] tracking-[0.12em] text-paper mix-blend-difference"
-        >
-          {product.no}
-        </span>
-      </Photo>
-      <div className="relative mt-3 border-t border-ink pt-[11px]">
-        {/* Drawn over the rule on hover — the accent the promises cards use,
-            borrowed for a moment. */}
-        <span
-          data-rule
           aria-hidden
-          className="absolute -top-px left-0 h-px w-full origin-left scale-x-0 bg-forest"
+          className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-ink transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 motion-reduce:transition-none"
         />
-        <div className="flex justify-between gap-3 text-[14.5px]">
-          <span data-name className="transition-colors group-hover:text-forest">
-            {product.name}
+        {/* Number · name · price on one line when the card has room; on a
+            narrow card (under 18rem) the price drops below the name instead
+            of squeezing it to a word per line. */}
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 @[18rem]:grid-cols-[auto_minmax(0,1fr)_auto]">
+          <span className="font-mono text-label tracking-normal text-smoke tabular-nums">
+            {product.no}
           </span>
-          <span className="font-mono text-graphite">{product.price}</span>
+          <span className="text-[15px] leading-snug">{product.name}</span>
+          {/* The price rolls: an identical copy slides up into the same one-line mask. */}
+          <span className="relative col-start-2 mt-1 justify-self-start overflow-clip font-mono text-[12.5px] leading-[1.4] tabular-nums @[18rem]:col-start-3 @[18rem]:row-start-1 @[18rem]:mt-0">
+            <span className="block transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full group-focus-visible:-translate-y-full motion-reduce:transition-none">
+              {product.price}
+            </span>
+            <span
+              aria-hidden
+              className="absolute inset-x-0 top-full block transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full group-focus-visible:-translate-y-full motion-reduce:transition-none"
+            >
+              {product.price}
+            </span>
+          </span>
+        </div>
+        <div className="mt-1 font-mono text-label tracking-normal text-smoke">
+          {product.material}
         </div>
       </div>
-      <div className="mt-1 font-mono text-[10.5px] text-smoke">{product.material}</div>
     </Link>
   );
 }

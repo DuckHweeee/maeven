@@ -44,8 +44,8 @@ export default function Newsletter({ compact = false }: { compact?: boolean }) {
           placeholder="youremail@email.com"
           aria-invalid={state === "error"}
           aria-describedby={state === "error" ? `${id}-err` : undefined}
-          className={`min-w-0 flex-1 border bg-panel px-3.5 py-3 text-[15px] outline-none placeholder:text-smoke focus-visible:border-ink ${
-            state === "error" ? "border-forest" : "border-line-3"
+          className={`min-w-0 flex-1 border bg-panel px-3.5 py-3 text-[15px] placeholder:text-smoke focus-visible:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
+            state === "error" ? "border-forest" : "border-slate-2"
           }`}
         />
         <button

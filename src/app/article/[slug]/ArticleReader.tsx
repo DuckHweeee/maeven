@@ -29,7 +29,7 @@ export default function ArticleReader({
   const a = en && article.en ? article.en : article;
 
   return (
-    <main>
+    <main id="main" tabIndex={-1} className="outline-none">
       <div className="mx-auto max-w-[820px] px-4 pt-10 pb-[22px] sm:px-6 sm:pt-[60px]">
         <div className="mono-label text-[10.5px] text-forest">{a.rubric}</div>
         <h1 className="mt-4 mb-5 font-display text-[clamp(29px,5.2vw,64px)] leading-[1.04] font-bold tracking-[-0.012em]">

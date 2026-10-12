@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { pauseScroll } from "@/lib/scroll";
 
 const KEY = "maeven.welcome.v1";
 const CODE = "MAEVEN15";
@@ -90,9 +91,12 @@ export default function WelcomeOffer() {
       }
     };
 
+    // Modal: the page behind must not scroll under the overlay.
+    pauseScroll(true);
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
+      pauseScroll(false);
       restoreTo.current?.focus?.();
     };
   }, [visible]);
@@ -190,8 +194,8 @@ export default function WelcomeOffer() {
                 placeholder="youremail@email.com"
                 aria-invalid={state === "error"}
                 aria-describedby={state === "error" ? `${id}-err` : undefined}
-                className={`mt-2 w-full border bg-panel px-3.5 py-3 text-[15px] outline-none placeholder:text-smoke focus-visible:border-ink ${
-                  state === "error" ? "border-forest" : "border-line-3"
+                className={`mt-2 w-full border bg-panel px-3.5 py-3 text-[15px] placeholder:text-smoke focus-visible:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
+                  state === "error" ? "border-forest" : "border-slate-2"
                 }`}
               />
               {state === "error" && (

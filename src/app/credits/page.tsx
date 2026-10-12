@@ -98,7 +98,7 @@ function Grid({ items }: { items: [string, Credit][] }) {
 
 export default function CreditsPage() {
   return (
-    <main className="mx-auto max-w-[1120px] px-4 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-24">
+    <main id="main" tabIndex={-1} className="mx-auto outline-none max-w-[1120px] px-4 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-24">
       <h1 className="m-0 mb-4 font-display text-[clamp(34px,4.8vw,58px)] font-extrabold tracking-[-0.02em]">
         Tín dụng ảnh
       </h1>
